@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+success+`
+|`+Boolean+`
+|indicate whether the person was deleted successfully or not
+
+|`+message+`
+|`+String+`
+|display an appropriate message regarding the deletion process
+
+|===

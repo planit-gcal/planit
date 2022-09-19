@@ -1,0 +1,10 @@
+[source,http,options="nowrap"]
+----
+POST /plan-it/people/create-person HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 81
+Host: localhost:8080
+
+{"person_id":null,"gender":"male","name":"Mustafa","surname":"Alhamoud","age":23}
+----

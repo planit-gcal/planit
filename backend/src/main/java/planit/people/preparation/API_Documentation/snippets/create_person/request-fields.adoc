@@ -1,0 +1,20 @@
+|===
+|Path|Type|Description
+
+|`+name+`
+|`+String+`
+|the first name of the person to be created
+
+|`+gender+`
+|`+String+`
+|the gender of the person to be created
+
+|`+surname+`
+|`+String+`
+|the last name of the person to be created
+
+|`+age+`
+|`+Number+`
+|the age of the person to be created
+
+|===

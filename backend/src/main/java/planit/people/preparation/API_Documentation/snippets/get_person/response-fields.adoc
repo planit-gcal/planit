@@ -1,0 +1,24 @@
+|===
+|Path|Type|Description
+
+|`+person_id+`
+|`+Number+`
+|the id of the retrieved person
+
+|`+gender+`
+|`+String+`
+|the gender of the retrieved person
+
+|`+name+`
+|`+String+`
+|the first name of the retrieved person
+
+|`+surname+`
+|`+String+`
+|the last name of the retrieved person
+
+|`+age+`
+|`+Number+`
+|the age of the retrieved person
+
+|===

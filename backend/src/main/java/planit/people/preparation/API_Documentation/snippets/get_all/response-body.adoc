@@ -1,0 +1,4 @@
+[source,options="nowrap"]
+----
+[{"person_id":1,"gender":"male","name":"Same","surname":"Smith","age":23},{"person_id":2,"gender":"female","name":"Reem","surname":"Smith","age":21}]
+----

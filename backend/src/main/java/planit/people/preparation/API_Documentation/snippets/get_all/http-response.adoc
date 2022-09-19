@@ -1,0 +1,11 @@
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 149
+
+[{"person_id":1,"gender":"male","name":"Same","surname":"Smith","age":23},{"person_id":2,"gender":"female","name":"Reem","surname":"Smith","age":21}]
+----

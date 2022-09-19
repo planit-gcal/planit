@@ -1,0 +1,6 @@
+[source,bash]
+----
+$ echo '{"person_id":null,"gender":"male","name":"Mustafa","surname":"Alhamoud","age":23}' | http POST 'http://localhost:8080/plan-it/people/create-person' \
+    'Content-Type:application/json;charset=UTF-8' \
+    'Accept:application/json'
+----

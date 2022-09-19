@@ -1,0 +1,4 @@
+[source,options="nowrap"]
+----
+{"person_id":1,"gender":"male","name":"Mustafa","surname":"Alhamoud","age":23}
+----
