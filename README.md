@@ -4,7 +4,8 @@ This repository contains frontend and backend apps for the Planit project.
 
 # Useful links
 
-- https://miro.com/app/board/uXjVPVOoQV0=/
+- [Introduction to Docker](/docs/Docker.md)
+- [Miro board](https://miro.com/app/board/uXjVPVOoQV0=/)
 
 # Running the project locally
 
