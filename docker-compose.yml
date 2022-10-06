@@ -18,7 +18,7 @@ services:
       - backend
       - frontend
 
-  frontend-service:
+  frontendservice:
     build:
       context: frontend-react # Use an image built from the specified dockerfile in the `frontend-react` directory.
       dockerfile: Dockerfile
@@ -49,6 +49,18 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - backend
+  ngrok:
+    image: wernight/ngrok:latest
+    ports:
+      - 4040:4040
+    environment:
+      NGROK_PROTOCOL: http
+      NGROK_PORT: frontendservice:80
+      NGROK_AUTH: 1XyeZAbYPN1M9b4X5wv39a4ZqYv_2pELVkSurk88y3RvHh8aN
+    depends_on:
+      - frontendservice
+    networks:
+      - frontend
 
 # Volumes
 volumes:
