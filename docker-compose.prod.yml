@@ -35,6 +35,7 @@ services:
     volumes:
       - ./key.pem:/root/ssl/key.pem
       - ./cert.pem:/root/ssl/cert.pem
+
   db:
     image: postgres:14.1-alpine
     # changed from default 5432 to 5433 to avoid conflicts when testing this docker-compose locally
@@ -52,14 +53,16 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - backend
+
   ngrok:
     image: wernight/ngrok:latest
     ports:
       - 4040:4040
+    env_file:
+      - .env.prod
     environment:
       NGROK_PROTOCOL: http
       NGROK_PORT: frontend-service:443
-      NGROK_AUTH: 1XyeZAbYPN1M9b4X5wv39a4ZqYv_2pELVkSurk88y3RvHh8aN
     depends_on:
       - frontend-service
     networks:
