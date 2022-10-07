@@ -6,7 +6,7 @@ function App() {
   const [response, setResponse] = useState<any>("no response yet");
 
   useEffect(() => {
-    const url = `${process.env.REACT_APP_API_BASE_URL}/plan-it/people`;
+    const url = `/plan-it/people`;
 
     // a bunch of terrible test code
     fetch(url, {})

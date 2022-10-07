@@ -18,20 +18,23 @@ services:
       - backend
       - frontend
 
-  frontendservice:
+  frontend-service:
     build:
       context: frontend-react # Use an image built from the specified dockerfile in the `frontend-react` directory.
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_BASE_URL: http://127.0.0.1:8080
+        REACT_APP_API_BASE_URL: http://backend-service:8080
     ports:
-      - "80:80" # Map the exposed port 80 on the container to port 80 on the host machine
+      - "443:443" # Map the exposed port 80 on the container to port 80 on the host machine
     restart: always
     depends_on:
       - backend-service
     networks:
       - frontend
-
+      - backend
+    volumes:
+      - ./key.pem:/root/ssl/key.pem
+      - ./cert.pem:/root/ssl/cert.pem
   db:
     image: postgres:14.1-alpine
     # changed from default 5432 to 5433 to avoid conflicts when testing this docker-compose locally
@@ -55,12 +58,13 @@ services:
       - 4040:4040
     environment:
       NGROK_PROTOCOL: http
-      NGROK_PORT: frontendservice:80
+      NGROK_PORT: frontend-service:443
       NGROK_AUTH: 1XyeZAbYPN1M9b4X5wv39a4ZqYv_2pELVkSurk88y3RvHh8aN
     depends_on:
-      - frontendservice
+      - frontend-service
     networks:
       - frontend
+      - backend
 
 # Volumes
 volumes:
