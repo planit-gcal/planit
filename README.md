@@ -39,9 +39,7 @@ This repository contains frontend and backend apps for the Planit project.
 
 ### Deploying locally
 
-1. Generate keypairs for SSL. Run `openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365
-
-# -subj "/C=GB/ST=London/L=London/O=Alros/OU=IT Department/CN=localhost"` in root directory
+1. Generate keypairs for SSL. Run `openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out cert.pem -sha256 -days 365 -subj "/C=GB/ST=London/L=London/O=Alros/OU=IT Department/CN=localhost"`
 
 2. `docker-compose -f docker-compose.prod.yml build --no-cache`
 3. `docker-compose -f docker-compose.prod.yml up`
