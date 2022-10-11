@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping(path = "plan-it/google_account",
         produces = {MediaType.APPLICATION_JSON_VALUE})

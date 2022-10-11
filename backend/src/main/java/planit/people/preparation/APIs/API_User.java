@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin
 @RestController
 @RequestMapping(path = "plan-it/user",
         produces = {MediaType.APPLICATION_JSON_VALUE})

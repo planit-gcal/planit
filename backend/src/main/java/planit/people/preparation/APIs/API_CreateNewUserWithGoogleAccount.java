@@ -11,7 +11,6 @@ import planit.people.preparation.DTOs.DTO_User_Google_account;
 import planit.people.preparation.Entities.Entity_Google_account;
 import planit.people.preparation.Entities.Entity_User;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping(path = "plan-it/create-new-user-with-google-account",
         produces = {MediaType.APPLICATION_JSON_VALUE})
