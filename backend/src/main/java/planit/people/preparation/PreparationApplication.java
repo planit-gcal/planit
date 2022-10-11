@@ -18,7 +18,7 @@ public class PreparationApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/plan-it/**").allowedOrigins("http://localhost:80", "http://localhost:443");
+				registry.addMapping("/plan-it/**").allowedOrigins("http://localhost:3000", "http://localhost:80", "http://localhost:443");
 			}
 		};
 	}
