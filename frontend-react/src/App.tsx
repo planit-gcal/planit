@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import React from "react";
 import "./App.css";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 function App() {
-  const [response, setResponse] = useState<any>("no response yet");
-
-  useEffect(() => {
-    const url = `/plan-it/people`;
-
-    // a bunch of terrible test code
-    fetch(url, {})
-      .then((response) => {
-        if (response.status === 204) {
-          return "empty response";
-        }
-
-        return response.json();
+  const onSuccess = (response: any) => {
+    console.log("succ: ", response);
+    axios
+      .post("/plan-it/user/token", {
+        code: response.code,
       })
-      .then((data) => {
-        setResponse(data);
-      });
-  }, []);
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.log(error.message));
+  };
+
+  // @ts-ignore
+  const login = useGoogleLogin({
+    onSuccess: onSuccess,
+    flow: "auth-code",
+    scope:
+      "profile email openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly",
+    accessType: "offline",
+  });
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>{JSON.stringify(response)}</p>
-      </header>
+      <button onClick={() => login()}>Sign in with Google 🚀 </button>;
     </div>
   );
 }

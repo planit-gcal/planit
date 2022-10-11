@@ -22,7 +22,6 @@ import java.util.Optional;
  * @see PeopleResponse in order to view the response object used for some methods that are used in this class
  * @since 1.0
  */
-@CrossOrigin(origins = {"http://localhost:80", "http://localhost:443"})
 @RestController
 @RequestMapping(path = "plan-it/people",
         produces = {MediaType.APPLICATION_JSON_VALUE})
