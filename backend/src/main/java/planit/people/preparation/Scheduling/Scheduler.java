@@ -2,22 +2,24 @@ package planit.people.preparation.Scheduling;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.*;
 
 public class Scheduler {
 
-    public Vector<Interval> GetAvailableTimeSlotsBetweenDates(Vector<Interval> busyTime, DateTime start, DateTime end) {
+    public static Vector<Interval> GetAvailableTimeSlotsBetweenDates(Vector<Interval> busyTime, DateTime start, DateTime end) {
         var filtered = FilterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
         var merged = MergeSortedIntervals(filtered);
         return GetFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
-    private Vector<Interval> GetFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
+    private static Vector<Interval> GetFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
         var freeIntervals = new Vector<Interval>();
 
-        Interval lastFree = null;
+        Interval lastFree = new Interval(start, end);
         if (mergedIntervals.size() > 0) {
             var firstBusy = mergedIntervals.get(0);
             if (firstBusy.isAfter(start)) {
@@ -36,22 +38,20 @@ public class Scheduler {
             freeIntervals.add(new Interval(freeStart, freeEnd));
         }
 
-        if (lastFree != null) {
-            freeIntervals.add(lastFree);
-        }
+        freeIntervals.add(lastFree);
 
         return freeIntervals;
     }
 
-    private Vector<Interval> MergeSortedIntervals(Vector<Interval> intervals) {
+    private static Vector<Interval> MergeSortedIntervals(Vector<Interval> intervals) {
         if (intervals == null || intervals.isEmpty()) {
-            throw new NullPointerException("sortedIntervals cannot be empty");
+            return new Vector<>();
         }
 
         var mergedIntervals = new Vector<Interval>();
         mergedIntervals.add(intervals.get(0));
 
-        for (int i = 1; i < intervals.size() - 1; i++) {
+        for (int i = 1; i < intervals.size(); i++) {
             var first = mergedIntervals.remove(mergedIntervals.size() - 1);
             var second = intervals.get(i);
             if (first.overlaps(second)) {
@@ -65,7 +65,7 @@ public class Scheduler {
         return mergedIntervals;
     }
 
-    private Vector<Interval> FilterIntervals(Vector<Interval> intervals, DateTime start, DateTime end) {
+    private static Vector<Interval> FilterIntervals(Vector<Interval> intervals, DateTime start, DateTime end) {
         var clampedIntervals = new Vector<Interval>();
         for (Interval current : intervals) {
             if (!current.isBefore(start) && !current.isAfter(end)) {
