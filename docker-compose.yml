@@ -55,14 +55,10 @@ services:
       - backend
 
   ngrok:
-    image: wernight/ngrok:latest
+    image: efrecon/localtunnel
+    command: --local-host frontend-service --port 80 --subdomain planit-custom-domain true
     ports:
-      - 4040:4040
-    env_file:
-      - .env.prod
-    environment:
-      NGROK_PROTOCOL: http
-      NGROK_PORT: frontend-service:443
+      - "35067:35067"
     depends_on:
       - frontend-service
     networks:
