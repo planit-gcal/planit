@@ -7,7 +7,9 @@ function App() {
   const onSuccess = (response: any) => {
     console.log("succ: ", response);
     axios
-      .post("http://localhost:8080/plan-it/user/token", { code: response.code })
+      .post("/plan-it/user/token", {
+        code: response.code,
+      })
       .then((response) => {
         console.log(response);
       })
