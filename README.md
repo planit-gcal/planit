@@ -26,7 +26,7 @@ This repository contains frontend and backend apps for the Planit project.
      - `psql -U postgres`
      - `CREATE DATABASE people;`
      - `exit`
-3. Paste `client_secret.json` file to `/backend/src/main/java/planit/people/preparation/APIs/`
+3. Paste `client_secret.json` file to `/backend/src/main/java/planit/people/preparation/Google_Connector`
 4. Start the back-end
    - `./mvnw spring-boot:run` - starts backend server at http://localhost:8080
 
