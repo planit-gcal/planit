@@ -11,7 +11,15 @@ public class Scheduler {
 
     public static Vector<Interval> GetAvailableTimeSlotsBetweenDateOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end)
     {
-        var available = GetAvailableTimeSlotsBetweenDates(busyTime, start, end);
+        var filtered = FilterIntervals(busyTime, start, end);
+        filtered.sort(new IntervalStartComparator());
+        var merged = MergeSortedIntervals(filtered);
+        var available = GetFreeIntervalsFromMergedIntervals(merged, start, end);
+        return GetIntervalsOfTotalDuration(available, duration);
+    }
+
+    private static Vector<Interval> GetIntervalsOfTotalDuration(Vector<Interval> available, Duration duration)
+    {
         var totalDuration = Duration.ZERO;
         var fittingDuration = new Vector<Interval>();
 
@@ -31,12 +39,6 @@ public class Scheduler {
             }
         }
         return null;
-    }
-    private static Vector<Interval> GetAvailableTimeSlotsBetweenDates(Vector<Interval> busyTime, DateTime start, DateTime end) {
-        var filtered = FilterIntervals(busyTime, start, end);
-        filtered.sort(new IntervalStartComparator());
-        var merged = MergeSortedIntervals(filtered);
-        return GetFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
     private static Vector<Interval> GetFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
