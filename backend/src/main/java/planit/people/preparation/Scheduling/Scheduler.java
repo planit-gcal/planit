@@ -1,15 +1,39 @@
 package planit.people.preparation.Scheduling;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Vector;
 
 public class Scheduler {
 
-    public static Vector<Interval> GetAvailableTimeSlotsBetweenDates(Vector<Interval> busyTime, DateTime start, DateTime end) {
+    public static Vector<Interval> GetAvailableTimeSlotsBetweenDateOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end)
+    {
+        var available = GetAvailableTimeSlotsBetweenDates(busyTime, start, end);
+        var totalDuration = Duration.ZERO;
+        var fittingDuration = new Vector<Interval>();
+
+        for (Interval interval : available) {
+            var currentDuration = totalDuration.plus(interval.toDuration());
+            int compareTo = currentDuration.compareTo(duration);
+            if (compareTo < 0) {
+                fittingDuration.add(interval);
+                totalDuration = currentDuration;
+            } else if (compareTo == 0) {
+                fittingDuration.add(interval);
+                return fittingDuration;
+            } else {
+                var shortenedInterval = new Interval(interval.getStart(), duration.minus(totalDuration));
+                fittingDuration.add(shortenedInterval);
+                return fittingDuration;
+            }
+        }
+        return null;
+    }
+    private static Vector<Interval> GetAvailableTimeSlotsBetweenDates(Vector<Interval> busyTime, DateTime start, DateTime end) {
         var filtered = FilterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
         var merged = MergeSortedIntervals(filtered);
