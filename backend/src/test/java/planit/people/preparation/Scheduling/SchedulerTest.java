@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Vector;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SchedulerTest {
 
@@ -83,5 +84,14 @@ class SchedulerTest {
         var expectedArray = expected.toArray();
 
         assertArrayEquals(expectedArray, actualArray);
+    }
+
+    @Test
+    void getAvailableTimeSlotsBetweenDatesIncorrect() {
+        var intervals = new Vector<Interval>();
+        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
+        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
+        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("15/01/2000")));
+        assertThrows(java.lang.IllegalArgumentException.class, () -> {Scheduler.GetAvailableTimeSlotsBetweenDates(intervals, formatter.parseDateTime("20/01/2000"), formatter.parseDateTime("1/01/2000"));});
     }
 }
