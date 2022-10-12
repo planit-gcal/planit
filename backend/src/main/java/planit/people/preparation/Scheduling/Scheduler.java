@@ -5,7 +5,6 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Vector;
 
 public class Scheduler {
