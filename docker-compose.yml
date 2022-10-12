@@ -56,9 +56,7 @@ services:
 
   ngrok:
     image: efrecon/localtunnel
-    command: --local-host frontend-service --port 80 --subdomain planit-custom-domain true
-    ports:
-      - "35067:35067"
+    command: --local-host frontend-service --port 80 --subdomain planit-custom-domain --verbose
     depends_on:
       - frontend-service
     networks:
