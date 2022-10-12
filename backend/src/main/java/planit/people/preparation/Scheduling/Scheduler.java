@@ -9,17 +9,25 @@ import java.util.Vector;
 
 public class Scheduler {
 
-    public static Vector<Interval> GetAvailableTimeSlotsBetweenDateOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end)
-    {
+    public static Interval GetOneTimeSlotBetweenDatesOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+        Vector<Interval> available = GetAllAvailable(busyTime, start, end);
+        return GetFirstIntervalMatchingDuration(available, duration);
+    }
+
+    public static Vector<Interval> GetAvailableTimeSlotsBetweenDatesOfTotalLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+        Vector<Interval> available = GetAllAvailable(busyTime, start, end);
+        return GetIntervalsOfTotalDuration(available, duration);
+
+    }
+
+    private static Vector<Interval> GetAllAvailable(Vector<Interval> busyTime, DateTime start, DateTime end) {
         var filtered = FilterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
         var merged = MergeSortedIntervals(filtered);
-        var available = GetFreeIntervalsFromMergedIntervals(merged, start, end);
-        return GetIntervalsOfTotalDuration(available, duration);
+        return GetFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
-    private static Vector<Interval> GetIntervalsOfTotalDuration(Vector<Interval> available, Duration duration)
-    {
+    private static Vector<Interval> GetIntervalsOfTotalDuration(Vector<Interval> available, Duration duration) {
         var totalDuration = Duration.ZERO;
         var fittingDuration = new Vector<Interval>();
 
@@ -38,7 +46,7 @@ public class Scheduler {
                 return fittingDuration;
             }
         }
-        return null;
+        return new Vector<>();
     }
 
     private static Vector<Interval> GetFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
@@ -70,7 +78,7 @@ public class Scheduler {
 
     private static Vector<Interval> MergeSortedIntervals(Vector<Interval> intervals) {
         if (intervals == null || intervals.isEmpty()) {
-            return new Vector<>();
+            return intervals;
         }
 
         var mergedIntervals = new Vector<Interval>();
@@ -113,6 +121,17 @@ public class Scheduler {
             return new Interval(second.getStart(), first.getEnd());
         }
     }
+
+    private static Interval GetFirstIntervalMatchingDuration(Vector<Interval> available, Duration duration) {
+        for (Interval interval : available) {
+            var intervalDuration = interval.toDuration();
+            if (intervalDuration.compareTo(duration) >= 0) {
+                return new Interval(interval.getStart(), duration);
+            }
+        }
+        return null;
+    }
+
 
     public static class IntervalStartComparator implements Comparator<Interval> {
         @Override
