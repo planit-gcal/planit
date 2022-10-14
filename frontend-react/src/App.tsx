@@ -4,6 +4,7 @@ import {useGoogleLogin} from "@react-oauth/google";
 import axios from "axios";
 import {CreateEventForm} from "./components/CreateEventForm/CreateEventForm";
 import {EventCreateRequest} from "./models/event";
+import {EmailSelector} from "./components/EmailSelector/EmailSelector";
 
 function App() {
     const [owner, setOwner] = useState('');
@@ -48,10 +49,15 @@ function App() {
         accessType: "offline",
     });
 
+    const onSelectEmail = (email:string) => {
+        setOwner(email);
+    };
+
     return (
         <div className="App">
             <button onClick={() => login()}>Sign in with Google 🚀</button>
             ;
+            <EmailSelector emails={["a", "b", "c"]} selectChange={onSelectEmail}></EmailSelector>
             <br/>
             <CreateEventForm onSubmit={onEventSubmit} owner={owner}></CreateEventForm>
         </div>
