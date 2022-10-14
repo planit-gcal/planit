@@ -5,10 +5,12 @@ import axios from "axios";
 import {CreateEventForm} from "./components/CreateEventForm/CreateEventForm";
 import {EventCreateRequest} from "./models/event";
 import {EmailSelector} from "./components/EmailSelector/EmailSelector";
+import {useLocalStorage} from "./hooks/useLocalStorage";
 
 function App() {
     const [owner, setOwner] = useState('');
     const [accountEmails, setAccountEmails] = useState<string[]>([]);
+    const [planitUserId, setPlanitUserId] = useLocalStorage("planitUserId", null);
 
     const onSuccess = (response: any) => {
         console.log("succ: ", response);
@@ -26,6 +28,9 @@ function App() {
             )
             .then((response) => {
                 console.log(response);
+                //here add set for local storage
+                setPlanitUserId(response.data.planit_userId);
+                console.log(planitUserId);
             })
             .catch((error) => console.log(error.message));
     };
