@@ -19,6 +19,8 @@ public class Calendar_Service {
 
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, String google_id) throws IOException {
         Google_Helper google_helper = new Google_Helper(user_service.getRefreshToken(google_id), true);
+        System.out.println("DTO_NewEventDetail: " + newEventDetail);
+        //google_helper.getFreeBusy(newEventDetail.start_date(), newEventDetail.end_date());
         return google_helper.createEvent(newEventDetail);
     }
 

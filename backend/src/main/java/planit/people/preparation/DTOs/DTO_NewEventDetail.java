@@ -1,5 +1,8 @@
 package planit.people.preparation.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 import java.util.List;
 
 public record DTO_NewEventDetail(
@@ -8,5 +11,7 @@ public record DTO_NewEventDetail(
         String description,
         String calendar_name,
         List<String> attendees,
-        Integer duration) {
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") Date start_date,
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")Date end_date,
+        Long duration) {
 }
