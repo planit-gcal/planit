@@ -3,7 +3,7 @@ package planit.people.preparation.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
-import planit.people.preparation.Google_Connector.Google_Helper;
+import planit.people.preparation.GoogleConnector.GoogleHelper;
 import planit.people.preparation.Responses.CalendarResponse;
 
 import java.io.IOException;
@@ -18,9 +18,9 @@ public class Calendar_Service {
     }
 
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, String google_id) throws IOException {
-        Google_Helper google_helper = new Google_Helper(user_service.getRefreshToken(google_id), true);
+        GoogleHelper google_helper = new GoogleHelper(user_service.getRefreshToken(google_id), true);
         System.out.println("DTO_NewEventDetail: " + newEventDetail);
-        //google_helper.getFreeBusy(newEventDetail.start_date(), newEventDetail.end_date());
+        //google_helper.getFreeBusy(newEventDetail.startDate(), newEventDetail.endDate());
         return google_helper.createEvent(newEventDetail);
     }
 
