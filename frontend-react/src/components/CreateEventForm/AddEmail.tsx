@@ -13,7 +13,7 @@ export const AddEmail = ({emails, addEmail}: AddEmailProps) => {
     return (
         <form>
             <div>{emails.map((e, i) => <div key={i}>{e}</div>)}</div>
-            <input type='text' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
+            <input type='email' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
             <button onClick={(e)=> {e.preventDefault()
                 addEmail(email)
                 setEmail('');
