@@ -1,7 +1,10 @@
+
 import React from "react";
 import "./App.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import {CreateEventForm} from "./components/CreateEventForm/CreateEventForm";
+import {EventCreateRequest} from "./models/event";
 
 function App() {
   const onSuccess = (response: any) => {
@@ -16,6 +19,16 @@ function App() {
       .catch((error) => console.log(error.message));
   };
 
+    const onEventSubmit = (result: EventCreateRequest) => {
+        console.log("succ: ", result);
+        axios
+            .post("/plan-it/calendar/new-event/1", result)
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => console.log(error.message));
+    };
+
   // @ts-ignore
   const login = useGoogleLogin({
     onSuccess: onSuccess,
@@ -28,6 +41,8 @@ function App() {
   return (
     <div className="App">
       <button onClick={() => login()}>Sign in with Google 🚀 </button>;
+      <br/>
+      <CreateEventForm onSubmit={onEventSubmit}></CreateEventForm>
     </div>
   );
 }
