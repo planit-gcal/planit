@@ -1,10 +1,8 @@
 package planit.people.preparation.GoogleConnector;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -15,21 +13,21 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.oauth2.Oauth2;
-import com.google.api.services.oauth2.model.Userinfo;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.UserCredentials;
+import planit.people.preparation.DTOs.DTO_NewEventDetail;
+import planit.people.preparation.Responses.CalendarResponse;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public class GoogleConnector {
+    public static final String TIME_ZONE_SPECIFIER = "UTC";
     /**
      * Application name.
      */
@@ -73,7 +71,6 @@ public class GoogleConnector {
     public GoogleConnector() {
 
     }
-
     public String getCode() {
         return code;
     }
@@ -91,7 +88,7 @@ public class GoogleConnector {
         this.refresh_token = refresh_token;
     }
 
-    public HttpRequestInitializer getCredentials() throws IOException {
+    public HttpRequestInitializer getCredentials() {
         var credentials = UserCredentials.newBuilder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
@@ -101,13 +98,13 @@ public class GoogleConnector {
         return new HttpCredentialsAdapter(credentials);
     }
 
-    public Calendar calendarService() throws IOException {
+    public Calendar calendarService() {
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    public Oauth2 oauth2Service() throws IOException {
+    public Oauth2 oauth2Service() {
         return new Oauth2.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
@@ -144,42 +141,75 @@ public class GoogleConnector {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        GoogleConnector google_connector = new GoogleConnector("<TOKEN>");
-        Calendar service =
-                new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, google_connector.getCredentials())
-                        .setApplicationName(APPLICATION_NAME)
-                        .build();
-        Oauth2 oauth2 = new Oauth2.Builder(HTTP_TRANSPORT, JSON_FACTORY, google_connector.getCredentials())
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-        Userinfo userinfo = oauth2.userinfo().get().execute();
-        System.out.println("userinfo: " + userinfo);
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        CalendarList calendarList = service.calendarList().list().execute();
-
-        List<CalendarListEntry> items = calendarList.getItems();
-        if (items.isEmpty()) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Calendars: ");
-
-            for (CalendarListEntry calendar : items) {
-                System.out.printf("%s (%s)\n", calendar.getSummary(), calendar.getId());
-                Events events = service.events().list(calendar.getId()).setTimeMin(now).execute();
-                List<Event> eventList = events.getItems();
-                System.out.println("events for: "+  calendar.getSummary());
-                if (eventList.isEmpty()) {
-                    System.out.println("No upcoming events found.");
-                } else {
-                    System.out.println("Upcoming events");
-                    for (Event event : eventList) {
-                        System.out.printf("%s (%s)\n", event.getSummary(),event.getICalUID());
-                    }
-                }
-            }
+    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, DateTime startDate) throws IOException {
+        Event event = new Event()
+                .setSummary(newEventDetail.summary())
+                .setLocation(newEventDetail.location())
+                .setDescription(newEventDetail.description());
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDate)
+                .setTimeZone(TIME_ZONE_SPECIFIER);
+        event.setStart(start);
+        DateTime endDateTime = new DateTime(startDate.getValue() + (newEventDetail.duration() * 60 * 1000));
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone(TIME_ZONE_SPECIFIER);
+        event.setEnd(end);
+        String[] recurrence = new String[]{"RRULE:FREQ=DAILY;COUNT=1"};
+        event.setRecurrence(Arrays.asList(recurrence));
+        List<EventAttendee> attendees = new ArrayList<>();
+        for (String attendee : newEventDetail.attendees()) {
+            attendees.add(new EventAttendee().setEmail(attendee));
         }
+        event.setAttendees(attendees);
+
+        EventReminder[] reminderOverrides = new EventReminder[]{
+                new EventReminder().setMethod("email").setMinutes(24 * 60),
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);
+
+        String calendarId = "primary";
+
+        event = calendarService().events().insert(calendarId, event).execute();
+        System.out.printf("Event created: %s\n", event.getHtmlLink());
+        return new CalendarResponse(startDate, endDateTime);
+    }
+
+    public FreeBusyResponse getFreeBusy(Date startDate, Date endDate) throws IOException {
+        FreeBusyRequest freeBusyRequest = new FreeBusyRequest();
+        freeBusyRequest.setItems(getFreeBusyItems());
+        TimeZone timeZone = TimeZone.getTimeZone(TIME_ZONE_SPECIFIER);
+        DateTime startTime = new DateTime(startDate, timeZone);
+        DateTime endTime = new DateTime(endDate, timeZone);
+        freeBusyRequest.setTimeZone(TIME_ZONE_SPECIFIER);
+        freeBusyRequest.setTimeMin(startTime);
+        freeBusyRequest.setTimeMax(endTime);
+        Calendar.Freebusy.Query freeBusyQuery = calendarService().freebusy().query(freeBusyRequest);
+        FreeBusyResponse freeBusyResponse = freeBusyQuery.execute();
+        System.out.println(freeBusyResponse.toString());
+        return freeBusyResponse;
+    }
+
+    private List<String> getAllCalendarId() throws IOException {
+        List<String> calendarsIds = new ArrayList<>();
+        CalendarList calendarList = calendarService().calendarList().list().execute();
+
+        for (CalendarListEntry calendarListEntry : calendarList.getItems()) {
+            calendarsIds.add(calendarListEntry.getId());
+        }
+        return calendarsIds;
+    }
+
+    private List<FreeBusyRequestItem> getFreeBusyItems() throws IOException {
+        List<String> calendarsIds = getAllCalendarId();
+        List<FreeBusyRequestItem> freeBusyRequestItems = new ArrayList<>();
+        for (String id : calendarsIds) {
+            freeBusyRequestItems.add(new FreeBusyRequestItem().set("id", id));
+        }
+        return freeBusyRequestItems;
     }
 }
