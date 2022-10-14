@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 
 import {AddEmail} from "./AddEmail";
 import {EventCreateRequest} from "../../models/event";
-
+import {formatToUTC} from "../../utils/date.utils";
 
 type CreateEventFormProps = {
     onSubmit: (result: EventCreateRequest) => void;
@@ -21,13 +21,7 @@ export const CreateEventForm = ({onSubmit}: CreateEventFormProps) => {
         setAttendees((prevState)=>[...prevState, email])
     }
 
-    // const handleSubmit = (e : React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    //     e.preventDefault();
-    //     const result = {summary, location, description, attendees, start_date, end_date, duration};
-    //     console.log(result);
-    // }
 
-    //<input type='text' placeholder='email' value={email} onChange={(e) => setEmail(e.target.value)}/>
     return (
         <form>
             <label htmlFor='summary'>Event Summary</label>
@@ -52,8 +46,8 @@ export const CreateEventForm = ({onSubmit}: CreateEventFormProps) => {
                 location,
                 description,
                 attendees,
-                start_date,
-                end_date,
+                start_date:formatToUTC(start_date),
+                end_date:formatToUTC(end_date),
                 duration
             })}}>submit</button>
         </form>
