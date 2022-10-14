@@ -5,7 +5,6 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Vector;
 
 public class Scheduler {
@@ -22,18 +21,18 @@ public class Scheduler {
     }
 
     private static Vector<Interval> GetAllAvailable(Vector<Interval> busyTime, DateTime start, DateTime end) {
-        var filtered = FilterIntervals(busyTime, start, end);
+        Vector<Interval> filtered = FilterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
-        var merged = MergeSortedIntervals(filtered);
+        Vector<Interval> merged = MergeSortedIntervals(filtered);
         return GetFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
     private static Vector<Interval> GetIntervalsOfTotalDuration(Vector<Interval> available, Duration duration) {
-        var totalDuration = Duration.ZERO;
-        var fittingDuration = new Vector<Interval>();
+        Duration totalDuration = Duration.ZERO;
+        Vector<Interval> fittingDuration = new Vector<>();
 
         for (Interval interval : available) {
-            var currentDuration = totalDuration.plus(interval.toDuration());
+            Duration currentDuration = totalDuration.plus(interval.toDuration());
             int compareTo = currentDuration.compareTo(duration);
             if (compareTo < 0) {
                 fittingDuration.add(interval);
@@ -42,7 +41,7 @@ public class Scheduler {
                 fittingDuration.add(interval);
                 return fittingDuration;
             } else {
-                var shortenedInterval = new Interval(interval.getStart(), duration.minus(totalDuration));
+                Interval shortenedInterval = new Interval(interval.getStart(), duration.minus(totalDuration));
                 fittingDuration.add(shortenedInterval);
                 return fittingDuration;
             }
@@ -51,24 +50,24 @@ public class Scheduler {
     }
 
     private static Vector<Interval> GetFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
-        var freeIntervals = new Vector<Interval>();
+        Vector<Interval> freeIntervals = new Vector<>();
 
         Interval lastFree = new Interval(start, end);
         if (mergedIntervals.size() > 0) {
-            var firstBusy = mergedIntervals.get(0);
+            Interval firstBusy = mergedIntervals.get(0);
             if (firstBusy.isAfter(start)) {
-                var firstFree = new Interval(start, firstBusy.getStart());
+                Interval firstFree = new Interval(start, firstBusy.getStart());
                 freeIntervals.add(0, firstFree);
             }
-            var lastBusy = mergedIntervals.get(mergedIntervals.size() - 1);
+            Interval lastBusy = mergedIntervals.get(mergedIntervals.size() - 1);
             if (lastBusy.isBefore(end)) {
                 lastFree = new Interval(lastBusy.getEnd(), end);
             }
         }
 
         for (int i = 0; i < mergedIntervals.size() - 1; i++) {
-            var freeStart = mergedIntervals.get(i).getEnd();
-            var freeEnd = mergedIntervals.get(i + 1).getStart();
+            DateTime freeStart = mergedIntervals.get(i).getEnd();
+            DateTime freeEnd = mergedIntervals.get(i + 1).getStart();
             freeIntervals.add(new Interval(freeStart, freeEnd));
         }
 
@@ -82,14 +81,14 @@ public class Scheduler {
             return intervals;
         }
 
-        var mergedIntervals = new Vector<Interval>();
+        Vector<Interval> mergedIntervals = new Vector<>();
         mergedIntervals.add(intervals.get(0));
 
         for (int i = 1; i < intervals.size(); i++) {
-            var first = mergedIntervals.remove(mergedIntervals.size() - 1);
-            var second = intervals.get(i);
+            Interval first = mergedIntervals.remove(mergedIntervals.size() - 1);
+            Interval second = intervals.get(i);
             if (first.overlaps(second)) {
-                var merged = merge(first, second);
+                Interval merged = merge(first, second);
                 mergedIntervals.add(merged);
             } else {
                 mergedIntervals.add(first);
@@ -100,7 +99,7 @@ public class Scheduler {
     }
 
     private static Vector<Interval> FilterIntervals(Vector<Interval> intervals, DateTime start, DateTime end) {
-        var clampedIntervals = new Vector<Interval>();
+        Vector<Interval> clampedIntervals = new Vector<>();
         for (Interval current : intervals) {
             if (!current.isBefore(start) && !current.isAfter(end)) {
                 clampedIntervals.add(current);
@@ -125,7 +124,7 @@ public class Scheduler {
 
     private static Interval GetFirstIntervalMatchingDuration(Vector<Interval> available, Duration duration) {
         for (Interval interval : available) {
-            var intervalDuration = interval.toDuration();
+            Duration intervalDuration = interval.toDuration();
             if (intervalDuration.compareTo(duration) >= 0) {
                 return new Interval(interval.getStart(), duration);
             }
