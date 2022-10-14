@@ -5,6 +5,7 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Minutes;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
@@ -83,8 +84,14 @@ public class Google_Helper {
         return new CalendarResponse(startDate, endDateTime);
     }
 
-    public DateTime getStartDate(Date start_date, Date end_date, Long duration) throws IOException {
-        return Scheduler.getStartTime(getFreeBusy(start_date, end_date), duration, start_date, end_date);
+    public DateTime getStartDate(Date start_date, Date end_date, Long duration) throws IOException
+    {
+        org.joda.time.DateTime sD = new org.joda.time.DateTime(start_date);
+        org.joda.time.DateTime eD = new org.joda.time.DateTime(end_date);
+        Duration durationInMinutes = Duration.standardMinutes(duration);
+        Interval first_interval = Scheduler.GetOneTimeSlotBetweenDatesOfLength(getFreeBusy(start_date, end_date), durationInMinutes, sD, eD);
+        Date event_start_date = first_interval.getStart().toDate();
+        return new DateTime(event_start_date);
     }
 
     public Vector<Interval> getFreeBusy(Date startDate, Date endDate) throws IOException {

@@ -11,7 +11,7 @@ public record DTO_NewEventDetail(
         String description,
         String calendar_name,
         List<String> attendees,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") Date start_date,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")Date end_date,
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss z") Date start_date,
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss z")Date end_date,
         Long duration) {
 }
