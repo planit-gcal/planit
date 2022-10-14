@@ -24,9 +24,9 @@ This repository contains frontend and backend apps for the Planit project.
    - find "my-postgres-db" container in Docker
    - click "CLI" button to enter the terminal inside container, inside execute:
      - `psql -U postgres`
-     - `CREATE DATABASE people;`
+     - `CREATE DATABASE planit;`
      - `exit`
-3. Paste `client_secret.json` file to `/backend/src/main/java/planit/people/preparation/Google_Connector`
+3. Paste `client_secret.json` file to `/backend/src/main/java/planit/backend/src/main/resources`
 4. Start the back-end
    - `./mvnw spring-boot:run` - starts backend server at http://localhost:8080
 
@@ -43,6 +43,8 @@ This repository contains frontend and backend apps for the Planit project.
 
 In case of caching problems:
 `docker-compose build --no-cache frontend-service && docker-compose up`
+
+In the end, it's available at `https://planit-custom-domain.loca.lt/`.
 
 # Architecture overview
 
