@@ -3,6 +3,7 @@ package planit.people.preparation.Scheduling;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.TimePeriod;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import java.sql.Time;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class Converter {
+
     public static List<Interval> convertEventsToIntervals(Events events) {
         return events.getItems().stream().map(Converter::convertEventToInterval).toList();
     }

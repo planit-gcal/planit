@@ -10,9 +10,6 @@ import java.util.Vector;
 
 public class Scheduler {
 
-    public static com.google.api.client.util.DateTime getStartTime(Vector<Interval> busyTime, Long durationInMinutes, Date start, Date end) {
-        return null;
-    }
     public static Interval GetOneTimeSlotBetweenDatesOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
         Vector<Interval> available = GetAllAvailable(busyTime, start, end);
         return GetFirstIntervalMatchingDuration(available, duration);
