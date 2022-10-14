@@ -10,7 +10,7 @@ import planit.people.preparation.DAOs.IDAO_User;
 import planit.people.preparation.DTOs.DTO_Code;
 import planit.people.preparation.Entities.Entity_Google_account;
 import planit.people.preparation.Entities.Entity_User;
-import planit.people.preparation.Google_Connector.Google_Helper;
+import planit.people.preparation.GoogleConnector.GoogleHelper;
 import planit.people.preparation.Responses.UserCreationResponse;
 
 import java.io.IOException;
@@ -64,10 +64,10 @@ public class User_Service {
 
     public UserCreationResponse getGoogleAccountId(DTO_Code dto_code) throws IOException {
         try {
-            Google_Helper google_helper = new Google_Helper(dto_code.code(), false);
+            GoogleHelper google_helper = new GoogleHelper(dto_code.code(), false);
             System.out.println("google helper: " + google_helper);
             Entity_User entity_user;
-            Userinfo userinfo = google_helper.get_user_info();
+            Userinfo userinfo = google_helper.getUserInfo();
             System.out.println("google userinfo: " + userinfo);
             if (dto_code.planit_userId() == null) {
                 entity_user = create_new_user(new Entity_User(userinfo.getName(), userinfo.getFamilyName()));

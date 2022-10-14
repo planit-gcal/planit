@@ -29,6 +29,13 @@ public class Entity_Google_account {
         this.refresh_token = refresh_token;
     }
 
+    public Entity_Google_account(Long id, String email, Entity_User the_user, String refresh_token) {
+        this.id = id;
+        this.email = email;
+        this.the_user = the_user;
+        this.refresh_token = refresh_token;
+    }
+
     public String getRefresh_token() {
         return refresh_token;
     }

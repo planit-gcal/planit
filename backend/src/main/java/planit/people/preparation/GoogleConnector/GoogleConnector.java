@@ -1,4 +1,4 @@
-package planit.people.preparation.Google_Connector;
+package planit.people.preparation.GoogleConnector;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Google_Connector {
+public class GoogleConnector {
     /**
      * Application name.
      */
@@ -38,7 +38,7 @@ public class Google_Connector {
      * Global instance of the JSON factory.
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_RESOURCE_NAME = "/client_secret.json";
+    private static final String CREDENTIALS_FILE_PATH = "backend/src/main/java/planit/people/preparation/Google_Connector/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
     static {
@@ -52,7 +52,7 @@ public class Google_Connector {
 
     static {
         try {
-            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Google_Connector.class.getResourceAsStream(CREDENTIALS_RESOURCE_NAME)));
+            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(new FileInputStream(CREDENTIALS_FILE_PATH)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -65,12 +65,12 @@ public class Google_Connector {
     private String refresh_token;
 
 
-    public Google_Connector(String refresh_token) {
+    public GoogleConnector(String refresh_token) {
         this.refresh_token = refresh_token;
 
     }
 
-    public Google_Connector() {
+    public GoogleConnector() {
 
     }
 
@@ -83,11 +83,11 @@ public class Google_Connector {
         setRefreshAndExpiry();
     }
 
-    public String getRefresh_token() {
+    public String getRefreshToken() {
         return refresh_token;
     }
 
-    public void setRefresh_token(String refresh_token) {
+    public void setRefreshToken(String refresh_token) {
         this.refresh_token = refresh_token;
     }
 
@@ -101,13 +101,13 @@ public class Google_Connector {
         return new HttpCredentialsAdapter(credentials);
     }
 
-    public Calendar calendar_service() throws IOException {
+    public Calendar calendarService() throws IOException {
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    public Oauth2 oauth2_service() throws IOException {
+    public Oauth2 oauth2Service() throws IOException {
         return new Oauth2.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
@@ -115,12 +115,14 @@ public class Google_Connector {
 
     private void setRefreshAndExpiry() {
         try {
+            InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
+            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             String clientId = clientSecrets.getDetails().getClientId();
             String clientSecret = clientSecrets.getDetails().getClientSecret();
             GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance(),
                     clientId, clientSecret,
-                    this.code, "https://planit-custom-domain.loca.lt/")
+                    this.code, "http://localhost:3000")
                     .execute();
             System.out.println("response: " + response);
             this.refresh_token = response.getRefreshToken();
@@ -143,7 +145,7 @@ public class Google_Connector {
     }
 
     public static void main(String[] args) throws IOException {
-        Google_Connector google_connector = new Google_Connector("<TOKEN>");
+        GoogleConnector google_connector = new GoogleConnector("<TOKEN>");
         Calendar service =
                 new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, google_connector.getCredentials())
                         .setApplicationName(APPLICATION_NAME)
