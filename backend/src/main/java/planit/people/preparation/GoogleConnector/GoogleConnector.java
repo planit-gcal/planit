@@ -36,7 +36,7 @@ public class GoogleConnector {
      * Global instance of the JSON factory.
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "backend/src/main/java/planit/people/preparation/Google_Connector/client_secret.json";
+    private static final String CREDENTIALS_FILE_PATH = "backend/src/main/resources/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
     static {

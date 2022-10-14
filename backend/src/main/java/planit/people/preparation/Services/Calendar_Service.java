@@ -25,33 +25,35 @@ public class Calendar_Service {
     }
 
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException {
-        Entity_Google_account googleAccount = idao_google_account.getEntity_Google_accountByEmail(new ArrayList<>() {
+        List<Entity_Google_account> googleAccounts = idao_google_account.getEntityGoogleAccountByEmail(new ArrayList<>() {
             {
                 add(newEventDetail.owner());
-            }
-        }).get(0);
-        GoogleHelper google_helper = new GoogleHelper(googleAccount.getRefresh_token(), true);
-        System.out.println("DTO_NewEventDetail: " + newEventDetail);
-        List<String> emails = new ArrayList<>() {
-            {
                 addAll(newEventDetail.attendees());
-                add(newEventDetail.owner());
             }
-        };
-        return google_helper.createEvent(newEventDetail, getRefreshTokenForUsers(emails));
+        });
+        GoogleHelper google_helper = new GoogleHelper(getOwnerRefreshToken(googleAccounts, newEventDetail.owner()), true);
+        System.out.println("DTO_NewEventDetail: " + newEventDetail);
+        return google_helper.createEvent(newEventDetail, getRefreshTokenForUsers(googleAccounts));
+    }
+    private String getOwnerRefreshToken(List<Entity_Google_account> googleAccounts, String ownerEmail) {
+        for (Entity_Google_account googleAccount : googleAccounts) {
+            if (googleAccount.getEmail().equals(ownerEmail)) {
+                return googleAccount.getRefresh_token();
+            }
+        }
+        return null;
     }
 
-    private Set<Entity_User> getPlanItUserIdFromEmail(List<String> emails) {
+    private Set<Entity_User> getPlanItUserIdFromEmail(List<Entity_Google_account> googleAccountsFromEmail) {
         Set<Entity_User> usersPlanItIds = new HashSet<>();
-        List<Entity_Google_account> googleAccounts = idao_google_account.getEntity_Google_accountByEmail(emails);
-        for (Entity_Google_account googleAccount : googleAccounts) {
+        for (Entity_Google_account googleAccount : googleAccountsFromEmail) {
             usersPlanItIds.add(googleAccount.getThe_user());
         }
         return usersPlanItIds;
     }
 
-    private Set<String> getRefreshTokenForUsers(List<String> emails) {
-        Set<Entity_User> usersPlanItIds = getPlanItUserIdFromEmail(emails);
+    private Set<String> getRefreshTokenForUsers(List<Entity_Google_account> googleAccountsFromEmail) {
+        Set<Entity_User> usersPlanItIds = getPlanItUserIdFromEmail(googleAccountsFromEmail);
         Set<String> refreshTokens = new HashSet<>();
         List<Entity_Google_account> googleAccounts = idao_google_account.getEntityGoogleAccountsByPlanItUsers(usersPlanItIds);
         for (Entity_Google_account googleAccount : googleAccounts) {
