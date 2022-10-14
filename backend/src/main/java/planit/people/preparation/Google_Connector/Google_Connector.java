@@ -38,6 +38,7 @@ public class Google_Connector {
      * Global instance of the JSON factory.
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final String CREDENTIALS_RESOURCE_NAME = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
     static {
@@ -51,7 +52,7 @@ public class Google_Connector {
 
     static {
         try {
-            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Google_Connector.class.getResourceAsStream("/client_secret.json")));
+            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Google_Connector.class.getResourceAsStream(CREDENTIALS_RESOURCE_NAME)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
