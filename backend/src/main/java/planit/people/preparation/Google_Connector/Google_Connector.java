@@ -38,7 +38,7 @@ public class Google_Connector {
      * Global instance of the JSON factory.
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "src/main/java/planit/people/preparation/Google_Connector/client_secret.json";
+    private static final String CREDENTIALS_RESOURCE_NAME = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
     static {
@@ -52,7 +52,7 @@ public class Google_Connector {
 
     static {
         try {
-            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(new FileInputStream(CREDENTIALS_FILE_PATH)));
+            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Google_Connector.class.getResourceAsStream(CREDENTIALS_RESOURCE_NAME)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -115,14 +115,12 @@ public class Google_Connector {
 
     private void setRefreshAndExpiry() {
         try {
-            InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
             String clientId = clientSecrets.getDetails().getClientId();
             String clientSecret = clientSecrets.getDetails().getClientSecret();
             GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance(),
                     clientId, clientSecret,
-                    this.code, "http://localhost:3000")
+                    this.code, "https://planit-custom-domain.loca.lt/")
                     .execute();
             System.out.println("response: " + response);
             this.refresh_token = response.getRefreshToken();

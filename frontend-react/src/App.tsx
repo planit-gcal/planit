@@ -10,9 +10,17 @@ function App() {
   const onSuccess = (response: any) => {
     console.log("succ: ", response);
     axios
-      .post("/plan-it/user/token", {
-        code: response.code,
-      })
+      .post(
+        "/plan-it/user/token",
+        {
+          code: response.code,
+        },
+        {
+          headers: {
+            "Bypass-Tunnel-Reminder": 1,
+          },
+        }
+      )
       .then((response) => {
         console.log(response);
       })
