@@ -9,7 +9,7 @@ type CreateEventFormProps = {
     onSubmit: (result: EventCreateRequest) => void;
 }
 
-export const CreateEventForm = ({onSubmit}: CreateEventFormProps, owner:string) => {
+export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     const [summary, setSummary] = useState('');
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
