@@ -9,7 +9,7 @@ type AddEmailProps = {
 export const AddEmail = ({emails, addEmail}: AddEmailProps) => {
 
     const [email, setEmail] = useState('');
-
+    //TODO: add email validation
     return (
         <form>
             <div>{emails.map((e, i) => <div key={i}>{e}</div>)}</div>
