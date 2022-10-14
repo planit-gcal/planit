@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Google_Helper {
-    private static String timeZone;
+    private static final String timeZone = "UTC";
     private final Google_Connector google_connector = new Google_Connector();
     public String refresh_token;
 
@@ -122,9 +122,6 @@ public class Google_Helper {
         CalendarList calendarList = google_connector.calendar_service().calendarList().list().execute();
 
         for (CalendarListEntry calendarListEntry : calendarList.getItems()) {
-            if (calendarListEntry.isPrimary()) {
-                timeZone = calendarListEntry.getTimeZone();
-            }
             calendarsIds.add(calendarListEntry.getId());
         }
         return calendarsIds;
