@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.Responses.CalendarResponse;
-import planit.people.preparation.Services.Calendar_Service;
+import planit.people.preparation.Services.Service_Calendar;
 
 @RestController
 @RequestMapping(path = "plan-it/calendar",
         produces = {MediaType.APPLICATION_JSON_VALUE})
 public class API_Calendar {
-    private final Calendar_Service calendar_service;
+    private final Service_Calendar serviceCalendar;
 
     @Autowired
-    public API_Calendar(Calendar_Service calendar_service) {
-        this.calendar_service = calendar_service;
+    public API_Calendar(Service_Calendar serviceCalendar) {
+        this.serviceCalendar = serviceCalendar;
     }
 
     @PostMapping(path = "new-event",
@@ -28,11 +28,12 @@ public class API_Calendar {
     public ResponseEntity<CalendarResponse> createNewEvent(@RequestBody DTO_NewEventDetail newEventDetail) {
         try {
             System.out.println("request event: " + newEventDetail);
-            return new ResponseEntity<>(calendar_service.createEvent(newEventDetail), HttpStatus.CREATED);
+            return new ResponseEntity<>(serviceCalendar.createEvent(newEventDetail), HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
+
 }

@@ -1,7 +1,6 @@
 package planit.people.preparation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.catalina.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -11,29 +10,25 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import planit.people.preparation.APIs.API_User;
-import planit.people.preparation.DAOs.IDAO_Google_account;
-import planit.people.preparation.DAOs.IDAO_User;
+import planit.people.preparation.DAOs.IDAO_GoogleAccount;
 import planit.people.preparation.DTOs.DTO_Code;
 import planit.people.preparation.Responses.UserCreationResponse;
-import planit.people.preparation.Services.User_Service;
+import planit.people.preparation.Services.Service_User;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(API_User.class)
 @AutoConfigureRestDocs(outputDir = "src/main/java/planit/people/preparation/API_Documentation/snippets")
 public class PlanItTest {
     @MockBean
-    private IDAO_User idao_user;
+    IDAO_GoogleAccount idaoGoogleAccount;
     @MockBean
-    IDAO_Google_account idao_google_account;
-    @MockBean
-    User_Service user_service;
+    Service_User serviceUser;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -42,7 +37,7 @@ public class PlanItTest {
     public void createNewUserTest() throws Exception {
 
         UserCreationResponse userCreationResponse = new UserCreationResponse("1", "1");
-        doReturn(userCreationResponse).when(idao_google_account).save(any());
+        doReturn(userCreationResponse).when(idaoGoogleAccount).save(any());
         DTO_Code dto_code = new DTO_Code(null, "code");
         this.mockMvc
                 .perform(

@@ -13,9 +13,10 @@ import planit.people.preparation.Scheduling.Converter;
 import planit.people.preparation.Scheduling.Scheduler;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 public class GoogleHelper {
     private final GoogleConnector googleConnector = new GoogleConnector();
@@ -48,26 +49,27 @@ public class GoogleHelper {
         org.joda.time.DateTime jodaStartDateTime = new org.joda.time.DateTime(startDate);
         org.joda.time.DateTime jodaStopDateTime = new org.joda.time.DateTime(endDate);
         Duration durationInMinutes = Duration.standardMinutes(duration);
-        Interval firstInterval = Scheduler.getOneTimeSlotBetweenDatesOfLength(getFreeBusyForAll(startDate, endDate, refreshTokens), durationInMinutes, jodaStartDateTime, jodaStopDateTime);
+        List<Interval> freeBusyForAllAttendee = getFreeBusyForAll(startDate, endDate, refreshTokens);
+        Interval firstInterval = Scheduler.getOneTimeSlotBetweenDatesOfLength(freeBusyForAllAttendee, durationInMinutes, jodaStartDateTime, jodaStopDateTime);
         Date eventStartDate = firstInterval.getStart().toDate();
         return new DateTime(eventStartDate);
     }
 
-    private Vector<Interval> getFreeBusyForAll(Date startDate, Date endDate, Set<String> refreshTokens) throws IOException {
-        Vector<Interval> busyForAll = new Vector<>();
+    private List<Interval> getFreeBusyForAll(Date startDate, Date endDate, Set<String> refreshTokens) throws IOException {
+        List<Interval> busyForAll = new ArrayList<>();
         for (String refreshToken : refreshTokens) {
             busyForAll.addAll(getFreeBusy(startDate, endDate, refreshToken));
         }
         return busyForAll;
     }
 
-    public Vector<Interval> getFreeBusy(Date startDate, Date endDate, String refreshToken) throws IOException {
+    public List<Interval> getFreeBusy(Date startDate, Date endDate, String refreshToken) throws IOException {
         GoogleConnector googleConnectorForIndividual = new GoogleConnector(refreshToken);
         return getBusyIntervals(googleConnectorForIndividual.getFreeBusy(startDate, endDate));
     }
 
-    private Vector<Interval> getBusyIntervals(FreeBusyResponse freeBusyResponse) {
-        Vector<TimePeriod> busyTimePeriods = new Vector<>();
+    private List<Interval> getBusyIntervals(FreeBusyResponse freeBusyResponse) {
+        List<TimePeriod> busyTimePeriods = new ArrayList<>();
         for (String calendarId : freeBusyResponse.getCalendars().keySet()) {
             busyTimePeriods.addAll(freeBusyResponse.getCalendars().get(calendarId).getBusy());
         }
