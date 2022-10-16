@@ -1,7 +1,7 @@
-function onHomepage(e) {
+function onHomepage(e: GoogleAppsScript.Addons.CommonEventObject) {
   console.log(e);
-  // var hour = Number(Utilities.formatDate(new Date(), e.userTimezone.id, 'H'));
-  // var message;
+  // const hour = Number(Utilities.formatDate(new Date(), e.userTimezone.id, 'H'));
+  // const message;
   // if (hour >= 6 && hour < 12) {
   //   message = 'Good morning';
   // } else if (hour >= 12 && hour < 18) {
@@ -13,34 +13,27 @@ function onHomepage(e) {
   return createCard("xd", true);
 }
 
-/**
- * Creates a card with an image of a cat, overlayed with the text.
- * @param {String} text The text to overlay on the image.
- * @param {Boolean} isHomepage True if the card created here is a homepage;
- *      false otherwise. Defaults to false.
- * @return {CardService.Card} The assembled card.
- */
-function createCard(text, isHomepage = false, imgUrl = null) {
+function createCard(text: string, isHomepage = false) {
   // Create a button that changes the cat image when pressed.
   // Note: Action parameter keys and values must be strings.
-  var action = CardService.newAction()
+  const action = CardService.newAction()
     .setFunctionName("onRequestSend")
     .setParameters({ text: text, isHomepage: isHomepage.toString() });
-  var button = CardService.newTextButton()
+  const button = CardService.newTextButton()
     .setText("Make a request")
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
-  var buttonSet = CardService.newButtonSet().addButton(button);
+  const buttonSet = CardService.newButtonSet().addButton(button);
 
   // Assemble the widgets and return the card.
-  var section = CardService.newCardSection().addWidget(buttonSet);
-  var card = CardService.newCardBuilder().addSection(section);
+  const section = CardService.newCardSection().addWidget(buttonSet);
+  const card = CardService.newCardBuilder().addSection(section);
 
   if (!isHomepage) {
     // Create the header shown when the card is minimized,
     // but only when this card is a contextual card. Peek headers
     // are never used by non-contexual cards like homepages.
-    var peekHeader = CardService.newCardHeader()
+    const peekHeader = CardService.newCardHeader()
       .setTitle("Contextual Cat")
       .setImageUrl(
         "https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png"
@@ -52,21 +45,14 @@ function createCard(text, isHomepage = false, imgUrl = null) {
   return card.build();
 }
 
-/**
- * Callback for the "Change cat" button.
- * @param {Object} e The event object, documented {@link
- *     https://developers.google.com/gmail/add-ons/concepts/actions#action_event_objects
- *     here}.
- * @return {CardService.ActionResponse} The action response to apply.
- */
-function onRequestSend(e) {
+function onRequestSend(e: GoogleAppsScript.Addons.CommonEventObject) {
   console.log(e);
   // Get the text that was shown in the current cat image. This was passed as a
   // parameter on the Action set for the button.
-  var text = e.parameters.text;
+  const text = e.parameters.text;
 
   // The isHomepage parameter is passed as a string, so convert to a Boolean.
-  var isHomepage = e.parameters.isHomepage === "true";
+  const isHomepage = e.parameters.isHomepage === "true";
 
   // Create a new card with the same text.
 
@@ -85,9 +71,9 @@ function onRequestSend(e) {
   const contentText = response.getContentText();
   console.log(contentText);
 
-  // var jsonObject = JSON.parse(response.getContentText());
+  // const jsonObject = JSON.parse(response.getContentText());
 
-  var card = createCard(response.getContentText(), isHomepage);
+  const card = createCard(response.getContentText(), isHomepage);
 
   // const startDate = new Date(Date.now());
   // CalendarApp.createEvent(
@@ -105,8 +91,8 @@ function onRequestSend(e) {
 
   // Create an action response that instructs the add-on to replace
   // the current card with the new one.
-  var navigation = CardService.newNavigation().updateCard(card);
-  var actionResponse =
+  const navigation = CardService.newNavigation().updateCard(card);
+  const actionResponse =
     CardService.newActionResponseBuilder().setNavigation(navigation);
   return actionResponse.build();
 }
