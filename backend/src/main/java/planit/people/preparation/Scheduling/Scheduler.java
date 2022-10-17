@@ -1,5 +1,6 @@
 package planit.people.preparation.Scheduling;
 
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -7,19 +8,53 @@ import org.joda.time.Interval;
 import java.util.Comparator;
 import java.util.Vector;
 
-public class Scheduler {
+/**
+ * Class used for finding time intervals fitting provided parameters
+ */
+public final class Scheduler {
 
-    public static Interval getOneTimeSlotBetweenDatesOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+    /**
+     * Finds available time slot (interval) between the given dates of given duration. If not found, returns null.
+     * @param busyTime Time intervals during which the time is marked as busy.
+     * @param duration Actual duration of time the event should take.
+     * @param start The soonest date the event should be scheduled at.
+     * @param end The latest date the event should be scheduled at.
+     * @return First found interval matching all parameters or null.
+     * @see org.joda.time.Interval
+     * @see org.joda.time.Duration
+     * @see org.joda.time.DateTime
+     */
+    public static @Nullable Interval getOneTimeSlotBetweenDatesOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
         Vector<Interval> available = getAllAvailable(busyTime, start, end);
         return getFirstIntervalMatchingDuration(available, duration);
     }
 
+    /**
+     * Finds available time slots (intervals) between the given dates of given duration. If not found, returns empty.
+     * This method will find multiple time slots with total length of duration.
+     * This might not be so useful for now.
+     * @param busyTime Time intervals during which the time is marked as busy.
+     * @param duration Actual duration of time the event should take.
+     * @param start The soonest date the event should be scheduled at.
+     * @param end The latest date the event should be scheduled at.
+     * @return List of first intervals matching all parameters. Can be empty if none found.
+     * @see org.joda.time.Interval
+     * @see org.joda.time.Duration
+     * @see org.joda.time.DateTime
+     */
     public static Vector<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
         Vector<Interval> available = getAllAvailable(busyTime, start, end);
         return getIntervalsOfTotalDuration(available, duration);
 
     }
 
+    /**
+     * Returns all available time slots between start and end date. Does not filter them.
+     * @param busyTime Time intervals during which the time is marked as busy.
+     * @param start The soonest date the event should be scheduled at.
+     * @param end The latest date the event should be scheduled at.
+     * @return List of all intervals matching the parameters or empty.
+     */
     private static Vector<Interval> getAllAvailable(Vector<Interval> busyTime, DateTime start, DateTime end) {
         Vector<Interval> filtered = filterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
@@ -27,6 +62,12 @@ public class Scheduler {
         return getFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
+    /**
+     * Finds intervals of total length equal to provided duration. Might return multiple intervals of one minute. Might cut last interval short to match duration.
+     * @param available List of intervals of <strong>free</strong> time.
+     * @param duration Duration of the event.
+     * @return Intervals of total duration equal to duration or empty.
+     */
     private static Vector<Interval> getIntervalsOfTotalDuration(Vector<Interval> available, Duration duration) {
         Duration totalDuration = Duration.ZERO;
         Vector<Interval> fittingDuration = new Vector<Interval>();
@@ -49,6 +90,14 @@ public class Scheduler {
         return new Vector<>();
     }
 
+
+    /**
+     * "Inverts" a list of intervals provided to get "free" time.
+     * @param mergedIntervals List of <strong>non-overlapping and sorted</strong> intervals being "busy".
+     * @param start The soonest date the event should be scheduled at. <strong>When inverting, interval starting from this date will be created if possible.</strong>
+     * @param end The latest date the event should be scheduled at. <strong>When inverting, interval ending at this date will be created if possible.</strong>
+     * @return Inverted list of intervals provided. Might additionally add intervals starting at start or ending at end. Might return empty.
+     */
     private static Vector<Interval> getFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
         Vector<Interval> freeIntervals = new Vector<Interval>();
 
@@ -76,6 +125,11 @@ public class Scheduler {
         return freeIntervals;
     }
 
+    /**
+     * Merges provided intervals. "Merge" means join any overlapping intervals together, leaving no overlaps. Provided interval list must be <strong>sorted</strong>.
+     * @param intervals list of <strong>sorted</strong> intervals
+     * @return merged list of intervals
+     */
     private static Vector<Interval> mergeSortedIntervals(Vector<Interval> intervals) {
         if (intervals == null || intervals.isEmpty()) {
             return intervals;
@@ -98,6 +152,14 @@ public class Scheduler {
         return mergedIntervals;
     }
 
+
+    /**
+     * Filteres the given intervals so that only the intervals between start and end are returned. If any interval goes beyond boundaries, it will be cut.
+     * @param intervals List of intervals to filter.
+     * @param start The date before which no event can start.
+     * @param end The date after which no event can end.
+     * @return List of intervals starting on or after start and ending before or at end. Might return empty.
+     */
     private static Vector<Interval> filterIntervals(Vector<Interval> intervals, DateTime start, DateTime end) {
         Vector<Interval> clampedIntervals = new Vector<Interval>();
         for (Interval current : intervals) {
@@ -108,6 +170,13 @@ public class Scheduler {
         return clampedIntervals;
     }
 
+
+    /**
+     * Joins two intervals into one. <strong>Order of arguments does not matter.</strong>
+     * @param first interval to merge
+     * @param second interval to merge
+     * @return Interval starting at earliest date from provided intervals and ending at latest date from provided intervals.
+     */
     private static Interval merge(Interval first, Interval second) {
         if (first.contains(second)) {
             return first;
@@ -122,7 +191,13 @@ public class Scheduler {
         }
     }
 
-    private static Interval getFirstIntervalMatchingDuration(Vector<Interval> available, Duration duration) {
+    /**
+     * Returns an interval of matching duration. Cuts the interval short if needed. Returns null if not found
+     * @param available List of "free" intervals too chose from.
+     * @param duration The duration of event.
+     * @return An interval from list of exact duration or null.
+     */
+    private static @Nullable Interval getFirstIntervalMatchingDuration(Vector<Interval> available, Duration duration) {
         for (Interval interval : available) {
             Duration intervalDuration = interval.toDuration();
             if (intervalDuration.compareTo(duration) >= 0) {
