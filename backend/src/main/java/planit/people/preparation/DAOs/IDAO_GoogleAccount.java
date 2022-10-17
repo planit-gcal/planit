@@ -15,4 +15,7 @@ public interface IDAO_GoogleAccount extends CrudRepository<Entity_GoogleAccount,
 
     @Query("SELECT new Entity_GoogleAccount (google.id, google.email, google.the_user, google.refresh_token) FROM Entity_GoogleAccount google  WHERE google.the_user IN (:planItUsers)")
     List<Entity_GoogleAccount> getEntityGoogleAccountsByPlanItUsers(@Param("planItUsers") Set<Entity_User> planItUsers);
+
+    @Query("SELECT email FROM Entity_Google_account where the_user.user_id = :userId")
+    List<String> getEmailsFromUserId(@Param("userId") Long userId);
 }
