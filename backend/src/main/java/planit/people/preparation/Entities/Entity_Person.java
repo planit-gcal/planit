@@ -61,11 +61,12 @@ public class Entity_Person {
 
     /**
      * Constructor used to return the person object from DB
+     *
      * @param person_id person Id in the DB
-     * @param gender  person gender
-     * @param name    person first name
-     * @param surname person surname
-     * @param age     person age
+     * @param gender    person gender
+     * @param name      person first name
+     * @param surname   person surname
+     * @param age       person age
      */
     public Entity_Person(Long person_id, String gender, String name, String surname, Integer age) {
         this.person_id = person_id;

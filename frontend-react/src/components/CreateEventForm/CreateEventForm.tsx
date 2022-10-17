@@ -5,11 +5,10 @@ import {EventCreateRequest} from "../../models/event";
 import {formatToUTC} from "../../utils/date.utils";
 
 type CreateEventFormProps = {
-    owner:string;
     onSubmit: (result: EventCreateRequest) => void;
 }
 
-export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
+export const CreateEventForm = ({onSubmit}: CreateEventFormProps) => {
     const [summary, setSummary] = useState('');
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
@@ -49,8 +48,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                 attendees,
                 start_date:formatToUTC(start_date),
                 end_date:formatToUTC(end_date),
-                duration,
-                owner
+                duration
             })}}>submit</button>
         </form>
     );

@@ -4,32 +4,33 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 public class Scheduler {
 
-    public static Interval getOneTimeSlotBetweenDatesOfLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
-        Vector<Interval> available = getAllAvailable(busyTime, start, end);
+    public static Interval getOneTimeSlotBetweenDatesOfLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+        List<Interval> available = getAllAvailable(busyTime, start, end);
         return getFirstIntervalMatchingDuration(available, duration);
     }
 
-    public static Vector<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(Vector<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
-        Vector<Interval> available = getAllAvailable(busyTime, start, end);
+    public static List<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+        List<Interval> available = getAllAvailable(busyTime, start, end);
         return getIntervalsOfTotalDuration(available, duration);
 
     }
 
-    private static Vector<Interval> getAllAvailable(Vector<Interval> busyTime, DateTime start, DateTime end) {
-        Vector<Interval> filtered = filterIntervals(busyTime, start, end);
+    private static List<Interval> getAllAvailable(List<Interval> busyTime, DateTime start, DateTime end) {
+        List<Interval> filtered = filterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
-        Vector<Interval> merged = mergeSortedIntervals(filtered);
+        List<Interval> merged = mergeSortedIntervals(filtered);
         return getFreeIntervalsFromMergedIntervals(merged, start, end);
     }
 
-    private static Vector<Interval> getIntervalsOfTotalDuration(Vector<Interval> available, Duration duration) {
+    private static List<Interval> getIntervalsOfTotalDuration(List<Interval> available, Duration duration) {
         Duration totalDuration = Duration.ZERO;
-        Vector<Interval> fittingDuration = new Vector<Interval>();
+        List<Interval> fittingDuration = new ArrayList<>();
 
         for (Interval interval : available) {
             Duration currentDuration = totalDuration.plus(interval.toDuration());
@@ -46,11 +47,11 @@ public class Scheduler {
                 return fittingDuration;
             }
         }
-        return new Vector<>();
+        return new ArrayList<>();
     }
 
-    private static Vector<Interval> getFreeIntervalsFromMergedIntervals(Vector<Interval> mergedIntervals, DateTime start, DateTime end) {
-        Vector<Interval> freeIntervals = new Vector<Interval>();
+    private static List<Interval> getFreeIntervalsFromMergedIntervals(List<Interval> mergedIntervals, DateTime start, DateTime end) {
+        List<Interval> freeIntervals = new ArrayList<>();
 
         Interval lastFree = new Interval(start, end);
         if (mergedIntervals.size() > 0) {
@@ -76,12 +77,12 @@ public class Scheduler {
         return freeIntervals;
     }
 
-    private static Vector<Interval> mergeSortedIntervals(Vector<Interval> intervals) {
+    private static List<Interval> mergeSortedIntervals(List<Interval> intervals) {
         if (intervals == null || intervals.isEmpty()) {
             return intervals;
         }
 
-        Vector<Interval> mergedIntervals = new Vector<Interval>();
+        List<Interval> mergedIntervals = new ArrayList<>();
         mergedIntervals.add(intervals.get(0));
 
         for (int i = 1; i < intervals.size(); i++) {
@@ -98,8 +99,8 @@ public class Scheduler {
         return mergedIntervals;
     }
 
-    private static Vector<Interval> filterIntervals(Vector<Interval> intervals, DateTime start, DateTime end) {
-        Vector<Interval> clampedIntervals = new Vector<Interval>();
+    private static List<Interval> filterIntervals(List<Interval> intervals, DateTime start, DateTime end) {
+        List<Interval> clampedIntervals = new ArrayList<>();
         for (Interval current : intervals) {
             if (!current.isBefore(start) && !current.isAfter(end)) {
                 clampedIntervals.add(current);
@@ -122,7 +123,7 @@ public class Scheduler {
         }
     }
 
-    private static Interval getFirstIntervalMatchingDuration(Vector<Interval> available, Duration duration) {
+    private static Interval getFirstIntervalMatchingDuration(List<Interval> available, Duration duration) {
         for (Interval interval : available) {
             Duration intervalDuration = interval.toDuration();
             if (intervalDuration.compareTo(duration) >= 0) {

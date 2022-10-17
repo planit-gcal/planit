@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "google_account")
-public class Entity_Google_account {
+public class Entity_GoogleAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_gen")
     @SequenceGenerator(name = "account_gen", sequenceName = "account_seq", allocationSize = 1)
@@ -20,16 +20,16 @@ public class Entity_Google_account {
     @Column(name = "refresh_token", nullable = false, unique = true)
     private String refresh_token;
 
-    public Entity_Google_account() {
+    public Entity_GoogleAccount() {
     }
 
-    public Entity_Google_account(String email, Entity_User the_user, String refresh_token) {
+    public Entity_GoogleAccount(String email, Entity_User the_user, String refresh_token) {
         this.email = email;
         this.the_user = the_user;
         this.refresh_token = refresh_token;
     }
 
-    public Entity_Google_account(Long id, String email, Entity_User the_user, String refresh_token) {
+    public Entity_GoogleAccount(Long id, String email, Entity_User the_user, String refresh_token) {
         this.id = id;
         this.email = email;
         this.the_user = the_user;
@@ -55,7 +55,7 @@ public class Entity_Google_account {
 
     @Override
     public String toString() {
-        return "Entity_Google_account{" +
+        return "Entity_GoogleAccount{" +
                 "email=" + email +
                 ", user='" + the_user + '\'' +
                 ", refresh_token='" + refresh_token +
