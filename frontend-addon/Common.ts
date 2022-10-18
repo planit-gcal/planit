@@ -16,13 +16,21 @@ function onHomepage(e: GoogleAppsScript.Addons.CommonEventObject) {
 function createCard(text: string, isHomepage = false) {
   // Create a button that changes the cat image when pressed.
   // Note: Action parameter keys and values must be strings.
-  const action = CardService.newAction()
-    .setFunctionName("onRequestSend")
-    .setParameters({ text: text, isHomepage: isHomepage.toString() });
+  // const action = CardService.newAction()
+  //   .setFunctionName("onRequestSend")
+  //   .setParameters({ text, isHomepage: isHomepage.toString() });
+  // const button = CardService.newTextButton()
+  //   .setText("Make a request")
+  //   .setOnClickAction(action)
+  //   .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
+
+  const action = CardService.newAuthorizationAction().setAuthorizationUrl(
+    "https://planit-custom-domain.loca.lt/"
+  );
   const button = CardService.newTextButton()
-    .setText("Make a request")
-    .setOnClickAction(action)
-    .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
+    .setText("Authorize")
+    .setAuthorizationAction(action);
+
   const buttonSet = CardService.newButtonSet().addButton(button);
 
   // Assemble the widgets and return the card.
@@ -70,6 +78,8 @@ function onRequestSend(e: GoogleAppsScript.Addons.CommonEventObject) {
 
   const contentText = response.getContentText();
   console.log(contentText);
+
+  console.log(ScriptApp.getOAuthToken());
 
   // const jsonObject = JSON.parse(response.getContentText());
 
