@@ -23,8 +23,8 @@ public class API_OAuth {
     }
 
     //TODO: Security Issue, this MUST be changed
-    @GetMapping(path = "/emails/{email}/exists")
-    public ResponseEntity<String> returnUserIdFromEmail(@PathVariable String email) {
+    @GetMapping(path = "/emails/{email}/planit-user-id")
+    public ResponseEntity<String> getUserIdFromEmail(@PathVariable String email) {
         try {
             return new ResponseEntity<>(idaoGoogleAccount.getIdOfUserFromEmail(email), HttpStatus.FOUND);
 
