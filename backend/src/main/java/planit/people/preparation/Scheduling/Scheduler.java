@@ -154,7 +154,7 @@ public final class Scheduler {
 
 
     /**
-     * Filteres the given intervals so that only the intervals between start and end are returned. If any interval goes beyond boundaries, it will be cut.
+     * Filters the given intervals so that only the intervals between start and end are returned. If any interval goes beyond boundaries, it will be cut.
      * @param intervals List of intervals to filter.
      * @param start The date before which no event can start.
      * @param end The date after which no event can end.
