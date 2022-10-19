@@ -1,30 +1,27 @@
 package planit.people.preparation.APIs;
 
-import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import planit.people.preparation.DAOs.IDAO_Google_account;
+import planit.people.preparation.DAOs.IDAO_GoogleAccount;
 import planit.people.preparation.DTOs.DTO_Code;
 import planit.people.preparation.Responses.UserCreationResponse;
-import planit.people.preparation.Services.User_Service;
+import planit.people.preparation.Services.Service_User;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 @RestController
 @RequestMapping(path = "plan-it/user",
         produces = {MediaType.APPLICATION_JSON_VALUE})
 public class API_User {
-    private final User_Service user_service;
-    private final IDAO_Google_account idaoGoogleAccount;
+    private final Service_User serviceUser;
+    private final IDAO_GoogleAccount idaoGoogleAccount;
 
     @Autowired
-    public API_User(User_Service user_service, IDAO_Google_account idaoGoogleAccount) {
-        this.user_service = user_service;
+    public API_User(Service_User serviceUser, IDAO_GoogleAccount idaoGoogleAccount) {
+        this.serviceUser = serviceUser;
         this.idaoGoogleAccount = idaoGoogleAccount;
     }
 
@@ -32,7 +29,7 @@ public class API_User {
     public ResponseEntity<UserCreationResponse> createNewUser(@RequestBody DTO_Code code) {
         System.out.println("dto code: " + code);
         try {
-            return new ResponseEntity<>(user_service.getGoogleAccountId(code), HttpStatus.CREATED);
+            return new ResponseEntity<>(serviceUser.getGoogleAccountId(code), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

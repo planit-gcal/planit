@@ -1,10 +1,8 @@
 package planit.people.preparation.GoogleConnector;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -15,21 +13,19 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.*;
 import com.google.api.services.oauth2.Oauth2;
-import com.google.api.services.oauth2.model.Userinfo;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.UserCredentials;
+import planit.people.preparation.DTOs.DTO_NewEventDetail;
+import planit.people.preparation.Responses.CalendarResponse;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public class GoogleConnector {
+    public static final String TIME_ZONE_SPECIFIER = "UTC";
     /**
      * Application name.
      */
@@ -38,7 +34,7 @@ public class GoogleConnector {
      * Global instance of the JSON factory.
      */
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "backend/src/main/java/planit/people/preparation/Google_Connector/client_secret.json";
+    private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
     static {
@@ -48,32 +44,31 @@ public class GoogleConnector {
             throw new RuntimeException(e);
         }
     }
-    private static final GoogleClientSecrets clientSecrets;
+    private static final GoogleClientSecrets CLIENT_SECRETS;
 
     static {
         try {
-            clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(new FileInputStream(CREDENTIALS_FILE_PATH)));
+            CLIENT_SECRETS = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(GoogleConnector.class.getResourceAsStream(CREDENTIALS_FILE_PATH))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static final String clientId = clientSecrets.getDetails().getClientId();
-    private static final String clientSecret = clientSecrets.getDetails().getClientSecret();
+    private static final String CLIENT_ID = CLIENT_SECRETS.getDetails().getClientId();
+    private static final String CLIENT_SECRET = CLIENT_SECRETS.getDetails().getClientSecret();
 
     private String code;
-    private String refresh_token;
+    private String refreshToken;
 
 
-    public GoogleConnector(String refresh_token) {
-        this.refresh_token = refresh_token;
+    public GoogleConnector(String refreshToken) {
+        this.refreshToken = refreshToken;
 
     }
 
     public GoogleConnector() {
 
     }
-
     public String getCode() {
         return code;
     }
@@ -84,30 +79,30 @@ public class GoogleConnector {
     }
 
     public String getRefreshToken() {
-        return refresh_token;
+        return refreshToken;
     }
 
     public void setRefreshToken(String refresh_token) {
-        this.refresh_token = refresh_token;
+        this.refreshToken = refresh_token;
     }
 
-    public HttpRequestInitializer getCredentials() throws IOException {
+    public HttpRequestInitializer getCredentials() {
         var credentials = UserCredentials.newBuilder()
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRefreshToken(this.refresh_token)
+                .setClientId(CLIENT_ID)
+                .setClientSecret(CLIENT_SECRET)
+                .setRefreshToken(this.refreshToken)
                 .build();
 
         return new HttpCredentialsAdapter(credentials);
     }
 
-    public Calendar calendarService() throws IOException {
+    public Calendar calendarService() {
         return new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    public Oauth2 oauth2Service() throws IOException {
+    public Oauth2 oauth2Service() {
         return new Oauth2.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials())
                 .setApplicationName(APPLICATION_NAME)
                 .build();
@@ -115,17 +110,13 @@ public class GoogleConnector {
 
     private void setRefreshAndExpiry() {
         try {
-            InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-            String clientId = clientSecrets.getDetails().getClientId();
-            String clientSecret = clientSecrets.getDetails().getClientSecret();
             GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance(),
-                    clientId, clientSecret,
+                    CLIENT_ID, CLIENT_SECRET,
                     this.code, "http://localhost:3000")
                     .execute();
             System.out.println("response: " + response);
-            this.refresh_token = response.getRefreshToken();
+            this.refreshToken = response.getRefreshToken();
             System.out.println("Refresh token: " + response.getRefreshToken());
         } catch (TokenResponseException e) {
             if (e.getDetails() != null) {
@@ -144,42 +135,73 @@ public class GoogleConnector {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        GoogleConnector google_connector = new GoogleConnector("<TOKEN>");
-        Calendar service =
-                new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, google_connector.getCredentials())
-                        .setApplicationName(APPLICATION_NAME)
-                        .build();
-        Oauth2 oauth2 = new Oauth2.Builder(HTTP_TRANSPORT, JSON_FACTORY, google_connector.getCredentials())
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-        Userinfo userinfo = oauth2.userinfo().get().execute();
-        System.out.println("userinfo: " + userinfo);
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        CalendarList calendarList = service.calendarList().list().execute();
-
-        List<CalendarListEntry> items = calendarList.getItems();
-        if (items.isEmpty()) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Calendars: ");
-
-            for (CalendarListEntry calendar : items) {
-                System.out.printf("%s (%s)\n", calendar.getSummary(), calendar.getId());
-                Events events = service.events().list(calendar.getId()).setTimeMin(now).execute();
-                List<Event> eventList = events.getItems();
-                System.out.println("events for: "+  calendar.getSummary());
-                if (eventList.isEmpty()) {
-                    System.out.println("No upcoming events found.");
-                } else {
-                    System.out.println("Upcoming events");
-                    for (Event event : eventList) {
-                        System.out.printf("%s (%s)\n", event.getSummary(),event.getICalUID());
-                    }
-                }
-            }
+    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, DateTime startDate) throws IOException {
+        Event event = new Event()
+                .setSummary(newEventDetail.summary())
+                .setLocation(newEventDetail.location())
+                .setDescription(newEventDetail.description());
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDate)
+                .setTimeZone(TIME_ZONE_SPECIFIER);
+        DateTime endDateTime = new DateTime(startDate.getValue() + (newEventDetail.duration() * 60 * 1000));
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone(TIME_ZONE_SPECIFIER);
+        String[] recurrence = new String[]{"RRULE:FREQ=DAILY;COUNT=1"};
+        List<EventAttendee> attendees = new ArrayList<>();
+        for (String attendee : newEventDetail.attendee_emails()) {
+            attendees.add(new EventAttendee().setEmail(attendee));
         }
+        EventReminder[] reminderOverrides = new EventReminder[]{
+                new EventReminder().setMethod("email").setMinutes(24 * 60),
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+
+        String calendarId = "primary";
+        event.setStart(start);
+        event.setEnd(end);
+        event.setRecurrence(Arrays.asList(recurrence));
+        event.setAttendees(attendees);
+        event.setReminders(reminders);
+        event = calendarService().events().insert(calendarId, event).execute();
+        System.out.printf("Event created: %s\n", event.getHtmlLink());
+        return new CalendarResponse(startDate, endDateTime);
+    }
+
+    public FreeBusyResponse getFreeBusy(Date startDate, Date endDate) throws IOException {
+        FreeBusyRequest freeBusyRequest = new FreeBusyRequest();
+        freeBusyRequest.setItems(getFreeBusyItems());
+        TimeZone timeZone = TimeZone.getTimeZone(TIME_ZONE_SPECIFIER);
+        DateTime startTime = new DateTime(startDate, timeZone);
+        DateTime endTime = new DateTime(endDate, timeZone);
+        freeBusyRequest.setTimeZone(TIME_ZONE_SPECIFIER);
+        freeBusyRequest.setTimeMin(startTime);
+        freeBusyRequest.setTimeMax(endTime);
+        Calendar.Freebusy.Query freeBusyQuery = calendarService().freebusy().query(freeBusyRequest);
+        FreeBusyResponse freeBusyResponse = freeBusyQuery.execute();
+        System.out.println(freeBusyResponse.toString());
+        return freeBusyResponse;
+    }
+
+    private List<String> getAllCalendarIds() throws IOException {
+        List<String> calendarsIds = new ArrayList<>();
+        CalendarList calendarList = calendarService().calendarList().list().execute();
+
+        for (CalendarListEntry calendarListEntry : calendarList.getItems()) {
+            calendarsIds.add(calendarListEntry.getId());
+        }
+        return calendarsIds;
+    }
+
+    private List<FreeBusyRequestItem> getFreeBusyItems() throws IOException {
+        List<String> calendarsIds = getAllCalendarIds();
+        List<FreeBusyRequestItem> freeBusyRequestItems = new ArrayList<>();
+        for (String id : calendarsIds) {
+            freeBusyRequestItems.add(new FreeBusyRequestItem().set("id", id));
+        }
+        return freeBusyRequestItems;
     }
 }
