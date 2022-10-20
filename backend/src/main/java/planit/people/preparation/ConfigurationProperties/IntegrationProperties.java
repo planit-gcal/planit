@@ -1,10 +1,10 @@
-package planit.people.preparation;
+package planit.people.preparation.ConfigurationProperties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="integrations")
+@ConfigurationProperties(prefix = "integrations")
 public class IntegrationProperties {
     private String googleTokenRedirectUri;
 

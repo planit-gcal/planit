@@ -18,6 +18,9 @@ import com.google.auth.oauth2.UserCredentials;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.Responses.CalendarResponse;
 
+import planit.people.preparation.ConfigurationProperties.IntegrationProperties;
+import planit.people.preparation.Utils.SpringContext;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
@@ -35,6 +38,10 @@ public class GoogleConnector {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
+
+    private static IntegrationProperties getIntegrationProperties() {
+        return SpringContext.getBean(IntegrationProperties.class);
+    }
 
     static {
         try {
@@ -56,6 +63,7 @@ public class GoogleConnector {
 
     private static final String CLIENT_ID = CLIENT_SECRETS.getDetails().getClientId();
     private static final String CLIENT_SECRET = CLIENT_SECRETS.getDetails().getClientSecret();
+    private static final String GOOGLE_TOKEN_REDIRECT_URI = getIntegrationProperties().getGoogleTokenRedirectUri();
 
     private String code;
     private String refreshToken;
@@ -110,11 +118,13 @@ public class GoogleConnector {
 
     private void setRefreshAndExpiry() {
         try {
+
             GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance(),
                     CLIENT_ID, CLIENT_SECRET,
-                    this.code, "http://localhost:3000")
+                    this.code, GOOGLE_TOKEN_REDIRECT_URI)
                     .execute();
+
             System.out.println("response: " + response);
             this.refreshToken = response.getRefreshToken();
             System.out.println("Refresh token: " + response.getRefreshToken());
