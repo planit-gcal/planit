@@ -32,6 +32,22 @@ This repository contains frontend and backend apps for the Planit project.
 
 ...and you're good to go! Visit http://localhost:3000.
 
+### Google Workspace Addon
+
+#### Prerequisites
+
+1. Clasp is a CLI to upload the addon code. Run `clasp create --type standalone` to create a clasp connection with your Google account.
+
+#### Deploying
+
+1. `clasp push -f && clasp deploy`
+2. Create a test deployment at https://script.google.com and install it to your calendar
+3. Visit Google Calendar website
+
+#### Viewing logs
+
+Checking the results of `console.log` requires entering the the "Executions" section on the left in Apps Script dashboard.
+
 # Deploying the project
 
 ### Deploying locally
