@@ -34,6 +34,4 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
-# java -jar -Dspring.profiles.active=production XXX.jar
-
 ENTRYPOINT ["java","-Dspring.profiles.active=production","-cp","app:app/lib/*","planit.people.preparation.PreparationApplication"]
