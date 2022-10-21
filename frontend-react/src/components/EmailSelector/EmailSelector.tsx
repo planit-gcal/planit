@@ -6,7 +6,6 @@ type EmailSelectorProps = {
 }
 
 export const EmailSelector = ({emails, selectChange}: EmailSelectorProps) => {
-
     return (
         <>
             <label htmlFor='email_select'>Select an email</label>

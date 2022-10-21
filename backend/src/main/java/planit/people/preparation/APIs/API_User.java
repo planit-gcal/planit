@@ -38,7 +38,7 @@ public class API_User {
     @GetMapping(path = "getAllEmails/{userId}")
     public ResponseEntity<List<String>> getAllEmailsForEmail(@PathVariable Long userId) {
         try {
-            return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.FOUND);
+            return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
