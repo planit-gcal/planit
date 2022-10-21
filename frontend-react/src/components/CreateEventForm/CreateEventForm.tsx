@@ -46,11 +46,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                 summary,
                 location,
                 description,
-                attendees,
+                attendee_emails:attendees,
                 start_date:formatToUTC(start_date),
                 end_date:formatToUTC(end_date),
                 duration,
-                owner
+                owner_email:owner
             })}}>submit</button>
         </form>
     );

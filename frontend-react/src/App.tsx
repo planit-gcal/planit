@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import "./App.css";
 import {useGoogleLogin} from "@react-oauth/google";
 import axios from "axios";
@@ -45,6 +45,17 @@ function App() {
             .catch((error) => console.log(error.message));
     };
 
+    const getEmailList = (id:string) => {
+        axios
+            .get(`/plan-it/user/getAllEmails/${id}`)
+            .then(response => setAccountEmails(response.data))
+    }
+
+    useEffect(() => {
+        if (planitUserId !== null)
+            getEmailList(planitUserId);
+    }, [planitUserId])
+
     // @ts-ignore
     const login = useGoogleLogin({
         onSuccess: onSuccess,
@@ -62,7 +73,10 @@ function App() {
         <div className="App">
             <button onClick={() => login()}>Sign in with Google 🚀</button>
             ;
-            <EmailSelector emails={["a", "b", "c"]} selectChange={onSelectEmail}></EmailSelector>
+            <div >
+
+            </div>
+            <EmailSelector emails={accountEmails} selectChange={onSelectEmail}></EmailSelector>
             <br/>
             <CreateEventForm onSubmit={onEventSubmit} owner={owner}></CreateEventForm>
         </div>
