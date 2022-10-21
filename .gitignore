@@ -58,3 +58,4 @@ yarn-debug.log*
 yarn-error.log*
 
 client_secret.json
+.clasp.json
