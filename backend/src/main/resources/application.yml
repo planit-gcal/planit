@@ -6,13 +6,12 @@ spring:
     username: postgres
     password: postgres
   jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        ddl-auto: update
+    hibernate:
+      jdbc:
+        lob:
+          non_contextual_creation: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
 integrations:
   google-token-redirect-uri: http://localhost:3000
 
