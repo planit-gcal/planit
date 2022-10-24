@@ -1,111 +1,81 @@
-function onHomepage(e: GoogleAppsScript.Addons.CommonEventObject) {
-  console.log(e);
-  // const hour = Number(Utilities.formatDate(new Date(), e.userTimezone.id, 'H'));
-  // const message;
-  // if (hour >= 6 && hour < 12) {
-  //   message = 'Good morning';
-  // } else if (hour >= 12 && hour < 18) {
-  //   message = 'Good afternoon';
-  // } else {
-  //   message = 'Good night';
-  // }
-  // message += ' ' + e.hostApp;
-  return createCard("xd", true);
+function onHomepage(e) {
+  return createCard();
 }
 
-function createCard(text: string, isHomepage = false) {
-  // Create a button that changes the cat image when pressed.
-  // Note: Action parameter keys and values must be strings.
-  // const action = CardService.newAction()
-  //   .setFunctionName("onRequestSend")
-  //   .setParameters({ text, isHomepage: isHomepage.toString() });
-  // const button = CardService.newTextButton()
-  //   .setText("Make a request")
-  //   .setOnClickAction(action)
-  //   .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
+const weekInMs = 6.048e+8;
+const users = ["Kuba", "Marcin", "Łukasz", "Mustafa"]
 
-  const action = CardService.newAuthorizationAction().setAuthorizationUrl(
-    "https://planit-custom-domain.loca.lt/"
-  );
-  const button = CardService.newTextButton()
-    .setText("Authorize")
-    .setAuthorizationAction(action);
+function createCard() {
+  var card = CardService.newCardBuilder();
+  var header = CardService.newCardHeader().setTitle("Create new event");
 
-  const buttonSet = CardService.newButtonSet().addButton(button);
+  var section = CardService.newCardSection();
 
-  // Assemble the widgets and return the card.
-  const section = CardService.newCardSection().addWidget(buttonSet);
-  const card = CardService.newCardBuilder().addSection(section);
+  section.addWidget(
+      CardService.newTextInput()
+          .setFieldName("Event name")
+          .setTitle("Event name")
+          .setValue("Planit Event")
+  )
 
-  if (!isHomepage) {
-    // Create the header shown when the card is minimized,
-    // but only when this card is a contextual card. Peek headers
-    // are never used by non-contexual cards like homepages.
-    const peekHeader = CardService.newCardHeader()
-      .setTitle("Contextual Cat")
-      .setImageUrl(
-        "https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png"
-      )
-      .setSubtitle(text);
-    card.setPeekCardHeader(peekHeader);
-  }
+  const msSinceEpocToday = new Date();
 
+  section.addWidget(
+      CardService.newDatePicker()
+          .setFieldName("Min date")
+          .setTitle("Min date")
+          .setValueInMsSinceEpoch(msSinceEpocToday.valueOf())
+  )
+
+  section.addWidget(
+      CardService.newDatePicker()
+          .setFieldName("Max date")
+          .setTitle("Max date")
+          .setValueInMsSinceEpoch(msSinceEpocToday.valueOf() + weekInMs)
+  )
+
+  const dropdown = CardService.newSelectionInput()
+      .setFieldName("Preset")
+      .setTitle("Choose preset")
+      .setType(CardService.SelectionInputType.DROPDOWN);
+
+  const array = ["my friends", "work", "family"]
+
+  array.forEach(x => dropdown.addItem(x, x, false))
+
+  section.addWidget(dropdown)
+
+
+  card.addSection(section);
+  card.setHeader(header);
   return card.build();
 }
 
-function onRequestSend(e: GoogleAppsScript.Addons.CommonEventObject) {
-  console.log(e);
-  // Get the text that was shown in the current cat image. This was passed as a
-  // parameter on the Action set for the button.
-  const text = e.parameters.text;
+function buildUserSection(users : [string]) : GoogleAppsScript.Card_Service.CardSection
+{
+  const section = CardService.newCardSection()
+      .setHeader("Guests")
+      .setCollapsible(true)
 
-  // The isHomepage parameter is passed as a string, so convert to a Boolean.
-  const isHomepage = e.parameters.isHomepage === "true";
+  for (let i = 0; i < users.length; i++){
+    const user = users[i];
+    section.addWidget(
+        CardService.newTextParagraph().setText(user)
+    )
+  }
 
-  // Create a new card with the same text.
+  section.addWidget(
+      CardService.newTextInput()
+          .setFieldName("new user email")
+          .setFieldName("add user")
+          .setHint("user@gmail.com")
+  )
 
-  const config: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
-    muteHttpExceptions: true,
-    method: "get",
-    headers: {
-      "Bypass-Tunnel-Reminder": "1",
-    },
-  };
-  let response = UrlFetchApp.fetch(
-    "https://planit-custom-domain.loca.lt/",
-    config
-  );
+  section.addWidget(
+      CardService.newTextButton()
+          .setText("add user")
+          .setOnClickAction()
+  )
 
-  const contentText = response.getContentText();
-  console.log(contentText);
-
-  console.log(ScriptApp.getOAuthToken());
-
-  // const jsonObject = JSON.parse(response.getContentText());
-
-  const card = createCard(response.getContentText(), isHomepage);
-
-  // const startDate = new Date(Date.now());
-  // CalendarApp.createEvent(
-  //   "new event",
-  //   startDate,
-  //   new Date(
-  //     startDate.getFullYear(),
-  //     startDate.getMonth(),
-  //     startDate.getDate(),
-  //     startDate.getHours() + 1
-  //   )
-  // );
-
-  ScriptApp.getService().getUrl();
-
-  // Create an action response that instructs the add-on to replace
-  // the current card with the new one.
-  const navigation = CardService.newNavigation().updateCard(card);
-  const actionResponse =
-    CardService.newActionResponseBuilder().setNavigation(navigation);
-  return actionResponse.build();
+  return section;
 }
-
-// deploy a backend to a free hosting
-//
