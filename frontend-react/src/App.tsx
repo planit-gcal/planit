@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import "./App.css";
 import {useGoogleLogin} from "@react-oauth/google";
 import axios from "axios";
@@ -12,13 +12,14 @@ function App() {
     const [accountEmails, setAccountEmails] = useState<string[]>([]);
     const [planitUserId, setPlanitUserId] = useLocalStorage("planitUserId", null);
 
-    const onSuccess = (response: any) => {
+    const onSuccess = useCallback((response: any) => {
         console.log("succ: ", response);
         axios
             .post(
                 "/plan-it/user/token",
                 {
                     code: response.code,
+                    planit_userId: planitUserId
                 },
                 {
                     headers: {
@@ -33,7 +34,7 @@ function App() {
                 console.log(planitUserId);
             })
             .catch((error) => console.log(error.message));
-    };
+    },[planitUserId]);
 
     const onEventSubmit = (result: EventCreateRequest) => {
         console.log("succ: ", result);
@@ -72,6 +73,7 @@ function App() {
     return (
         <div className="App">
             <button onClick={() => login()}>Sign in with Google 🚀</button>
+            <button onClick={() => setPlanitUserId(null)}>Logout</button>
             ;
             <div >
 
