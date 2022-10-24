@@ -73,6 +73,7 @@ function App() {
     return (
         <div className="App">
             <button onClick={() => login()}>Sign in with Google 🚀</button>
+            <button onClick={() => setPlanitUserId(null)}>Logout</button>
             ;
             <div >
 
