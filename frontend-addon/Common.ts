@@ -1,9 +1,14 @@
 function onHomepage() {
+  var check = PropertiesService.getUserProperties().getProperty("Users");
+  if(!check)
+  {
+    const constUsers = ["Kuba", "Marcin", "Łukasz", "Mustafa"]
+    PropertiesService.getUserProperties().setProperty("Users", JSON.stringify(constUsers));
+  }
   return createCard();
 }
 
 const weekInMs = 6.048e+8;
-const constUsers = ["Kuba", "Marcin", "Łukasz", "Mustafa"]
 
 function createCard(listOfUsers : string[] = []) {
   var card = CardService.newCardBuilder();
@@ -45,22 +50,24 @@ function createCard(listOfUsers : string[] = []) {
 
   section.addWidget(dropdown)
 
-  console.log("list passed to method " + listOfUsers)
-  card.addSection(buildUserSection(listOfUsers))
+  card.addSection(buildUserSection())
   card.addSection(section);
   card.setHeader(header);
   return card.build();
 }
 
-function buildUserSection(users : string[]) : GoogleAppsScript.Card_Service.CardSection
+function buildUserSection() : GoogleAppsScript.Card_Service.CardSection
 {
-  console.log("received by method " + users)
 
-  if(users === undefined || users === [])
-  {
-    console.log("users is undefined")
-    users = constUsers;
-  }
+  // if(users === undefined || users.length === 0)
+  // {
+  //   console.log("users is undefined")
+  //   users = constUsers;
+  // }
+
+  const beforeJson = PropertiesService.getUserProperties().getProperty("Users");
+  const users = JSON.parse(beforeJson) as string[];
+  console.log("received by method " + users)
 
   const section = CardService.newCardSection()
       .setHeader("Guests")
@@ -81,17 +88,12 @@ function buildUserSection(users : string[]) : GoogleAppsScript.Card_Service.Card
           .setHint("user@gmail.com")
   )
 
-  var json = {}
-  json['users'] = JSON.stringify(users);
 
-  console.log(json)
   section.addWidget(
       CardService.newTextButton()
           .setText("add user")
           .setOnClickAction(CardService.newAction()
-              .setFunctionName("onAddUser")
-              .setParameters(json)))
-  console.log("5");
+              .setFunctionName("onAddUser")))
 
   console.log("at the end of method " + users)
 
@@ -100,18 +102,18 @@ function buildUserSection(users : string[]) : GoogleAppsScript.Card_Service.Card
 
 function onAddUser(e)
 {
-  const users = JSON.parse(e['parameters']['users']);
+  const beforeJson = PropertiesService.getUserProperties().getProperty("Users");
+  const users = JSON.parse(beforeJson);
 
-  console.log("button received ");
-  console.log(e);
   console.log("before add user " + users);
 
   const newUser = e['formInputs']["add user"][0];
   users.push(newUser)
-  e['listOfUsers'] = users;
+
   console.log("after add users " + users);
-  const json = {};
-  json['listOfUsers'] = users;
-  var refreshNav = CardService.newNavigation().popToRoot().updateCard(createCard(users));
-  CardService.newActionResponseBuilder().setNavigation(refreshNav).build();
+
+  PropertiesService.getUserProperties().setProperty("Users", JSON.stringify(users));
+
+  var refreshNav = CardService.newNavigation().popToRoot().updateCard(createCard());
+  return CardService.newActionResponseBuilder().setNavigation(refreshNav).build();
 }
