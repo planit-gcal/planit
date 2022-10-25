@@ -1,8 +1,8 @@
 function onHomepage() {
-    const check = PropertiesService.getUserProperties().getProperty("Users");
+    const check = GetProperty<string[]>(usersString)
     if (!check) {
-        const constUsers = ["Kuba", "Marcin", "Łukasz", "Mustafa"]
-        PropertiesService.getUserProperties().setProperty("Users", JSON.stringify(constUsers));
+        const constUsers = ["kubaserdynski@gmail.com", "łukasz.blachnicki@gmail.com", "marcin.kasperski.69420@gmail.com"]
+        SetProperty("Users", constUsers);
     }
     return createCard();
 }
@@ -73,8 +73,6 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
 
     const section = CardService.newCardSection()
         .setHeader("Guests")
-        .setCollapsible(true)
-        .setNumUncollapsibleWidgets(3);
 
     section.addWidget(
         CardService.newTextInput()
@@ -88,21 +86,56 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
             .setOnClickAction(CardService.newAction()
                 .setFunctionName("onAddUser")))
 
+    let icon = CardService.newIconImage()
+        .setIcon(CardService.Icon.EMAIL)
+        .setAltText('Send an email');
+
+
+
+
+    const cardSectionGrid = CardService.newGrid()
+        .setNumColumns(2)
+        .addItem(
+            CardService.newGridItem()
+                .setTitle("User email")
+                .setTextAlignment(CardService.HorizontalAlignment.START)
+        )
+        .addItem(
+            CardService.newGridItem()
+            .setSubtitle("Required")
+            .setTextAlignment(CardService.HorizontalAlignment.END)
+        );
+
+    section.addWidget(cardSectionGrid);
+
+
+
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        const emptyAction = CardService.newAction()
+        const deleteUserAction = CardService.newAction()
             .setFunctionName("deleteUser")
             .setParameters({"index": i.toString()});
 
+        const userRequiredAction = CardService.newAction()
+            .setFunctionName("deleteUser")
+
+        let checkBox = CardService.newSwitch()
+            .setControlType(CardService.SwitchControlType.CHECK_BOX)
+            .setFieldName('isRequired')
+            .setValue('isRequired')
+            .setOnChangeAction(userRequiredAction)
+            .setSelected(true);
+
+
+
         section.addWidget(
-            CardService.newKeyValue()
-                .setContent(user)
-                .setOnClickAction(emptyAction)
-                .setButton(
-                    CardService.newTextButton()
-                        .setText("X")
-                        .setOnClickAction(emptyAction)
-                )
+            CardService.newDecoratedText()
+            .setText(user)
+            .setBottomLabel('click to remove')
+            .setStartIcon(icon)
+            .setWrapText(false)
+            .setSwitchControl(checkBox)
+            .setOnClickAction(deleteUserAction)
         );
     }
 
@@ -120,7 +153,9 @@ function deleteUser(e) {
 function onAddUser(e) {
     let users = GetProperty<string[]>(usersString);
 
-    const newUser = e['formInputs']["add user"][0];
+    console.log(e);
+
+    const newUser = e['formInputs']["new user email"][0];
     users = [newUser, ...users];
 
     SetProperty(usersString, users);
