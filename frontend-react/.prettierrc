@@ -1,0 +1,10 @@
+{
+  "printWidth": 120,
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "endOfLine": "auto",
+  "importOrderSeparation": true,
+  "importOrder": ["^(app|api|assets|auth|components|hooks|models|pages|queries|styles|theme|translations)/?", "^[./]"]
+}
