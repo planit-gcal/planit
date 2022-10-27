@@ -57,13 +57,11 @@ function App() {
     if (planitUserId !== null) getEmailList(planitUserId);
   }, [planitUserId]);
 
-  // @ts-ignore
   const login = useGoogleLogin({
-    onSuccess: onSuccess,
+    onSuccess,
     flow: 'auth-code',
     scope:
       'profile email openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly',
-    accessType: 'offline',
   });
 
   const onSelectEmail = (email: string) => {
