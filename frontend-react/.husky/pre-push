@@ -1,3 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-cd ./frontend-react && npx lint-staged 
+
+cd frontend-react
+npm run lint
