@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import { AddEmail } from './AddEmail';
 import { EventCreateRequest } from '../../models/event';
 import { formatToUTC } from '../../utils/date.utils';
+import { AddEmail } from './AddEmail';
 
 type CreateEventFormProps = {
   owner: string;

@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
-import './App.css';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { useState, useEffect, useCallback } from 'react';
+
+import './App.css';
 import { CreateEventForm } from './components/CreateEventForm/CreateEventForm';
-import { EventCreateRequest } from './models/event';
 import { EmailSelector } from './components/EmailSelector/EmailSelector';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { EventCreateRequest } from './models/event';
 
 function App() {
   const [owner, setOwner] = useState('');
