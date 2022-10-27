@@ -1,50 +1,77 @@
 function onHomepage() {
-    const check = GetProperty<string[]>(usersString)
-    if (!check) {
-        const constUsers = ["kubaserdynski@gmail.com", "łukasz.blachnicki@gmail.com", "marcin.kasperski.69420@gmail.com"]
-        SetProperty("Users", constUsers);
-    }
+    SetProperty(eventNameString, "PlanIt Event");
+    SetProperty(minDateString, msSinceEpocToday.valueOf());
+    SetProperty(maxDateString,msSinceEpocToday.valueOf() + weekInMs);
+    SetProperty(durationString, "1:45");
     return createCard();
 }
 
 const weekInMs = 6.048e+8;
+const durationString = "duration";
+const eventNameString = "eventName"
 const usersString = "Users";
+const currentPresetIndexString = "currentPresetIndex";
+const minDateString = "startDate";
+const maxDateString = "endDate";
+const msSinceEpocToday = new Date();
 
 function createCard() {
 
     const card = CardService.newCardBuilder();
-    const header = CardService.newCardHeader().setTitle("Create new event");
     const section = CardService.newCardSection();
-    const msSinceEpocToday = new Date();
-    const array = ["my friends", "work", "family"]
 
     section.addWidget(
         CardService.newTextInput()
             .setFieldName("Event name")
             .setTitle("Event name")
-            .setValue("Planit Event")
+            .setValue(
+                GetProperty<string>(eventNameString))
+            .setOnChangeAction(
+                CardService.newAction()
+                    .setFunctionName("onEventNameChange")
+            )
+    )
+
+    section.addWidget(
+        CardService.newTextInput()
+            .setFieldName("duration")
+            .setTitle("Event Duration")
+            .setValue(
+                GetProperty<string>(durationString)
+            )
+            .setOnChangeAction(
+                CardService.newAction()
+                    .setFunctionName("onDurationChange")
+            )
     )
 
     section.addWidget(
         CardService.newDatePicker()
             .setFieldName("Min date")
             .setTitle("Min date")
-            .setValueInMsSinceEpoch(msSinceEpocToday.valueOf())
+            .setValueInMsSinceEpoch(
+                GetProperty<number>(minDateString)
+            )
+            .setOnChangeAction(
+                CardService.newAction()
+                    .setFunctionName("onMinDateChange")
+            )
     )
 
     section.addWidget(
         CardService.newDatePicker()
             .setFieldName("Max date")
             .setTitle("Max date")
-            .setValueInMsSinceEpoch(msSinceEpocToday.valueOf() + weekInMs)
+            .setValueInMsSinceEpoch(
+                GetProperty<number>(maxDateString)
+            )
+            .setOnChangeAction(
+                CardService.newAction()
+                    .setFunctionName("onMaxDateChange")
+            )
     )
 
-    const dropdown = CardService.newSelectionInput()
-        .setFieldName("Preset")
-        .setTitle("Choose preset")
-        .setType(CardService.SelectionInputType.DROPDOWN);
-    array.forEach(x => dropdown.addItem(x, x, false))
-    section.addWidget(dropdown)
+
 
     const fixedFooter =
         CardService
@@ -56,11 +83,10 @@ function createCard() {
                     .setOnClickAction(
                         CardService
                             .newAction()
-                            .setFunctionName("deleteUser")
+                            .setFunctionName("onDeleteUser")
                     ));
 
-
-    card.setHeader(header);
+    section.addWidget(presetDropdown())
     card.addSection(section);
     card.addSection(buildUserSection())
     card.setFixedFooter(fixedFooter);
@@ -69,7 +95,7 @@ function createCard() {
 }
 
 function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
-    const users = GetProperty<string[]>(usersString);
+    const users = GetProperty<Guest[]>(usersString);
 
     const section = CardService.newCardSection()
         .setHeader("Guests")
@@ -90,9 +116,6 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
         .setIcon(CardService.Icon.EMAIL)
         .setAltText('Send an email');
 
-
-
-
     const cardSectionGrid = CardService.newGrid()
         .setNumColumns(2)
         .addItem(
@@ -109,28 +132,25 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
     section.addWidget(cardSectionGrid);
 
 
-
     for (let i = 0; i < users.length; i++) {
         const user = users[i];
         const deleteUserAction = CardService.newAction()
-            .setFunctionName("deleteUser")
-            .setParameters({"index": i.toString()});
+            .setFunctionName("onDeleteUser")
+            .setParameters({"deleteIndex" : i.toString()})
 
-        const userRequiredAction = CardService.newAction()
-            .setFunctionName("deleteUser")
-
-        let checkBox = CardService.newSwitch()
+        const checkBox = CardService.newSwitch()
             .setControlType(CardService.SwitchControlType.CHECK_BOX)
-            .setFieldName('isRequired')
-            .setValue('isRequired')
-            .setOnChangeAction(userRequiredAction)
-            .setSelected(true);
+            .setFieldName(`isRequired${i}`)
+            .setValue(`isRequired${i}`)
+            .setSelected(user.isRequired);
+
+        console.log(`${user.email} ${user.isRequired}`);
 
 
 
         section.addWidget(
             CardService.newDecoratedText()
-            .setText(user)
+            .setText(user.email)
             .setBottomLabel('click to remove')
             .setStartIcon(icon)
             .setWrapText(false)
@@ -142,30 +162,29 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
     return section;
 }
 
-function deleteUser(e) {
-    const userIndex = Number(e['commonEventObject']["parameters"]["index"]);
-    const users = GetProperty<string[]>(usersString);
-    users.splice(userIndex, 1);
-    SetProperty(usersString, users);
-    return update();
-}
+function presetDropdown()
+{
+    const presets = getPresetsFromStorage();
+    const currentIndex = GetProperty<Number>(currentPresetIndexString);
 
-function onAddUser(e) {
-    let users = GetProperty<string[]>(usersString);
+    const presetChangeAction = CardService.newAction()
+        .setFunctionName("onPresetChange");
 
-    console.log(e);
+    const dropdown = CardService.newSelectionInput()
+        .setFieldName("Preset")
+        .setTitle("Choose preset")
+        .setType(CardService.SelectionInputType.DROPDOWN)
+        .setOnChangeAction(presetChangeAction)
 
-    const newUser = e['formInputs']["new user email"][0];
-    users = [newUser, ...users];
-
-    SetProperty(usersString, users);
-
-    return update();
+    presets.forEach((x, i) => dropdown.addItem(x.name, i, i === currentIndex))
+    return dropdown
 }
 
 function update() {
     const updateNavigation = CardService.newNavigation().popToRoot().updateCard(createCard());
     return CardService.newActionResponseBuilder().setNavigation(updateNavigation).build();
 }
+
+
 
 

@@ -13,9 +13,13 @@
   "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/"],
   "addOns": {
     "common": {
-      "name": "Planit",
+      "name": "PlanIt - create event",
       "logoUrl": "https://cdn.vectorstock.com/i/1000x1000/57/98/group-calendar-glyph-icon-vector-28415798.webp",
       "useLocaleFromApp": true,
+      "layoutProperties": {
+        "primaryColor": "#A0EEC0",
+        "secondaryColor": "#86CD82"
+      },
       "homepageTrigger": {
         "runFunction": "onHomepage",
         "enabled": true
