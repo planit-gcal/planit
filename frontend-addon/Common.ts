@@ -1,8 +1,9 @@
 function onHomepage() {
     SetProperty(eventNameString, "PlanIt Event");
     SetProperty(minDateString, msSinceEpocToday.valueOf());
-    SetProperty(maxDateString,msSinceEpocToday.valueOf() + weekInMs);
+    SetProperty(maxDateString, msSinceEpocToday.valueOf() + weekInMs);
     SetProperty(durationString, "1:45");
+    SetProperty(errorString, []);
     return createCard();
 }
 
@@ -13,6 +14,7 @@ const usersString = "Users";
 const currentPresetIndexString = "currentPresetIndex";
 const minDateString = "startDate";
 const maxDateString = "endDate";
+const errorString = "inputErrors";
 const msSinceEpocToday = new Date();
 
 function createCard() {
@@ -45,6 +47,10 @@ function createCard() {
             )
     )
 
+    if (isError(error.durationFormat)) {
+        section.addWidget(durationFormatError());
+    }
+
     section.addWidget(
         CardService.newDatePicker()
             .setFieldName("Min date")
@@ -71,7 +77,9 @@ function createCard() {
             )
     )
 
-
+    if (isError(error.date)) {
+        section.addWidget(dateError());
+    }
 
     const fixedFooter =
         CardService
@@ -84,11 +92,26 @@ function createCard() {
                         CardService
                             .newAction()
                             .setFunctionName("onDeleteUser")
+                    ))
+            .setSecondaryButton(
+                CardService.newTextButton()
+                    .setText("visit website")
+                    .setOnClickAction(
+                        CardService.newAction()
+                            .setFunctionName("onDeleteUser")
                     ));
-
     section.addWidget(presetDropdown())
     card.addSection(section);
     card.addSection(buildUserSection())
+
+    card.addSection(
+        CardService.newCardSection()
+            .addWidget(
+                CardService.newTextParagraph()
+                    .setText("Need more options or new presets? For those and <b>many other functionalities</b>, visit our website")
+            )
+    )
+
     card.setFixedFooter(fixedFooter);
 
     return card.build();
@@ -125,8 +148,8 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
         )
         .addItem(
             CardService.newGridItem()
-            .setSubtitle("Required")
-            .setTextAlignment(CardService.HorizontalAlignment.END)
+                .setSubtitle("Required")
+                .setTextAlignment(CardService.HorizontalAlignment.END)
         );
 
     section.addWidget(cardSectionGrid);
@@ -136,7 +159,7 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
         const user = users[i];
         const deleteUserAction = CardService.newAction()
             .setFunctionName("onDeleteUser")
-            .setParameters({"deleteIndex" : i.toString()})
+            .setParameters({"deleteIndex": i.toString()})
 
         const checkBox = CardService.newSwitch()
             .setControlType(CardService.SwitchControlType.CHECK_BOX)
@@ -147,23 +170,21 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
         console.log(`${user.email} ${user.isRequired}`);
 
 
-
         section.addWidget(
             CardService.newDecoratedText()
-            .setText(user.email)
-            .setBottomLabel('click to remove')
-            .setStartIcon(icon)
-            .setWrapText(false)
-            .setSwitchControl(checkBox)
-            .setOnClickAction(deleteUserAction)
+                .setText(user.email)
+                .setBottomLabel('click to remove')
+                .setStartIcon(icon)
+                .setWrapText(false)
+                .setSwitchControl(checkBox)
+                .setOnClickAction(deleteUserAction)
         );
     }
 
     return section;
 }
 
-function presetDropdown()
-{
+function presetDropdown() {
     const presets = getPresetsFromStorage();
     const currentIndex = GetProperty<Number>(currentPresetIndexString);
 

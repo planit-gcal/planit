@@ -1,8 +1,7 @@
 function GetProperty<T>(name : string) : T
 {
    const unparsed = PropertiesService.getUserProperties().getProperty(name);
-   const parsed = JSON.parse(unparsed);
-   return parsed;
+    return JSON.parse(unparsed);
 }
 
 function SetProperty(name : string, value : unknown)

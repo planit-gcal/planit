@@ -54,9 +54,30 @@ function onMinDateChange(e)
 
 function onMaxDateChange(e)
 {
-    console.log(e);
     const newDate = Number(e["formInputs"]["Max date"][0]["msSinceEpoch"]);
     SetProperty(maxDateString, newDate);
+
+    const minDate = Number(e["formInputs"]["Min date"][0]["msSinceEpoch"]);
+
+    console.log("OnMaxDateChange")
+
+    if(isError(error.date))
+    {
+        console.log("OnMaxDateChange - error is true")
+        if(minDate < newDate)
+        {
+
+            console.log("OnMaxDateChange - dates are now good, setting error to false")
+            setError(error.date, false);
+            return update();
+        }
+    }
+    else if(minDate >= newDate)
+    {
+        console.log("OnMaxDateChange - dates are bad, setting error to true")
+        setError(error.date, true);
+        return update();
+    }
 }
 
 function onDurationChange(e)
@@ -64,6 +85,24 @@ function onDurationChange(e)
     const input = e["formInputs"]["duration"][0];
     console.log(input);
     SetProperty(durationString, input);
+
+    const regex = RegExp("^(([0-1]?[0-9]|2[0-3]):)?([0-5][0-9])$");
+    const groups = regex.exec(input);
+    console.log("groups")
+    console.log(groups)
+    if (isError(error.durationFormat))
+    {
+        if(groups)
+        {
+            setError(error.durationFormat, false);
+            return update();
+        }
+    }
+    else if(!groups)
+    {
+        setError(error.durationFormat, true);
+        return update();
+    }
 }
 
 function onRequiredChange(e)

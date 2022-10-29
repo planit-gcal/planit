@@ -21,6 +21,12 @@ type Preset = {
     guests : Guest[]
 }
 
+enum error
+{
+    durationFormat = "durationFormat",
+    date = "date",
+}
+
 /*
 "number_of_events": 3,
     "min_time_between_events": 999,
