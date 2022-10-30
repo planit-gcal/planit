@@ -2,7 +2,7 @@ package planit.people.preparation.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import planit.people.preparation.Utilities.SqlTimeDeserializer;
+import planit.people.preparation.Utils.SqlTimeDeserializer;
 
 import javax.persistence.*;
 import java.sql.Time;
