@@ -18,11 +18,13 @@ import com.google.auth.oauth2.UserCredentials;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.Responses.CalendarResponse;
 
+import planit.people.preparation.ConfigurationProperties.IntegrationProperties;
+import planit.people.preparation.Utils.SpringContext;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.*;
-
 
 public class GoogleConnector {
     public static final String TIME_ZONE_SPECIFIER = "UTC";
@@ -37,6 +39,10 @@ public class GoogleConnector {
     private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
 
+    private static IntegrationProperties getIntegrationProperties() {
+        return SpringContext.getBean(IntegrationProperties.class);
+    }
+
     static {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -48,7 +54,8 @@ public class GoogleConnector {
 
     static {
         try {
-            CLIENT_SECRETS = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(GoogleConnector.class.getResourceAsStream(CREDENTIALS_FILE_PATH))));
+            CLIENT_SECRETS = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(
+                    Objects.requireNonNull(GoogleConnector.class.getResourceAsStream(CREDENTIALS_FILE_PATH))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,10 +63,10 @@ public class GoogleConnector {
 
     private static final String CLIENT_ID = CLIENT_SECRETS.getDetails().getClientId();
     private static final String CLIENT_SECRET = CLIENT_SECRETS.getDetails().getClientSecret();
+    private static final String GOOGLE_TOKEN_REDIRECT_URI = getIntegrationProperties().getGoogleTokenRedirectUri();
 
     private String code;
     private String refreshToken;
-
 
     public GoogleConnector(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -69,6 +76,7 @@ public class GoogleConnector {
     public GoogleConnector() {
 
     }
+
     public String getCode() {
         return code;
     }
@@ -110,11 +118,13 @@ public class GoogleConnector {
 
     private void setRefreshAndExpiry() {
         try {
+
             GoogleTokenResponse response = new GoogleAuthorizationCodeTokenRequest(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance(),
                     CLIENT_ID, CLIENT_SECRET,
-                    this.code, "http://localhost:3000")
+                    this.code, GOOGLE_TOKEN_REDIRECT_URI)
                     .execute();
+
             System.out.println("response: " + response);
             this.refreshToken = response.getRefreshToken();
             System.out.println("Refresh token: " + response.getRefreshToken());
@@ -147,12 +157,12 @@ public class GoogleConnector {
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
                 .setTimeZone(TIME_ZONE_SPECIFIER);
-        String[] recurrence = new String[]{"RRULE:FREQ=DAILY;COUNT=1"};
+        String[] recurrence = new String[] { "RRULE:FREQ=DAILY;COUNT=1" };
         List<EventAttendee> attendees = new ArrayList<>();
         for (String attendee : newEventDetail.attendee_emails()) {
             attendees.add(new EventAttendee().setEmail(attendee));
         }
-        EventReminder[] reminderOverrides = new EventReminder[]{
+        EventReminder[] reminderOverrides = new EventReminder[] {
                 new EventReminder().setMethod("email").setMinutes(24 * 60),
                 new EventReminder().setMethod("popup").setMinutes(10),
         };
