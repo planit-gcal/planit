@@ -1,0 +1,8 @@
+.+/plan-it/user/getAllEmails/{planit-user-id}+
+|===
+|Parameter|Description
+
+|`+planit-user-id+`
+|The id of the PlanIt User whose emails should be returned
+
+|===

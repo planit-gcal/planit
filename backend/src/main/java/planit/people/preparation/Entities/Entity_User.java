@@ -71,6 +71,7 @@ public class Entity_User {
 
     /**
      * Constructor used when Entity User record needs to be created in order to save it in another table as a foreign key.
+     *
      * @param user_id PlanIt User Id
      */
     public Entity_User(Long user_id) {
@@ -103,6 +104,10 @@ public class Entity_User {
 
     public Long getUser_id() {
         return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public void addPreset(Entity_EventPreset preset) {

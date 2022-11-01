@@ -1,0 +1,8 @@
+.+/plan-it/calendar/new-preset/{planit-user-id}+
+|===
+|Parameter|Description
+
+|`+planit-user-id+`
+|the id of the PlanIt User for whom the preset will be created
+
+|===

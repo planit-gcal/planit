@@ -64,6 +64,17 @@ public class Entity_Guest {
     }
 
     /**
+     * Constructor used in creating test methods
+     *
+     * @param email      Guest Email
+     * @param obligatory Guest's obligation to attend.
+     */
+    public Entity_Guest(String email, Boolean obligatory) {
+        this.email = email;
+        this.obligatory = obligatory;
+    }
+
+    /**
      * Empty constructor needed by Spring.
      */
     public Entity_Guest() {

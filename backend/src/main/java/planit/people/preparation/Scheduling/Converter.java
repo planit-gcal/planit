@@ -2,7 +2,10 @@ package planit.people.preparation.Scheduling;
 
 import com.google.api.services.calendar.model.TimePeriod;
 import org.joda.time.Interval;
+import org.springframework.web.util.UriUtils;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,5 +17,13 @@ public class Converter {
 
     public static Interval convertTimePeriodToInterval(TimePeriod timePeriod) {
         return new Interval(timePeriod.getStart().getValue(), timePeriod.getEnd().getValue());
+    }
+
+    public static String decodeURLString(String url) {
+        return URLDecoder.decode(url, StandardCharsets.UTF_8);
+    }
+
+    public static String encodeString(String value) {
+        return UriUtils.encodePath(value, "UTF-8");
     }
 }

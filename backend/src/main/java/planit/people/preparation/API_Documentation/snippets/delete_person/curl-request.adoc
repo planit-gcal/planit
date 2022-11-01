@@ -1,5 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/plan-it/people/1' -i -X DELETE \
-    -H 'Accept: application/json'
-----

@@ -38,14 +38,14 @@ public class Entity_PresetAvailability {
     /**
      * defines the start time of a day when an event CAN be created. the time has the following format HH:mm
      */
-    @Column(name = "start_available_time", nullable = true)
+    @Column(name = "start_available_time")
     @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = SqlTimeDeserializer.class)
     private Time start_available_time;
     /**
      * defines the end time of a day when an event CAN be created. the time has the following format HH:mm
      */
-    @Column(name = "end_available_time", nullable = true)
+    @Column(name = "end_available_time")
     @JsonFormat(pattern = "HH:mm")
     @JsonDeserialize(using = SqlTimeDeserializer.class)
     private Time end_available_time;
@@ -64,12 +64,13 @@ public class Entity_PresetAvailability {
 
     /**
      * Constructor used in retrieving record from the DB.
+     *
      * @param id_preset_availability id of the preset availability
-     * @param entity_EventPreset EventPreset foreign key
-     * @param day day of a record
-     * @param day_off day off
-     * @param start_available_time availability start time of a day (since result returned by a query is in Util.Date format, the constructor will convert the value into sql.Time)
-     * @param end_available_time availability end time of a day (since result returned by a query is in Util.Date format, the constructor will convert the value into sql.Time)
+     * @param entity_EventPreset     EventPreset foreign key
+     * @param day                    day of a record
+     * @param day_off                day off
+     * @param start_available_time   availability start time of a day (since result returned by a query is in Util.Date format, the constructor will convert the value into sql.Time)
+     * @param end_available_time     availability end time of a day (since result returned by a query is in Util.Date format, the constructor will convert the value into sql.Time)
      */
     public Entity_PresetAvailability(Long id_preset_availability, Entity_EventPreset entity_EventPreset, WeekDays day, Boolean day_off, java.util.Date start_available_time, java.util.Date end_available_time) {
         this.id_preset_availability = id_preset_availability;
@@ -82,14 +83,30 @@ public class Entity_PresetAvailability {
 
     /**
      * Constructor used in the process of creating a new record.
+     *
      * @param id_preset_availability id of the preset availability
-     * @param day day of a record
-     * @param day_off day off
-     * @param start_available_time availability start time of a day
-     * @param end_available_time availability end time of a day
+     * @param day                    day of a record
+     * @param day_off                day off
+     * @param start_available_time   availability start time of a day
+     * @param end_available_time     availability end time of a day
      */
     public Entity_PresetAvailability(Long id_preset_availability, WeekDays day, Boolean day_off, Time start_available_time, Time end_available_time) {
         this.id_preset_availability = id_preset_availability;
+        this.day = day;
+        this.start_available_time = start_available_time;
+        this.end_available_time = end_available_time;
+        this.day_off = day_off;
+    }
+
+    /**
+     * Constructor used in creating test methods
+     *
+     * @param day                  day of a record
+     * @param day_off              day off
+     * @param start_available_time availability start time of a day
+     * @param end_available_time   availability end time of a day
+     */
+    public Entity_PresetAvailability(WeekDays day, Time start_available_time, Time end_available_time, Boolean day_off) {
         this.day = day;
         this.start_available_time = start_available_time;
         this.end_available_time = end_available_time;
@@ -145,10 +162,22 @@ public class Entity_PresetAvailability {
         this.entity_EventPreset = entity_EventPreset;
     }
 
+    @Override
+    public String toString() {
+        return "Entity_PresetAvailability{" +
+                "id_preset_availability=" + id_preset_availability +
+                ", entity_EventPreset=" + entity_EventPreset +
+                ", day=" + day +
+                ", start_available_time=" + start_available_time +
+                ", end_available_time=" + end_available_time +
+                ", day_off=" + day_off +
+                '}';
+    }
+
     /**
      * Enum class containing the Weekdays which will be stored in the DB as an Enum String value.
      */
-    enum WeekDays {
+    public enum WeekDays {
         MONDAY,
         TUESDAY,
         WEDNESDAY,

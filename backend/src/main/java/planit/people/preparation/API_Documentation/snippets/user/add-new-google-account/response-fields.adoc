@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+planit_userId+`
+|`+class java.lang.Long+`
+|The unique identifier for the PlanIt User Account
+
+|`+google_account_id+`
+|`+class java.lang.Long+`
+|Auto generated Identifier for the new Google Account that contains a unique email and refresh token
+
+|===

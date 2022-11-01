@@ -1,0 +1,10 @@
+[source,http,options="nowrap"]
+----
+POST /plan-it/calendar/new-event HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 435
+Host: localhost:8080
+
+{"name":"TEST","summary":"Summary TEST","location":"PWR","description":"this is a unit test","event_preset_id":1,"attendee_emails":[{"id_event_guest":null,"entity_EventPreset":null,"email":"test@gmail.com","obligatory":true},{"id_event_guest":null,"entity_EventPreset":null,"email":"test5@gmail.com","obligatory":false}],"owner_email":"owner@email.com","start_date":"2022-01-10 12:00:00","end_date":"2022-02-10 12:00:00","duration":60}
+----

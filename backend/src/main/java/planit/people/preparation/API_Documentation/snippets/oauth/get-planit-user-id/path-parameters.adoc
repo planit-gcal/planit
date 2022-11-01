@@ -1,0 +1,8 @@
+.+/plan-it/oauth/planit-user-id/{email}+
+|===
+|Parameter|Description
+
+|`+email+`
+|The id of the PlanIt User whose emails should be returned
+
+|===

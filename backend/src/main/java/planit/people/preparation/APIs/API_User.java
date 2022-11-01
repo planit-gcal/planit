@@ -35,10 +35,10 @@ public class API_User {
         }
     }
 
-    @GetMapping(path = "getAllEmails/{userId}")
-    public ResponseEntity<List<String>> getAllEmailsForEmail(@PathVariable Long userId) {
+    @GetMapping(path = "getAllEmails/{planit-user-id}")
+    public ResponseEntity<List<String>> getAllEmailsForEmail(@PathVariable("planit-user-id") Long userId) {
         try {
-            return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.OK);
+            return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.FOUND);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
