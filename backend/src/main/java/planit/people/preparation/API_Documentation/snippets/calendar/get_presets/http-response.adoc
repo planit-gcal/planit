@@ -1,0 +1,17 @@
+[source,http,options="nowrap"]
+----
+HTTP/1.1 302 Found
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 1716
+
+[{"event_preset":{"id_event_preset":2,"name":"Test 2","break_into_smaller_events":true,"min_length_of_single_event":30,"max_length_of_single_event":60},"guests":[{"id_event_guest":4,"entity_EventPreset":null,"email":"test@gmail.com","obligatory":true},{"id_event_guest":5,"entity_EventPreset":null,"email":"test5@gmail.com","obligatory":false}],"preset_availability":[{"id_preset_availability":4,"entity_EventPreset":null,"day":"TUESDAY","start_available_time":"09:00:00","end_available_time":"17:00:00","day_off":false},{"id_preset_availability":5,"entity_EventPreset":null,"day":"SATURDAY","start_available_time":null,"end_available_time":null,"day_off":true},{"id_preset_availability":6,"entity_EventPreset":null,"day":"SUNDAY","start_available_time":null,"end_available_time":null,"day_off":true}]},{"event_preset":{"id_event_preset":1,"name":"Test 1","break_into_smaller_events":false,"min_length_of_single_event":null,"max_length_of_single_event":null},"guests":[{"id_event_guest":1,"entity_EventPreset":null,"email":"test@gmail.com","obligatory":true},{"id_event_guest":2,"entity_EventPreset":null,"email":"test2@gmail.com","obligatory":false},{"id_event_guest":3,"entity_EventPreset":null,"email":"test3@gmail.com","obligatory":false}],"preset_availability":[{"id_preset_availability":1,"entity_EventPreset":null,"day":"THURSDAY","start_available_time":"09:00:00","end_available_time":"17:00:00","day_off":false},{"id_preset_availability":2,"entity_EventPreset":null,"day":"MONDAY","start_available_time":"09:00:00","end_available_time":"17:00:00","day_off":false},{"id_preset_availability":3,"entity_EventPreset":null,"day":"SATURDAY","start_available_time":null,"end_available_time":null,"day_off":true}]}]
+----

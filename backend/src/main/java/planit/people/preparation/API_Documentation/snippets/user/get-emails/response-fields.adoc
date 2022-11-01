@@ -1,0 +1,8 @@
+|===
+|Path|Type|Description
+
+|`+[]+`
+|`+Array+`
+|A list containing all emails that belong to the provided PlanIt User Id
+
+|===

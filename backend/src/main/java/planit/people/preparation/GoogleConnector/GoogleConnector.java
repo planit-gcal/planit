@@ -16,6 +16,7 @@ import com.google.api.services.oauth2.Oauth2;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.UserCredentials;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
+import planit.people.preparation.Entities.Entity_Guest;
 import planit.people.preparation.Responses.CalendarResponse;
 
 import planit.people.preparation.ConfigurationProperties.IntegrationProperties;
@@ -159,8 +160,8 @@ public class GoogleConnector {
                 .setTimeZone(TIME_ZONE_SPECIFIER);
         String[] recurrence = new String[] { "RRULE:FREQ=DAILY;COUNT=1" };
         List<EventAttendee> attendees = new ArrayList<>();
-        for (String attendee : newEventDetail.attendee_emails()) {
-            attendees.add(new EventAttendee().setEmail(attendee));
+        for (Entity_Guest attendee : newEventDetail.attendee_emails()) {
+            attendees.add(new EventAttendee().setEmail(attendee.getEmail()).setOptional(!attendee.getObligatory()));
         }
         EventReminder[] reminderOverrides = new EventReminder[] {
                 new EventReminder().setMethod("email").setMinutes(24 * 60),

@@ -1,0 +1,4 @@
+[source,options="nowrap"]
+----
+["university@test.com","personal@test.com","work@test.com"]
+----

@@ -35,7 +35,9 @@ public class Service_Calendar {
         List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountByEmail(new ArrayList<>() {
             {
                 add(newEventDetail.owner_email());
-                addAll(newEventDetail.attendee_emails());
+                for (Entity_Guest guest : newEventDetail.attendee_emails()) {
+                    add(guest.getEmail());
+                }
             }
         });
         GoogleHelper google_helper = new GoogleHelper(getOwnerRefreshToken(googleAccounts, newEventDetail.owner_email()), true);

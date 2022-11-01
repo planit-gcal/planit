@@ -68,6 +68,11 @@ public class Entity_GoogleAccount {
         this.refresh_token = refresh_token;
     }
 
+    public Entity_GoogleAccount(Long id, Entity_User the_user) {
+        this.id = id;
+        this.the_user = the_user;
+    }
+
     public String getRefresh_token() {
         return refresh_token;
     }
@@ -84,6 +89,9 @@ public class Entity_GoogleAccount {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Override
     public String toString() {

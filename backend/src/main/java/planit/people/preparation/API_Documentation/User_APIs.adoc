@@ -1,0 +1,59 @@
+= User APIs.
+Alhamoud Mustafa
+:toc:
+
+The document contains all the APIs related to the user endpoints.
+
+== Create New PlanIt User
+
+=== successful request
+
+include::snippets/user/create-new-user/http-request.adoc[]
+
+=== successful response
+
+include::snippets/user/create-new-user/http-response.adoc[]
+
+=== all possible request attributes
+
+include::snippets/user/create-new-user/request-fields.adoc[]
+
+=== all possible response attributes
+
+include::snippets/user/create-new-user/response-fields.adoc[]
+
+== Add A New Email To A PlanIt User
+
+=== successful request
+
+include::snippets/user/add-new-google-account/http-request.adoc[]
+
+=== successful response
+
+include::snippets/user/add-new-google-account/http-response.adoc[]
+
+=== all possible request attributes
+
+include::snippets/user/add-new-google-account/request-fields.adoc[]
+
+=== all possible response attributes
+
+include::snippets/user/add-new-google-account/response-fields.adoc[]
+
+== Get All Emails Of A PlanIt User
+
+=== successful request
+
+include::snippets/user/get-emails/http-request.adoc[]
+
+=== successful response
+
+include::snippets/user/get-emails/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/user/get-emails/path-parameters.adoc[]
+
+=== all possible response attributes
+
+include::snippets/user/get-emails/response-fields.adoc[]

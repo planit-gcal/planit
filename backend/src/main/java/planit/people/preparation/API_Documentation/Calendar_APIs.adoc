@@ -1,0 +1,59 @@
+= Calendar APIs.
+Alhamoud Mustafa
+:toc:
+
+The document contains all the APIs related to the Calendar endpoints.
+
+== Create Event Preset
+
+=== successful request
+
+include::snippets/calendar/create_preset/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/create_preset/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/calendar/create_preset/path-parameters.adoc[]
+
+=== all possible request attributes
+
+include::snippets/calendar/create_preset/request-fields.adoc[]
+
+== Get Event Presets
+
+=== successful request
+
+include::snippets/calendar/get_presets/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/get_presets/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/calendar/get_presets/path-parameters.adoc[]
+
+=== all possible response attributes
+
+include::snippets/calendar/get_presets/response-fields.adoc[]
+
+== Create Event
+
+=== successful request
+
+include::snippets/calendar/create-event/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/create-event/http-response.adoc[]
+
+=== all possible request attributes
+
+include::snippets/calendar/create_preset/request-fields.adoc[]
+
+=== all possible response attributes
+
+include::snippets/calendar/create-event/response-fields.adoc[]

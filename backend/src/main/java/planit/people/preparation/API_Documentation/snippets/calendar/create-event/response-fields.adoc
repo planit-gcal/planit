@@ -1,0 +1,36 @@
+|===
+|Path|Type|Description
+
+|`+start_date+`
+|`+class com.google.api.client.util.DateTime+`
+|The scheduled event start date
+
+|`+start_date.value+`
+|`+class java.lang.Long+`
+|Date/time value expressed as the number of ms since the Unix epoch.
+
+|`+start_date.dateOnly+`
+|`+class java.lang.Boolean+`
+|Specifies whether this is a date-only value.
+
+|`+start_date.timeZoneShift+`
+|`+class java.lang.Integer+`
+|Time zone shift from UTC in minutes or 0 for date-only value.
+
+|`+end_date+`
+|`+class com.google.api.client.util.DateTime+`
+|The scheduled event end date
+
+|`+end_date.value+`
+|`+class java.lang.Long+`
+|Date/time value expressed as the number of ms since the Unix epoch.
+
+|`+end_date.dateOnly+`
+|`+class java.lang.Boolean+`
+|Specifies whether this is a date-only value.
+
+|`+end_date.timeZoneShift+`
+|`+class java.lang.Integer+`
+|Time zone shift from UTC in minutes or 0 for date-only value.
+
+|===

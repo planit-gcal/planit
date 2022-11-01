@@ -1,8 +1,0 @@
-.+/plan-it/people/{person_id}+
-|===
-|Parameter|Description
-
-|`+person_id+`
-|id of person to be deleted
-
-|===

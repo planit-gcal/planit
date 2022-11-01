@@ -1,0 +1,8 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+class java.lang.String+`
+|Code returned by Google when a user authorize the App
+
+|===

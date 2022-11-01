@@ -1,0 +1,4 @@
+[source,options="nowrap"]
+----
+{"name":"TEST","summary":"Summary TEST","location":"PWR","description":"this is a unit test","event_preset_id":1,"attendee_emails":[{"id_event_guest":null,"entity_EventPreset":null,"email":"test@gmail.com","obligatory":true},{"id_event_guest":null,"entity_EventPreset":null,"email":"test5@gmail.com","obligatory":false}],"owner_email":"owner@email.com","start_date":"2022-01-10 12:00:00","end_date":"2022-02-10 12:00:00","duration":60}
+----

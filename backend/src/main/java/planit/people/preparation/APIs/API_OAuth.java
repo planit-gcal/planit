@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import planit.people.preparation.DAOs.IDAO_GoogleAccount;
+import planit.people.preparation.Entities.Entity_GoogleAccount;
+import planit.people.preparation.Responses.UserCreationResponse;
+import planit.people.preparation.Scheduling.Converter;
 
 @RestController
 @RequestMapping(path = "plan-it/oauth",
@@ -22,11 +25,13 @@ public class API_OAuth {
         this.idaoGoogleAccount = idaoGoogleAccount;
     }
 
-    //TODO: Security Issue, this MUST be changed
-    @GetMapping(path = "/emails/{email}/planit-user-id")
-    public ResponseEntity<String> getUserIdFromEmail(@PathVariable String email) {
+    @GetMapping(path = "planit-user-id/{email}")
+    public ResponseEntity<UserCreationResponse> getUserIdFromEmail(@PathVariable String email) {
         try {
-            return new ResponseEntity<>(idaoGoogleAccount.getIdOfUserFromEmail(email), HttpStatus.FOUND);
+            Entity_GoogleAccount account = idaoGoogleAccount.getIdOfUserFromEmail(Converter.decodeURLString(email));
+            return new ResponseEntity<>(new UserCreationResponse(
+                    account.getThe_user().getUser_id(), account.getId()
+            ), HttpStatus.FOUND);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

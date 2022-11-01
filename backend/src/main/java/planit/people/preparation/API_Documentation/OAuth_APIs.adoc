@@ -1,0 +1,22 @@
+= OAuth APIs.
+:toc:
+
+The document contains all the APIs related to the OAuth endpoints.
+
+== Get PlanIt User Id From Their Email
+
+=== successful request
+
+include::snippets/oauth/get-planit-user-id/http-request.adoc[]
+
+=== successful response
+
+include::snippets/oauth/get-planit-user-id/http-response.adoc[]
+
+=== all possible request attributes
+
+include::snippets/oauth/get-planit-user-id/path-parameters.adoc[]
+
+=== all possible response attributes
+
+include::snippets/oauth/get-planit-user-id/response-fields.adoc[]
