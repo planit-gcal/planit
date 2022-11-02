@@ -47,5 +47,11 @@ module.exports = {
         'react/prop-types': 'off',
       },
     },
+    {
+      files: ['!**/config.ts'],
+      rules: {
+        'no-restricted-imports': ['error', { paths: ['axios'] }],
+      },
+    },
   ],
 };

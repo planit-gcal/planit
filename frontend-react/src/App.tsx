@@ -1,10 +1,10 @@
 import { useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
 import { useState, useEffect, useCallback } from 'react';
 
 import './App.css';
 import { CreateEventForm } from './components/CreateEventForm/CreateEventForm';
 import { EmailSelector } from './components/EmailSelector/EmailSelector';
+import { AxiosInstance } from './config';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { EventCreateRequest } from './models/event';
 
@@ -16,19 +16,10 @@ function App() {
   const onSuccess = useCallback(
     (response: any) => {
       console.log('succ: ', response);
-      axios
-        .post(
-          '/plan-it/user/token',
-          {
-            code: response.code,
-            planit_userId: planitUserId,
-          },
-          {
-            headers: {
-              'Bypass-Tunnel-Reminder': 1,
-            },
-          }
-        )
+      AxiosInstance.post('/plan-it/user/token', {
+        code: response.code,
+        planit_userId: planitUserId,
+      })
         .then((response) => {
           console.log(response);
           //here add set for local storage
@@ -42,8 +33,7 @@ function App() {
 
   const onEventSubmit = (result: EventCreateRequest) => {
     console.log('succ: ', result);
-    axios
-      .post('/plan-it/calendar/new-event', result)
+    AxiosInstance.post('/plan-it/calendar/new-event', result)
       .then((response) => {
         console.log(response);
       })
@@ -51,7 +41,7 @@ function App() {
   };
 
   const getEmailList = (id: string) => {
-    axios.get(`/plan-it/user/getAllEmails/${id}`).then((response) => setAccountEmails(response.data));
+    AxiosInstance.get(`/plan-it/user/getAllEmails/${id}`).then((response) => setAccountEmails(response.data));
   };
 
   useEffect(() => {
