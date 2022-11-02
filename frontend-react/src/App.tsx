@@ -1,72 +1,22 @@
-import { useGoogleLogin } from '@react-oauth/google';
-import { useState, useEffect, useCallback } from 'react';
+import { Layout } from 'antd';
+import { Header, Content } from 'antd/lib/layout/layout';
+import { Outlet } from 'react-router-dom';
 
 import './App.css';
-import { CreateEventForm } from './components/CreateEventForm/CreateEventForm';
-import { EmailSelector } from './components/EmailSelector/EmailSelector';
-import { AxiosInstance } from './config';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { EventCreateRequest } from './models/event';
+import GlobalNav from './components/GlobalNav/GlobalNav';
 
 function App() {
-  const [owner, setOwner] = useState('');
-  const [accountEmails, setAccountEmails] = useState<string[]>([]);
-  const [planitUserId, setPlanitUserId] = useLocalStorage('planitUserId', null);
-
-  const onSuccess = useCallback(
-    (response: any) => {
-      console.log('succ: ', response);
-      AxiosInstance.post('/plan-it/user/token', {
-        code: response.code,
-        planit_userId: planitUserId,
-      })
-        .then((response) => {
-          console.log(response);
-          //here add set for local storage
-          setPlanitUserId(response.data.planit_userId);
-          console.log(planitUserId);
-        })
-        .catch((error) => console.log(error.message));
-    },
-    [planitUserId, setPlanitUserId]
-  );
-
-  const onEventSubmit = (result: EventCreateRequest) => {
-    console.log('succ: ', result);
-    AxiosInstance.post('/plan-it/calendar/new-event', result)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => console.log(error.message));
-  };
-
-  const getEmailList = (id: string) => {
-    AxiosInstance.get(`/plan-it/user/getAllEmails/${id}`).then((response) => setAccountEmails(response.data));
-  };
-
-  useEffect(() => {
-    if (planitUserId !== null) getEmailList(planitUserId);
-  }, [planitUserId]);
-
-  const login = useGoogleLogin({
-    onSuccess,
-    flow: 'auth-code',
-    scope:
-      'profile email openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly',
-  });
-
-  const onSelectEmail = (email: string) => {
-    setOwner(email);
-  };
-
   return (
-    <div className="App">
-      <button onClick={() => login()}>Sign in with Google 🚀</button>
-      <button onClick={() => setPlanitUserId(null)}>Logout</button>;<div></div>
-      <EmailSelector emails={accountEmails} selectChange={onSelectEmail}></EmailSelector>
-      <br />
-      <CreateEventForm onSubmit={onEventSubmit} owner={owner}></CreateEventForm>
-    </div>
+    <Layout style={{ backgroundColor: '#D8D8D8' }}>
+      <Header>
+        <GlobalNav />
+      </Header>
+      <Layout>
+        <Content>
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
 
