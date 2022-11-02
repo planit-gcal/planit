@@ -2,11 +2,11 @@ import { useContext } from 'react';
 
 import { CreateEventForm } from '../../components/CreateEventForm/CreateEventForm';
 import { AxiosInstance } from '../../config';
-import { CountStateContext } from '../../contexts/PlanitUserContext';
+import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 import { EventCreateRequest } from '../../models/event';
 
 export const CreateEventPage = () => {
-  const { ownerEmail } = useContext(CountStateContext);
+  const { ownerEmail } = useContext(PlanitUserContext);
 
   const onEventSubmit = (result: EventCreateRequest) => {
     console.log('succ: ', result);

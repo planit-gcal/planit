@@ -9,12 +9,10 @@ type State = {
   setOwnerEmail: (id: string | null) => void;
 };
 
-// todo rename
+export const PlanitUserContext = createContext<State>({} as State);
 
-export const CountStateContext = createContext<State>({} as State);
-
-type CountProviderProps = { children: React.ReactNode };
-export const CountProvider = ({ children }: CountProviderProps) => {
+type PlanitUserProviderProps = { children: React.ReactNode };
+export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
   const [planitUserId, setPlanitUserId] = useLocalStorage<string | null>('planitUserId', null);
   const [ownerEmail, setOwnerEmail] = useState<string | null>(null);
 
@@ -28,5 +26,5 @@ export const CountProvider = ({ children }: CountProviderProps) => {
     [planitUserId, setPlanitUserId, ownerEmail, setOwnerEmail]
   );
 
-  return <CountStateContext.Provider value={value}>{children}</CountStateContext.Provider>;
+  return <PlanitUserContext.Provider value={value}>{children}</PlanitUserContext.Provider>;
 };

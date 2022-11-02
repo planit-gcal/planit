@@ -1,9 +1,10 @@
-import { Button, Tabs as AntdTabs } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, MenuProps, Space, Tabs as AntdTabs } from 'antd';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { CountStateContext } from '../../contexts/PlanitUserContext';
+import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 const Tabs = styled(AntdTabs)`
   .ant-tabs-nav::before {
@@ -11,17 +12,37 @@ const Tabs = styled(AntdTabs)`
   }
 `;
 
+const accountMenuItems: MenuProps['items'] = [
+  {
+    key: '1',
+    label: <Link to="account-settings">Account settings</Link>,
+  },
+  {
+    key: '4',
+    danger: true,
+    label: 'Logout',
+  },
+];
+
 const GlobalNav = () => {
-  const { setPlanitUserId } = useContext(CountStateContext);
+  const { planitUserId } = useContext(PlanitUserContext);
 
   const OperationsSlot = {
-    right: <Button onClick={() => setPlanitUserId(null)}>Logout</Button>,
+    right: (
+      <Dropdown menu={{ items: accountMenuItems }}>
+        <Button type="text" onClick={(e) => e.preventDefault()}>
+          <Space>
+            {planitUserId}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+    ),
   };
 
   const items = [
     { key: '1', label: <Link to="create-events">Create events</Link> },
     { key: '2', label: <Link to="manage-presets">Manage presets</Link> },
-    { key: '3', label: <Link to="account-settings">Account settings</Link> },
   ];
 
   return <Tabs items={items} tabBarExtraContent={OperationsSlot} tabBarStyle={{ margin: '0' }} />;

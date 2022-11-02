@@ -2,11 +2,11 @@ import { useState, useContext, useEffect } from 'react';
 
 import { EmailSelector } from '../../components/EmailSelector/EmailSelector';
 import { AxiosInstance } from '../../config';
-import { CountStateContext } from '../../contexts/PlanitUserContext';
+import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const AccountSettings = () => {
   const [accountEmails, setAccountEmails] = useState<string[]>([]);
-  const { planitUserId, setOwnerEmail } = useContext(CountStateContext);
+  const { planitUserId, setOwnerEmail } = useContext(PlanitUserContext);
 
   const getEmailList = (id: string) => {
     AxiosInstance.get(`/plan-it/user/getAllEmails/${id}`).then((response) => setAccountEmails(response.data));
