@@ -1,8 +1,15 @@
-import { Button, Tabs } from 'antd';
+import { Button, Tabs as AntdTabs } from 'antd';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 import { CountStateContext } from '../../contexts/PlanitUserContext';
+
+const Tabs = styled(AntdTabs)`
+  .ant-tabs-nav::before {
+    border-bottom: 0;
+  }
+`;
 
 const GlobalNav = () => {
   const { setPlanitUserId } = useContext(CountStateContext);
@@ -17,11 +24,7 @@ const GlobalNav = () => {
     { key: '3', label: <Link to="account-settings">Account settings</Link> },
   ];
 
-  return (
-    <div>
-      <Tabs items={items} tabBarExtraContent={OperationsSlot} />
-    </div>
-  );
+  return <Tabs items={items} tabBarExtraContent={OperationsSlot} tabBarStyle={{ margin: '0' }} />;
 };
 
 export default GlobalNav;
