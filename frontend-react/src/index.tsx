@@ -1,4 +1,5 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import 'antd/dist/antd.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -10,6 +11,8 @@ import { AccountSettings } from './routes/AccountSettings/AccountSettings';
 import { CreateEventPage } from './routes/CreateEventPage/CreateEventPage';
 import { ManagePresetsPage } from './routes/ManagePresetsPage/ManagePresetsPage';
 import { SignInPage } from './routes/SignInPage/SignInPage';
+
+// or 'antd/dist/antd.less'
 
 ReactDOM.render(
   <BrowserRouter>
