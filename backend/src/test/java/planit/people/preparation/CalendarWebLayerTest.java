@@ -67,7 +67,7 @@ public class CalendarWebLayerTest {
         };
         List<Entity_PresetAvailability> availabilities = new ArrayList<>() {
             {
-                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("09:00:00"), Time.valueOf("17:00:00"), false));
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, null, null, false));
                 add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, null, null, true));
                 add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
             }
@@ -80,7 +80,7 @@ public class CalendarWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .post("/plan-it/calendar/new-preset/{planit-user-id}", 20)
+                                .post("/plan-it/calendar/presets/{planit-user-id}", 20)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -161,7 +161,7 @@ public class CalendarWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .get("/plan-it/calendar/getAllPresets/{planit-user-id}", 1)
+                                .get("/plan-it/calendar/presets/{planit-user-id}", 1)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isFound())

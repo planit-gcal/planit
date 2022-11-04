@@ -3,5 +3,5 @@
 $ curl 'http://localhost:8080/plan-it/user/token' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -H 'Accept: application/json' \
-    -d '{"planit_userId":1,"code":"code"}'
+    -d '{"planit_user_id":1,"code":"code"}'
 ----

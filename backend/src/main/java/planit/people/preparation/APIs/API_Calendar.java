@@ -43,7 +43,7 @@ public class API_Calendar {
      * @param dtoNewPreset the body of the new Preset Detail
      * @return the status code of the creation process.
      */
-    @PostMapping(path = "new-preset/{planit-user-id}",
+    @PostMapping(path = "presets/{planit-user-id}",
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Boolean> createNewPreset(@PathVariable("planit-user-id") Integer planItUserId, @RequestBody DTO_PresetDetail dtoNewPreset) {
         try {
@@ -62,7 +62,7 @@ public class API_Calendar {
      * @param planItUserId the PlanIt User Id for whom we need to get their Preset Details
      * @return List of Preset Detail
      */
-    @GetMapping(path = "getAllPresets/{planit-user-id}")
+    @GetMapping(path = "presets/{planit-user-id}")
     public ResponseEntity<List<DTO_PresetDetail>> getAllPresetFromPlanItUserId(@PathVariable("planit-user-id") Long planItUserId) {
         try {
             return new ResponseEntity<>(serviceCalendar.getEventPresetsByPlanItUserId(planItUserId), HttpStatus.FOUND);
@@ -79,7 +79,7 @@ public class API_Calendar {
      * @return Status OK
      */
     @PatchMapping
-            (path = "update-preset", consumes = {MediaType.APPLICATION_JSON_VALUE})
+            (path = "presets", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Boolean> updateNewPreset(@RequestBody DTO_PresetDetail dtoPresetDetail) {
         try {
             System.out.println("request: " + dtoPresetDetail);

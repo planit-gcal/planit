@@ -1,6 +1,6 @@
 [source,bash]
 ----
-$ echo '{"planit_userId":1,"code":"code"}' | http POST 'http://localhost:8080/plan-it/user/token' \
+$ echo '{"planit_user_id":1,"code":"code"}' | http POST 'http://localhost:8080/plan-it/user/token' \
     'Content-Type:application/json;charset=UTF-8' \
     'Accept:application/json'
 ----

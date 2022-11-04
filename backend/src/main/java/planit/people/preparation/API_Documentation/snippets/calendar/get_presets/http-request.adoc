@@ -1,6 +1,6 @@
 [source,http,options="nowrap"]
 ----
-GET /plan-it/calendar/getAllPresets/1 HTTP/1.1
+GET /plan-it/calendar/presets/1 HTTP/1.1
 Accept: application/json
 Host: localhost:8080
 

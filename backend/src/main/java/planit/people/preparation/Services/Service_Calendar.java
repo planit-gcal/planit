@@ -136,7 +136,7 @@ public class Service_Calendar {
         List<DTO_PresetDetail> newPresets = new ArrayList<>();
         List<Entity_EventPreset> eventPresets = idaoUser.getAllEventPresetByPlanItId(planItUserId);
         if (eventPresets.isEmpty()) {
-            throw new EmptyResultDataAccessException(0);
+            return new ArrayList<>();
         } else {
             Map<Entity_EventPreset, List<Entity_PresetAvailability>> availabilities = getAvailabilities(idaoPresetAvailability.getAllByIdEventPreset(eventPresets));
             Map<Entity_EventPreset, List<Entity_Guest>> guests = getGuests(idao_guest.getAllByEntityEventPreset(eventPresets));
@@ -161,25 +161,15 @@ public class Service_Calendar {
     private Map<Entity_EventPreset, List<Entity_Guest>> getGuests(List<Entity_Guest> guests) {
         Map<Entity_EventPreset, List<Entity_Guest>> result = new HashMap<>();
         for (Entity_Guest guest : guests) {
-            if (result.containsKey(guest.getEntity_EventPreset())) {
-                result.get(guest.getEntity_EventPreset()).add(
-                        new Entity_Guest(
-                                guest.getId_event_guest(),
-                                guest.getEmail(),
-                                guest.getObligatory()
-                        )
-                );
-            } else {
-                result.put(guest.getEntity_EventPreset(), new ArrayList<>() {
-                    {
-                        add(new Entity_Guest(
-                                guest.getId_event_guest(),
-                                guest.getEmail(),
-                                guest.getObligatory()
-                        ));
-                    }
-                });
-            }
+            Entity_EventPreset presetKey = guest.getEntity_EventPreset();
+            List<Entity_Guest> guestList = result.getOrDefault(presetKey, new ArrayList<>());
+            guestList.add(
+                    new Entity_Guest(
+                            guest.getId_event_guest(),
+                            guest.getEmail(),
+                            guest.getObligatory())
+            );
+            result.put(presetKey, guestList);
         }
         return result;
     }
@@ -193,29 +183,18 @@ public class Service_Calendar {
     private Map<Entity_EventPreset, List<Entity_PresetAvailability>> getAvailabilities(List<Entity_PresetAvailability> availabilities) {
         Map<Entity_EventPreset, List<Entity_PresetAvailability>> result = new HashMap<>();
         for (Entity_PresetAvailability availability : availabilities) {
-            if (result.containsKey(availability.getEntity_EventPreset())) {
-                result.get(availability.getEntity_EventPreset()).add(
-                        new Entity_PresetAvailability(
-                                availability.getId_preset_availability(),
-                                availability.getDay(),
-                                availability.getDay_off(),
-                                availability.getStart_available_time(),
-                                availability.getEnd_available_time()
-                        )
-                );
-            } else {
-                result.put(availability.getEntity_EventPreset(), new ArrayList<>() {
-                    {
-                        add(new Entity_PresetAvailability(
-                                availability.getId_preset_availability(),
-                                availability.getDay(),
-                                availability.getDay_off(),
-                                availability.getStart_available_time(),
-                                availability.getEnd_available_time()
-                        ));
-                    }
-                });
-            }
+            Entity_EventPreset presetKey = availability.getEntity_EventPreset();
+            List<Entity_PresetAvailability> availabilityList = result.getOrDefault(presetKey, new ArrayList<>());
+            availabilityList.add(
+                    new Entity_PresetAvailability(
+                            availability.getId_preset_availability(),
+                            availability.getDay(),
+                            availability.getDay_off(),
+                            availability.getStart_available_time(),
+                            availability.getEnd_available_time()
+                    )
+            );
+            result.put(presetKey, availabilityList);
         }
         return result;
     }

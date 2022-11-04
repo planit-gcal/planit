@@ -1,4 +1,4 @@
 [source,options="nowrap"]
 ----
-{"planit_userId":1,"google_account_id":2}
+{"planit_user_id":1,"google_account_id":2}
 ----

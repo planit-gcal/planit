@@ -1,4 +1,4 @@
 [source,options="nowrap"]
 ----
-{"planit_userId":1,"code":"code"}
+{"planit_user_id":1,"code":"code"}
 ----

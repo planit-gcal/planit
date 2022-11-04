@@ -1,7 +1,7 @@
 |===
 |Path|Type|Description
 
-|`+planit_userId+`
+|`+planit_user_id+`
 |`+class java.lang.Long+`
 |Auto generated Identifier for the User new PlanIt User account
 

@@ -3,6 +3,6 @@
 |Parameter|Description
 
 |`+email+`
-|The id of the PlanIt User whose emails should be returned
+|The encoded email of the PlanIt User
 
 |===

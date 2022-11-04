@@ -11,7 +11,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 41
+Content-Length: 42
 
-{"planit_userId":1,"google_account_id":1}
+{"planit_user_id":1,"google_account_id":1}
 ----

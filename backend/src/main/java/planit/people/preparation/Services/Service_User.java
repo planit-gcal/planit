@@ -54,11 +54,11 @@ public class Service_User {
             Entity_User entity_user;
             Userinfo userinfo = google_helper.getUserInfo();
             System.out.println("google userinfo: " + userinfo);
-            if (dto_code.planit_userId() == null) {
+            if (dto_code.planit_user_id() == null) {
                 entity_user = create_new_user(new Entity_User(userinfo.getName(), userinfo.getFamilyName()));
                 System.out.println("google entity_user: " + entity_user);
             } else {
-                entity_user = new Entity_User(dto_code.planit_userId());
+                entity_user = new Entity_User(dto_code.planit_user_id());
                 System.out.println("google entity_user2: " + entity_user);
             }
             System.out.println("Entity User: " + entity_user);

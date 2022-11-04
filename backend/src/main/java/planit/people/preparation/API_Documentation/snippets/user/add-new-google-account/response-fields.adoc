@@ -1,7 +1,7 @@
 |===
 |Path|Type|Description
 
-|`+planit_userId+`
+|`+planit_user_id+`
 |`+class java.lang.Long+`
 |The unique identifier for the PlanIt User Account
 

@@ -58,11 +58,11 @@ public class UserWebLayerTest {
                 .andDo(print())
                 .andDo(document("create-new-user",
                         requestFields(
-                                fieldWithPath("planit_userId").ignored(),
+                                fieldWithPath("planit_user_id").ignored(),
                                 fieldWithPath("code").description("Code returned by Google when a user authorize the App").type(String.class)
                         ),
                         responseFields(
-                                fieldWithPath("planit_userId").description("Auto generated Identifier for the User new PlanIt User account").type(Long.class),
+                                fieldWithPath("planit_user_id").description("Auto generated Identifier for the User new PlanIt User account").type(Long.class),
                                 fieldWithPath("google_account_id").description("Auto generated Identifier for the new Google Account that contains a unique email and refresh token").type(Long.class)
                         )
                 ));
@@ -84,11 +84,11 @@ public class UserWebLayerTest {
                 .andDo(print())
                 .andDo(document("add-new-google-account",
                         requestFields(
-                                fieldWithPath("planit_userId").description("The unique identifier for the PlanIt User Account").type(Long.class),
+                                fieldWithPath("planit_user_id").description("The unique identifier for the PlanIt User Account").type(Long.class),
                                 fieldWithPath("code").description("Code returned by Google when a user authorize the App").type(String.class)
                         ),
                         responseFields(
-                                fieldWithPath("planit_userId").description("The unique identifier for the PlanIt User Account").type(Long.class),
+                                fieldWithPath("planit_user_id").description("The unique identifier for the PlanIt User Account").type(Long.class),
                                 fieldWithPath("google_account_id").description("Auto generated Identifier for the new Google Account that contains a unique email and refresh token").type(Long.class)
                         )
                 ));
