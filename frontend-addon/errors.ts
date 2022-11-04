@@ -1,10 +1,20 @@
 const iconUrl = "https://cdn-icons-png.flaticon.com/512/2569/2569174.png"
 
+function UpdateError(errorEnum : error, newState : boolean) : boolean
+{
+    if(isError(errorEnum) === newState)
+    {
+        return false;
+    }
+    else
+    {
+        setError(errorEnum, newState)
+        return true;
+    }
+}
+
 function isError(errorEnum: error): boolean {
     const readErrors = GetProperty<error[]>(errorString);
-    console.log("isError")
-    console.log(readErrors)
-    console.log((readErrors.includes(errorEnum)).toString())
     return readErrors.includes(errorEnum);
 }
 
@@ -24,6 +34,11 @@ function setError(errorEnum: error, isActive: boolean) {
             SetProperty(errorString, readErrors);
         }
     }
+}
+
+function emailError()
+{
+    return errorText("This is not valid email format")
 }
 
 function durationFormatError() {

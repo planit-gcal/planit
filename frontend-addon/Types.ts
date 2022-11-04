@@ -1,6 +1,6 @@
 type Guest = {
     email : string,
-    isRequired : boolean,
+    isRequired : boolean
 }
 
 type Settings = {
@@ -25,6 +25,7 @@ enum error
 {
     durationFormat = "durationFormat",
     date = "date",
+    email = "email"
 }
 
 /*

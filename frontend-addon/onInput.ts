@@ -1,13 +1,28 @@
-
-function empty()
-{
+function empty() {
 
 }
 
-function onEventNameChange(e)
-{
+function onEventNameChange(e) {
     const newName = e['formInputs']["Event name"][0]
     SetProperty(eventNameString, newName);
+}
+
+function isEmailValid(email: string): boolean {
+    return email.endsWith("@gmail.com");
+}
+
+function onNewUserName(e) {
+    let readEmail = ""
+    try {
+        readEmail = e['formInputs']["new user email"][0];
+    } catch (e) {
+        return;
+    }
+    SetProperty(addUserEmailString, readEmail);
+    const isValid = isEmailValid(readEmail);
+    if (UpdateError(error.email, !isValid)) {
+        return update();
+    }
 }
 
 function onAddUser(e) {
@@ -15,9 +30,20 @@ function onAddUser(e) {
 
     console.log(e);
 
-    const newUser : Guest = {
-        email : e['formInputs']["new user email"][0],
-        isRequired : true,
+    let readEmail = ""
+    try {
+        readEmail = e['formInputs']["new user email"][0];
+    } catch (e) {
+        return;
+    }
+
+    if (!isEmailValid(readEmail)) {
+        return;
+    }
+
+    const newUser: Guest = {
+        email: readEmail,
+        isRequired: true
     };
     users = [newUser, ...users];
 
@@ -34,8 +60,7 @@ function onDeleteUser(e) {
     return update();
 }
 
-function onPresetChange(e)
-{
+function onPresetChange(e) {
     const presetIndex = Number(e["formInputs"]["Preset"]);
     const presets = getPresets();
     const preset = presets[presetIndex];
@@ -45,68 +70,39 @@ function onPresetChange(e)
     return update();
 }
 
-function onMinDateChange(e)
-{
-    console.log(e);
-    const newDate = Number(e["formInputs"]["Min date"][0]["msSinceEpoch"]);
-    SetProperty(minDateString, newDate);
-}
-
-function onMaxDateChange(e)
-{
-    const newDate = Number(e["formInputs"]["Max date"][0]["msSinceEpoch"]);
-    SetProperty(maxDateString, newDate);
-
+function onMinDateChange(e) {
     const minDate = Number(e["formInputs"]["Min date"][0]["msSinceEpoch"]);
-
-    console.log("OnMaxDateChange")
-
-    if(isError(error.date))
-    {
-        console.log("OnMaxDateChange - error is true")
-        if(minDate < newDate)
-        {
-
-            console.log("OnMaxDateChange - dates are now good, setting error to false")
-            setError(error.date, false);
-            return update();
-        }
-    }
-    else if(minDate >= newDate)
-    {
-        console.log("OnMaxDateChange - dates are bad, setting error to true")
-        setError(error.date, true);
-        return update();
+    const maxDate = Number(e["formInputs"]["Max date"][0]["msSinceEpoch"]);
+    SetProperty(minDateString, minDate);
+    if (UpdateError(error.date, minDate >= maxDate)) {
+        return update()
     }
 }
 
-function onDurationChange(e)
-{
+function onMaxDateChange(e) {
+    const minDate = Number(e["formInputs"]["Min date"][0]["msSinceEpoch"]);
+    const maxDate = Number(e["formInputs"]["Max date"][0]["msSinceEpoch"]);
+    SetProperty(maxDateString, maxDate);
+    if (UpdateError(error.date, minDate >= maxDate)) {
+        return update()
+    }
+}
+
+function onDurationChange(e) {
     const input = e["formInputs"]["duration"][0];
     console.log(input);
     SetProperty(durationString, input);
 
-    const regex = RegExp("^(([0-1]?[0-9]|2[0-3]):)?([0-5][0-9])$");
+    const regex = RegExp("^(([0-9]?[0-9]):)?([0-5][0-9])$");
     const groups = regex.exec(input);
     console.log("groups")
     console.log(groups)
-    if (isError(error.durationFormat))
-    {
-        if(groups)
-        {
-            setError(error.durationFormat, false);
-            return update();
-        }
-    }
-    else if(!groups)
-    {
-        setError(error.durationFormat, true);
+    if (UpdateError(error.durationFormat, !groups)) {
         return update();
     }
 }
 
-function onRequiredChange(e)
-{
+function onRequiredChange(e) {
     console.log("e")
     console.log(e)
     const index = Number(e['commonEventObject']["parameters"]["isRequiredIndex"]);

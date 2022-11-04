@@ -4,6 +4,7 @@ function onHomepage() {
     SetProperty(maxDateString, msSinceEpocToday.valueOf() + weekInMs);
     SetProperty(durationString, "1:45");
     SetProperty(errorString, []);
+    SetProperty(addUserEmailString, "")
     return createCard();
 }
 
@@ -15,11 +16,30 @@ const currentPresetIndexString = "currentPresetIndex";
 const minDateString = "startDate";
 const maxDateString = "endDate";
 const errorString = "inputErrors";
+const addUserEmailString = "addUserEmail"
 const msSinceEpocToday = new Date();
 
 function createCard() {
 
     const card = CardService.newCardBuilder();
+
+    card.addSection(
+        CardService.newCardSection()
+            .addWidget(
+                CardService.newTextParagraph()
+                    .setText("Need more options or new presets? For those and <b>many other functionalities</b>, visit our website")
+            )
+            .addWidget(
+                CardService.newTextButton()
+                    .setText("Open PlanIt.com")
+                    .setOpenLink(
+                        CardService.newOpenLink()
+                            .setUrl("planit.com")
+                            .setOpenAs(CardService.OpenAs.OVERLAY)
+                    )
+            )
+    )
+
     const section = CardService.newCardSection();
 
     section.addWidget(
@@ -92,26 +112,10 @@ function createCard() {
                         CardService
                             .newAction()
                             .setFunctionName("onDeleteUser")
-                    ))
-            .setSecondaryButton(
-                CardService.newTextButton()
-                    .setText("visit website")
-                    .setOnClickAction(
-                        CardService.newAction()
-                            .setFunctionName("onDeleteUser")
                     ));
     section.addWidget(presetDropdown())
     card.addSection(section);
     card.addSection(buildUserSection())
-
-    card.addSection(
-        CardService.newCardSection()
-            .addWidget(
-                CardService.newTextParagraph()
-                    .setText("Need more options or new presets? For those and <b>many other functionalities</b>, visit our website")
-            )
-    )
-
     card.setFixedFooter(fixedFooter);
 
     return card.build();
@@ -127,13 +131,27 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
         CardService.newTextInput()
             .setFieldName("new user email")
             .setTitle("add user")
+            .setValue(GetProperty<string>(addUserEmailString))
+            .setOnChangeAction(
+                CardService.newAction()
+                    .setFunctionName("onNewUserName")
+            )
     )
 
-    section.addWidget(
-        CardService.newTextButton()
-            .setText("add user")
-            .setOnClickAction(CardService.newAction()
-                .setFunctionName("onAddUser")))
+    if(isError(error.email))
+    {
+        section.addWidget(emailError());
+    }
+    else
+    {
+        section.addWidget(
+            CardService.newTextButton()
+                .setText("add user")
+                .setOnClickAction(CardService.newAction()
+                    .setFunctionName("onAddUser")))
+
+    }
+
 
     let icon = CardService.newIconImage()
         .setIcon(CardService.Icon.EMAIL)
