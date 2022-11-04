@@ -12,27 +12,30 @@ const Tabs = styled(AntdTabs)`
   }
 `;
 
-const accountMenuItems: MenuProps['items'] = [
-  {
-    key: '1',
-    label: <Link to="account-settings">Account settings</Link>,
-  },
-  {
-    key: '4',
-    danger: true,
-    label: 'Logout',
-  },
-];
-
 const GlobalNav = () => {
-  const { userDetails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+
+  const accountMenuItems: MenuProps['items'] = [
+    {
+      key: '1',
+      label: <Link to="account-settings">Account settings</Link>,
+    },
+    {
+      key: '4',
+      danger: true,
+      label: 'Logout',
+      onClick: () => {
+        setUserDetails({});
+      },
+    },
+  ];
 
   const OperationsSlot = {
     right: (
       <Dropdown menu={{ items: accountMenuItems }}>
         <Button type="text" onClick={(e) => e.preventDefault()}>
           <Space>
-            {userDetails?.planitUserId}
+            Creating events as {userDetails?.ownerEmail}
             <DownOutlined />
           </Space>
         </Button>

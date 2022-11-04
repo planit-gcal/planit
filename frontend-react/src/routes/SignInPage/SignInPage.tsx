@@ -1,11 +1,13 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useCallback, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { AxiosInstance } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const SignInPage = () => {
   const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const navigate = useNavigate();
 
   const onSuccess = useCallback(
     (response: any) => {
@@ -17,10 +19,11 @@ export const SignInPage = () => {
         .then((response) => {
           console.log(response);
           setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_userId! }));
+          navigate('/create-events');
         })
         .catch((error) => console.log(error.message));
     },
-    [setUserDetails, userDetails?.planitUserId]
+    [navigate, setUserDetails, userDetails?.planitUserId]
   );
 
   const login = useGoogleLogin({
