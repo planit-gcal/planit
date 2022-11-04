@@ -1,10 +1,12 @@
 import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, MenuProps, Space, Tabs as AntdTabs } from 'antd';
+import { Button, Dropdown, MenuProps, Row, Space, Tabs as AntdTabs, Typography } from 'antd';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
+
+const { Text } = Typography;
 
 const Tabs = styled(AntdTabs)`
   .ant-tabs-nav::before {
@@ -32,14 +34,20 @@ const GlobalNav = () => {
 
   const OperationsSlot = {
     right: (
-      <Dropdown menu={{ items: accountMenuItems }}>
-        <Button type="text" onClick={(e) => e.preventDefault()}>
-          <Space>
-            Creating events as {userDetails?.ownerEmail}
-            <DownOutlined />
-          </Space>
-        </Button>
-      </Dropdown>
+      <Row align={'middle'}>
+        <Text type="secondary" style={{ margin: 0 }}>
+          Creating events as
+        </Text>
+
+        <Dropdown menu={{ items: accountMenuItems }}>
+          <Button type="text" onClick={(e) => e.preventDefault()}>
+            <Space>
+              {userDetails?.ownerEmail}
+              <DownOutlined />
+            </Space>
+          </Button>
+        </Dropdown>
+      </Row>
     ),
   };
 
