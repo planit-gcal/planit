@@ -1,6 +1,6 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useGoogleLogin } from '@react-oauth/google';
-import { Button, Divider, Dropdown, Input, MenuProps, Row, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
+import { Button, Divider, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
 import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -32,7 +32,7 @@ const GlobalNav = () => {
         })
         .catch((error) => console.log(error.message));
     },
-    [setUserDetails, userDetails?.planitUserId]
+    [userDetails?.planitUserId]
   );
 
   const login = useGoogleLogin({
