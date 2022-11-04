@@ -1,0 +1,52 @@
+|===
+|Path|Type|Description
+
+|`+name+`
+|`+String+`
+|The name of the event
+
+|`+summary+`
+|`+String+`
+|Small description of the event
+
+|`+description+`
+|`+String+`
+|Complete description of the event
+
+|`+location+`
+|`+String+`
+|Location of the event
+
+|`+owner_email+`
+|`+String+`
+|The email of the event owner
+
+|`+duration+`
+|`+Number+`
+|The duration of the event
+
+|`+start_date+`
+|`+String+`
+|The start date after when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss
+
+|`+end_date+`
+|`+String+`
+|The end date before when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss
+
+|`+event_preset_id+`
+|`+Number+`
+|The Id of the event preset used to configure the configure.
+
+|`+attendee_emails[]+`
+|`+Array+`
+|
+
+|`+attendee_emails[].email+`
+|`+class java.lang.String+`
+|The email of the attendee
+
+|`+attendee_emails[].obligatory+`
+|`+class java.lang.Boolean+`
+|The guest's attendance is obligatory
+
+|===

@@ -1,6 +1,4 @@
 package planit.people.preparation.Responses;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public record UserCreationResponse(@JsonProperty String planit_userId, @JsonProperty String google_account_id){
+public record UserCreationResponse(Long planit_user_id, Long google_account_id) {
 }

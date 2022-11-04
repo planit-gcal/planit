@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/plan-it/calendar/presets/1' -i -X GET \
+    -H 'Accept: application/json'
+----

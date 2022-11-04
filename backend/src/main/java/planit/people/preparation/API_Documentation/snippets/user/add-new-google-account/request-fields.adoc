@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+planit_user_id+`
+|`+class java.lang.Long+`
+|The unique identifier for the PlanIt User Account
+
+|`+code+`
+|`+class java.lang.String+`
+|Code returned by Google when a user authorize the App
+
+|===

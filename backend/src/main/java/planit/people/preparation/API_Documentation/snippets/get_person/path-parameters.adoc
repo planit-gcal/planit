@@ -1,8 +1,0 @@
-.+/plan-it/people/{person_id}+
-|===
-|Parameter|Description
-
-|`+person_id+`
-|the id of the person to be retrieved
-
-|===
