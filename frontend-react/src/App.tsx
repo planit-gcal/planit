@@ -1,26 +1,44 @@
-import { Card, Layout } from 'antd';
-import { Header, Content } from 'antd/lib/layout/layout';
-import { Outlet } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import './App.css';
-import GlobalNav from './components/GlobalNav/GlobalNav';
+import MainLayout from './MainLayout';
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
+import { AccountSettings } from './routes/AccountSettings/AccountSettings';
+import { CreateEventPage } from './routes/CreateEventPage/CreateEventPage';
+import { ManagePresetsPage } from './routes/ManagePresetsPage/ManagePresetsPage';
+import { SignInPage } from './routes/SignInPage/SignInPage';
 
 function App() {
   return (
-    <Layout style={{ backgroundColor: '#D8D8D8', height: '100%' }}>
-      <Header
-        style={{ backgroundColor: '#FFFFFF', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)', height: 'auto', zIndex: 1 }}
-      >
-        <GlobalNav />
-      </Header>
-      <Layout style={{ padding: '56px 50px 0' }}>
-        <Content>
-          <Card style={{ boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)', minHeight: '800px' }}>
-            <Outlet />
-          </Card>
-        </Content>
-      </Layout>
-    </Layout>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<SignInPage />} />
+        <Route
+          path="create-events"
+          element={
+            <ProtectedRoute>
+              <CreateEventPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manage-presets"
+          element={
+            <ProtectedRoute>
+              <ManagePresetsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="account-settings"
+          element={
+            <ProtectedRoute>
+              <AccountSettings />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 
