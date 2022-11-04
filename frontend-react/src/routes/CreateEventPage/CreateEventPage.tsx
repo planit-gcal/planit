@@ -6,7 +6,7 @@ import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 import { EventCreateRequest } from '../../models/event';
 
 export const CreateEventPage = () => {
-  const { ownerEmail } = useContext(PlanitUserContext);
+  const { userDetails } = useContext(PlanitUserContext);
 
   const onEventSubmit = (result: EventCreateRequest) => {
     console.log('succ: ', result);
@@ -19,7 +19,7 @@ export const CreateEventPage = () => {
 
   return (
     <div>
-      <CreateEventForm onSubmit={onEventSubmit} owner={ownerEmail || ''}></CreateEventForm>
+      <CreateEventForm onSubmit={onEventSubmit} owner={userDetails?.ownerEmail || ''}></CreateEventForm>
     </div>
   );
 };

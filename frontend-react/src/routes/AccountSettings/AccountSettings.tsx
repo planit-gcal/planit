@@ -6,18 +6,18 @@ import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const AccountSettings = () => {
   const [accountEmails, setAccountEmails] = useState<string[]>([]);
-  const { planitUserId, setOwnerEmail } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
 
   const getEmailList = (id: string) => {
     AxiosInstance.get(`/plan-it/user/getAllEmails/${id}`).then((response) => setAccountEmails(response.data));
   };
 
   useEffect(() => {
-    if (planitUserId !== null) getEmailList(planitUserId);
-  }, [planitUserId]);
+    if (userDetails?.planitUserId) getEmailList(userDetails.planitUserId);
+  }, [userDetails?.planitUserId]);
 
   const onSelectEmail = (email: string) => {
-    setOwnerEmail(email);
+    setUserDetails((prev) => ({ ...prev, ownerEmail: email }));
   };
 
   return (

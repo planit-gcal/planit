@@ -25,14 +25,14 @@ const accountMenuItems: MenuProps['items'] = [
 ];
 
 const GlobalNav = () => {
-  const { planitUserId } = useContext(PlanitUserContext);
+  const { userDetails } = useContext(PlanitUserContext);
 
   const OperationsSlot = {
     right: (
       <Dropdown menu={{ items: accountMenuItems }}>
         <Button type="text" onClick={(e) => e.preventDefault()}>
           <Space>
-            {planitUserId}
+            {userDetails?.planitUserId}
             <DownOutlined />
           </Space>
         </Button>

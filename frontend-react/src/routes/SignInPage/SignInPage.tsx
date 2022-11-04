@@ -1,28 +1,26 @@
 import { useGoogleLogin } from '@react-oauth/google';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { AxiosInstance } from '../../config';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const SignInPage = () => {
-  const [planitUserId, setPlanitUserId] = useLocalStorage('planitUserId', null);
+  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
 
   const onSuccess = useCallback(
     (response: any) => {
       console.log('succ: ', response);
       AxiosInstance.post('/plan-it/user/token', {
         code: response.code,
-        planit_userId: planitUserId,
+        planit_userId: userDetails?.planitUserId || null,
       })
         .then((response) => {
           console.log(response);
-          //here add set for local storage
-          setPlanitUserId(response.data.planit_userId);
-          console.log(planitUserId);
+          setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_userId! }));
         })
         .catch((error) => console.log(error.message));
     },
-    [planitUserId, setPlanitUserId]
+    [setUserDetails, userDetails?.planitUserId]
   );
 
   const login = useGoogleLogin({

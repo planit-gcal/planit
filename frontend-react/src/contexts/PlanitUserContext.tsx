@@ -1,29 +1,29 @@
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useMemo } from 'react';
 
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
+type UserDetails = {
+  planitUserId?: string;
+  ownerEmail?: string;
+};
+
 type State = {
-  planitUserId: string | null;
-  setPlanitUserId: (id: string | null) => void;
-  ownerEmail: string | null;
-  setOwnerEmail: (id: string | null) => void;
+  userDetails: UserDetails | null;
+  setUserDetails: (userDetails: React.SetStateAction<UserDetails>) => void;
 };
 
 export const PlanitUserContext = createContext<State>({} as State);
 
 type PlanitUserProviderProps = { children: React.ReactNode };
 export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
-  const [planitUserId, setPlanitUserId] = useLocalStorage<string | null>('planitUserId', null);
-  const [ownerEmail, setOwnerEmail] = useState<string | null>(null);
+  const [userDetails, setUserDetails] = useLocalStorage<UserDetails>('userDetails', {});
 
   const value = useMemo(
     () => ({
-      planitUserId,
-      setPlanitUserId,
-      ownerEmail,
-      setOwnerEmail,
+      userDetails,
+      setUserDetails,
     }),
-    [planitUserId, setPlanitUserId, ownerEmail, setOwnerEmail]
+    [userDetails, setUserDetails]
   );
 
   return <PlanitUserContext.Provider value={value}>{children}</PlanitUserContext.Provider>;
