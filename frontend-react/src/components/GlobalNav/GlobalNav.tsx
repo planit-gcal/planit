@@ -1,9 +1,11 @@
-import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, MenuProps, Row, Space, Tabs as AntdTabs, Typography } from 'antd';
-import { useContext } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { useGoogleLogin } from '@react-oauth/google';
+import { Button, Divider, Dropdown, Input, MenuProps, Row, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
+import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { AxiosInstance } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 const { Text } = Typography;
@@ -15,39 +17,73 @@ const Tabs = styled(AntdTabs)`
 `;
 
 const GlobalNav = () => {
-  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails, userEmails } = useContext(PlanitUserContext);
 
-  const accountMenuItems: MenuProps['items'] = [
-    {
-      key: '1',
-      label: <Link to="account-settings">Account settings</Link>,
+  const onSuccess = useCallback(
+    (response: any) => {
+      console.log('succ: ', response);
+      AxiosInstance.post('/plan-it/user/token', {
+        code: response.code,
+        planit_userId: userDetails?.planitUserId || null,
+      })
+        .then((response) => {
+          console.log(response);
+          // setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_userId! }));
+        })
+        .catch((error) => console.log(error.message));
     },
-    {
-      key: '4',
-      danger: true,
-      label: 'Logout',
-      onClick: () => {
-        setUserDetails({});
-      },
-    },
-  ];
+    [setUserDetails, userDetails?.planitUserId]
+  );
+
+  const login = useGoogleLogin({
+    onSuccess,
+    flow: 'auth-code',
+    scope:
+      'profile email openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly',
+  });
+
+  const addItem = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    login();
+  };
+
+  const onOwnerEmailChange = (ownerEmail: string) => {
+    setUserDetails((prev) => ({ ...prev, ownerEmail }));
+  };
 
   const OperationsSlot = {
     right: (
-      <Row align={'middle'}>
+      <Space direction="horizontal">
         <Text type="secondary" style={{ margin: 0 }}>
           Creating events as
         </Text>
 
-        <Dropdown menu={{ items: accountMenuItems }}>
-          <Button type="text" onClick={(e) => e.preventDefault()}>
-            <Space>
-              {userDetails?.ownerEmail}
-              <DownOutlined />
-            </Space>
-          </Button>
-        </Dropdown>
-      </Row>
+        <Select
+          style={{ width: 220 }}
+          value={userDetails?.ownerEmail}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          onChange={onOwnerEmailChange}
+          dropdownRender={(menu) => (
+            <>
+              {menu}
+              <Divider style={{ margin: '8px 0' }} />
+              <Space style={{ padding: '0 8px 4px' }}>
+                <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                  Add email
+                </Button>
+              </Space>
+            </>
+          )}
+          options={userEmails.map((item) => ({ label: item, value: item }))}
+        />
+
+        <Button type="primary" danger onClick={() => setUserDetails({})}>
+          Logout
+        </Button>
+      </Space>
     ),
   };
 
