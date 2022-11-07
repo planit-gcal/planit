@@ -1,9 +1,12 @@
-import { Button, Divider, Form, Input, Space, StepProps, Steps, Tabs, TabsProps } from 'antd';
+import { Button, Col, Divider, Form, Input, Row, Space, Steps, Tabs, TabsProps } from 'antd';
+import 'antd/es/date-picker/style/index';
+import { add, parse } from 'date-fns';
 import { useState } from 'react';
-import { act } from 'react-dom/test-utils';
 
 import { EventCreateRequest } from '../../models/event';
 import { formatToUTC } from '../../utils/date.utils';
+import DatePicker from '../DatePicker/DatePicker';
+import TimePicker from '../TimePicker/TimePicker';
 import { AddEmail } from './AddEmail';
 
 type CreateEventFormProps = {
@@ -12,7 +15,12 @@ type CreateEventFormProps = {
 };
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
-  const [form] = Form.useForm<{ name: string; age: number }>();
+  const [generalForm] = Form.useForm<{
+    name: string;
+    duration: number;
+    event_between: [string, string];
+    attendee_emails: { email: string; obligatory: boolean }[];
+  }>();
 
   const [summary, setSummary] = useState('');
   const [location, setLocation] = useState('');
@@ -48,9 +56,42 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '1',
       children: (
-        <Form.Item name="event_name" label="Event Name" required>
-          <Input />
-        </Form.Item>
+        <Form layout="vertical" form={generalForm}>
+          <Row>
+            <Col span={16}>
+              <Form.Item name="name" label="Event Name" required>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.Item name="duration" label="Event Duration" required>
+                <TimePicker
+                  style={{ width: '100%' }}
+                  defaultValue={parse('1:30', 'HH:mm', new Date())}
+                  format="HH:mm"
+                  minuteStep={15}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="start_end" label="Event Between" required>
+                <DatePicker.RangePicker
+                  style={{ width: '100%' }}
+                  format="eeee, MMMM d"
+                  minuteStep={15}
+                  defaultValue={[
+                    new Date(),
+                    add(new Date(), {
+                      days: 3,
+                    }),
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       ),
       forceRender: true,
     },
@@ -98,6 +139,15 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
   const onNextButton = () => {
     setActiveTabKey((prev) => `${+prev + 1}`);
+
+    generalForm
+      .validateFields()
+      .then((val) => {
+        console.log(val);
+      })
+      .catch((reason) => {
+        console.log(reason);
+      });
   };
 
   const onBackButton = () => {
@@ -118,9 +168,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
-      <Form layout="vertical" style={{ flex: 1 }}>
-        <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
-      </Form>
+      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
 
       <Divider />
 
