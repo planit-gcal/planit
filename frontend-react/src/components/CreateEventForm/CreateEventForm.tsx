@@ -1,4 +1,4 @@
-import { Form, Input, StepProps, Steps, Tabs, TabsProps } from 'antd';
+import { Button, Form, Input, Space, StepProps, Steps, Tabs, TabsProps } from 'antd';
 import { useState } from 'react';
 import { act } from 'react-dom/test-utils';
 
@@ -90,9 +90,61 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       forceRender: true,
     },
   ];
+
+  const onNextButton = () => {
+    setActiveTabKey((prev) => `${+prev + 1}`);
+  };
+
+  const onBackButton = () => {
+    setActiveTabKey((prev) => `${+prev - 1}`);
+  };
+
+  const onJumpButton = () => {
+    setActiveTabKey('4');
+  };
+
+  const onConfirmButton = () => {
+    alert('todo');
+  };
+
+  const onSaveToPresetButton = () => {
+    alert('todo');
+  };
+
   return (
     <Form layout="vertical">
-      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} />
+      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
+      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'end' }}>
+        {activeTabKey === '0' && (
+          <>
+            <Button onClick={onJumpButton}>Jump to Confirm</Button>
+            <Button onClick={onNextButton} type="primary">
+              Next
+            </Button>
+          </>
+        )}
+
+        {['1', '2', '3'].includes(activeTabKey) && (
+          <>
+            <Button onClick={onBackButton}>Back</Button>
+            <Button onClick={onNextButton} type="primary">
+              Next
+            </Button>
+          </>
+        )}
+
+        {activeTabKey === '4' && (
+          <>
+            <Button onClick={onSaveToPresetButton} type="dashed">
+              Save to preset
+            </Button>
+            <Button onClick={onBackButton}>Back</Button>
+            <Button onClick={onConfirmButton} type="primary">
+              Confirm
+            </Button>
+          </>
+        )}
+      </Space>
     </Form>
   );
 
