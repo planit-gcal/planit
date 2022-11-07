@@ -8,6 +8,7 @@ function onHomepage() {
     return createCard();
 }
 
+const MAINURL = "https://planit-custom-domain.loca.lt"
 const weekInMs = 6.048e+8;
 const durationString = "duration";
 const eventNameString = "eventName"
@@ -204,6 +205,12 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
 
 function presetDropdown() {
     const presets = getPresetsFromStorage();
+
+    if(presets.length === 0)
+    {
+        return CardService.newTextParagraph().setText("No presets available")
+    }
+
     const currentIndex = GetProperty<Number>(currentPresetIndexString);
 
     const presetChangeAction = CardService.newAction()

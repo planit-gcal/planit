@@ -41,22 +41,41 @@ const dad : Guest = {
     isRequired : false,
 }
 
-function getPresets(): Preset[] {
-    return [
-        {
-            name: "project",
-            settings: settings,
-            guests : [jakub, lukasz, mustafa, marcin]
+// function getPresets(): Preset[] {
+//     return [
+//         {
+//             name: "project",
+//             settings: settings,
+//             guests : [jakub, lukasz, mustafa, marcin]
+//         },
+//         {
+//             name: "family",
+//             settings : settings,
+//             guests: [mom, dad]
+//         },
+//         {
+//             name : "random",
+//             settings : settings,
+//             guests : [lukasz, mom, jakub, dad]
+//         }
+//     ]
+// }
+
+function getPresets() : Preset[]
+{
+    let id = 1;
+    const url = `${MAINURL}/plan-it/calendar/presets/${id}`
+    const options = {
+        'method' : 'get',
+        'contentType' : 'application/json',
+        'muteHttpExceptions' : true,
+        'headers' : {
+            'Bypass-Tunnel-Reminder': '1',
         },
-        {
-            name: "family",
-            settings : settings,
-            guests: [mom, dad]
-        },
-        {
-            name : "random",
-            settings : settings,
-            guests : [lukasz, mom, jakub, dad]
-        }
-    ]
+    }
+    // @ts-ignore
+    const response = UrlFetchApp.fetch(url, options);
+    console.log(url)
+    console.log(response.toString())
+    return JSON.parse(response.toString());
 }
