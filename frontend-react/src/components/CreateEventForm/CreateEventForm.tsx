@@ -38,7 +38,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
     <>
-      <Steps items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
+      <Steps size="small" items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
       <Divider />
     </>
   );
