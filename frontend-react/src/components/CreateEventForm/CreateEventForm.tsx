@@ -1,7 +1,25 @@
-import { Button, Col, Divider, Form, Input, Row, Space, Steps, Tabs, TabsProps } from 'antd';
+import { CloseOutlined, MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  Avatar,
+  Button,
+  Col,
+  Divider,
+  Form,
+  FormInstance,
+  Input,
+  InputNumber,
+  Modal,
+  Row,
+  Space,
+  Steps,
+  Switch,
+  Tabs,
+  TabsProps,
+  Typography,
+} from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { EventCreateRequest } from '../../models/event';
 import { formatToUTC } from '../../utils/date.utils';
@@ -14,12 +32,14 @@ type CreateEventFormProps = {
   onSubmit: (result: EventCreateRequest) => void;
 };
 
+// todo fix default values
+
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
     name: string;
     duration: number;
     event_between: [string, string];
-    attendee_emails: { email: string; obligatory: boolean }[];
+    guests: { email: string; obligatory: boolean }[];
   }>();
 
   const [summary, setSummary] = useState('');
@@ -57,38 +77,87 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '1',
       children: (
         <Form layout="vertical" form={generalForm}>
-          <Row>
+          <Row gutter={16}>
             <Col span={16}>
-              <Form.Item name="name" label="Event Name" required>
+              <Form.Item name="name" label="Event Name" required initialValue={''}>
                 <Input />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={8}>
-              <Form.Item name="duration" label="Event Duration" required>
-                <TimePicker
-                  style={{ width: '100%' }}
-                  defaultValue={parse('1:30', 'HH:mm', new Date())}
-                  format="HH:mm"
-                  minuteStep={15}
-                />
+              <Form.Item
+                name="duration"
+                label="Event Duration"
+                required
+                initialValue={parse('1:30', 'HH:mm', new Date())}
+              >
+                <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="start_end" label="Event Between" required>
-                <DatePicker.RangePicker
-                  style={{ width: '100%' }}
-                  format="eeee, MMMM d"
-                  minuteStep={15}
-                  defaultValue={[
-                    new Date(),
-                    add(new Date(), {
-                      days: 3,
-                    }),
-                  ]}
-                />
+              <Form.Item
+                name="start_end"
+                label="Event Between"
+                required
+                initialValue={[
+                  new Date(),
+                  add(new Date(), {
+                    days: 3,
+                  }),
+                ]}
+              >
+                <DatePicker.RangePicker style={{ width: '100%' }} format="eeee, MMMM d" minuteStep={15} />
               </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
+
+                    {fields.map(({ key, name, ...restField }) => (
+                      <Row style={{ width: '100%' }} key={key} gutter={16}>
+                        <Col flex={1}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'email']}
+                            rules={[{ required: true, message: 'Missing email' }]}
+                            label={name === 0 ? 'Guest email' : undefined}
+                          >
+                            <Input />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={6}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'obligatory']}
+                            label={name === 0 ? 'Obligatory?' : undefined}
+                          >
+                            <Switch defaultChecked style={{ display: 'block' }} />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={2}>
+                          {/* empty HTML entity */}
+                          <Form.Item {...restField} label={name === 0 ? <>&#8203;</> : undefined}>
+                            <CloseOutlined onClick={() => remove(name)} />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    ))}
+
+                    <Form.Item>
+                      <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                        Add guest
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
             </Col>
           </Row>
         </Form>
