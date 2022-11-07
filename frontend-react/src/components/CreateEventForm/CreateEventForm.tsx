@@ -1,4 +1,4 @@
-import { Button, Form, Input, Space, StepProps, Steps, Tabs, TabsProps } from 'antd';
+import { Button, Divider, Form, Input, Space, StepProps, Steps, Tabs, TabsProps } from 'antd';
 import { useState } from 'react';
 import { act } from 'react-dom/test-utils';
 
@@ -12,6 +12,8 @@ type CreateEventFormProps = {
 };
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
+  const [form] = Form.useForm<{ name: string; age: number }>();
+
   const [summary, setSummary] = useState('');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
@@ -35,7 +37,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   ];
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
-    <Steps items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
+    <>
+      <Steps items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
+      <Divider />
+    </>
   );
 
   const items = [
@@ -112,8 +117,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   };
 
   return (
-    <Form layout="vertical">
-      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
+    <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
+      <Form layout="vertical" style={{ flex: 1 }}>
+        <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
+      </Form>
+
+      <Divider />
+
       <Space direction="horizontal" style={{ width: '100%', justifyContent: 'end' }}>
         {activeTabKey === '0' && (
           <>
@@ -145,7 +155,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
           </>
         )}
       </Space>
-    </Form>
+    </div>
   );
 
   return (

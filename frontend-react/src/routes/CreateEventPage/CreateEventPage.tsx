@@ -17,9 +17,5 @@ export const CreateEventPage = () => {
       .catch((error) => console.log(error.message));
   };
 
-  return (
-    <div>
-      <CreateEventForm onSubmit={onEventSubmit} owner={userDetails?.ownerEmail || ''}></CreateEventForm>
-    </div>
-  );
+  return <CreateEventForm onSubmit={onEventSubmit} owner={userDetails?.ownerEmail || ''}></CreateEventForm>;
 };
