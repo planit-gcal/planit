@@ -19,7 +19,13 @@ public class Entity_Guest {
     /**
      * Foreign Key references the EventPreset for each Guest record.
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade =
+            {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.REFRESH,
+                    CascadeType.PERSIST
+            })
     @JoinColumn(name = "id_event_preset")
     private Entity_EventPreset entity_EventPreset;
 

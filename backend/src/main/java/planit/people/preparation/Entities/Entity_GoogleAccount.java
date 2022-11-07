@@ -73,6 +73,10 @@ public class Entity_GoogleAccount {
         this.the_user = the_user;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getRefresh_token() {
         return refresh_token;
     }

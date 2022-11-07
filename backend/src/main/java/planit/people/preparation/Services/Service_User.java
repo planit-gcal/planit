@@ -55,7 +55,7 @@ public class Service_User {
             Userinfo userinfo = google_helper.getUserInfo();
             System.out.println("google userinfo: " + userinfo);
             if (dto_code.planit_user_id() == null) {
-                entity_user = create_new_user(new Entity_User(userinfo.getName(), userinfo.getFamilyName()));
+                entity_user = create_new_user(new Entity_User(userinfo.getGivenName(), userinfo.getFamilyName()));
                 System.out.println("google entity_user: " + entity_user);
             } else {
                 entity_user = new Entity_User(dto_code.planit_user_id());
