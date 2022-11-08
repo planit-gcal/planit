@@ -61,19 +61,18 @@ const dad : Guest = {
 //     ]
 // }
 
-function getPresets() : Preset[]
+function getPresets() : Preset[] | "404"
 {
     let id = 1;
     const url = `${MAINURL}/plan-it/calendar/presets/${id}`
     const options = {
-        'method' : 'get',
+        'method' : 'get' as const,
         'contentType' : 'application/json',
         'muteHttpExceptions' : true,
         'headers' : {
             'Bypass-Tunnel-Reminder': '1',
         },
     }
-    // @ts-ignore
     const response = UrlFetchApp.fetch(url, options);
     console.log(url)
     console.log(response.toString())

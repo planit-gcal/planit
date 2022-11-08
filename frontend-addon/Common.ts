@@ -8,7 +8,8 @@ function onHomepage() {
     return createCard();
 }
 
-const MAINURL = "https://planit-custom-domain.loca.lt"
+// const MAINURL = "https://planit-custom-domain.loca.lt"
+const MAINURL = "https://tidy-turtle-22.loca.lt"
 const weekInMs = 6.048e+8;
 const durationString = "duration";
 const eventNameString = "eventName"
@@ -206,7 +207,9 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
 function presetDropdown() {
     const presets = getPresetsFromStorage();
 
-    if(presets.length === 0)
+    console.log(presets);
+
+    if(presets.length === 0 || presets === "404")
     {
         return CardService.newTextParagraph().setText("No presets available")
     }

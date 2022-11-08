@@ -10,7 +10,7 @@
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
-  "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/"],
+  "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/", "https://tidy-turtle-22.loca.lt/"],
   "addOns": {
     "common": {
       "name": "PlanIt - create event",
