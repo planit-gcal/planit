@@ -22,6 +22,10 @@ include::snippets/calendar/create_preset/path-parameters.adoc[]
 
 include::snippets/calendar/create_preset/request-fields.adoc[]
 
+=== all possible response attributes
+
+include::snippets/calendar/create_preset/response-fields.adoc[]
+
 == Get Event Presets
 
 === successful request
@@ -40,6 +44,42 @@ include::snippets/calendar/get_presets/path-parameters.adoc[]
 
 include::snippets/calendar/get_presets/response-fields.adoc[]
 
+== Update Event Preset
+
+=== successful request
+
+include::snippets/calendar/update_preset/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/update_preset/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/calendar/update_preset/path-parameters.adoc[]
+
+=== all possible request attributes
+
+include::snippets/calendar/update_preset/request-fields.adoc[]
+
+=== all possible response attributes
+
+include::snippets/calendar/update_preset/response-fields.adoc[]
+
+== Delete Event Preset
+
+=== successful request
+
+include::snippets/calendar/delete_preset/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/delete_preset/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/calendar/delete_preset/path-parameters.adoc[]
+
 == Create Event
 
 === successful request
@@ -57,3 +97,17 @@ include::snippets/calendar/create_preset/request-fields.adoc[]
 === all possible response attributes
 
 include::snippets/calendar/create-event/response-fields.adoc[]
+
+== Share Preset Event
+
+=== successful request
+
+include::snippets/calendar/share_preset/http-request.adoc[]
+
+=== successful response
+
+include::snippets/calendar/share_preset/http-response.adoc[]
+
+=== all possible request attributes
+
+include::snippets/calendar/share_preset/request-fields.adoc[]

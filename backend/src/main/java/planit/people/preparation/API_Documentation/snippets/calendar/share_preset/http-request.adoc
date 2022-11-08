@@ -1,0 +1,10 @@
+[source,http,options="nowrap"]
+----
+POST /plan-it/calendar/presets/share HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 87
+Host: localhost:8080
+
+{"inviter_email":"inviter@email.com","invitee_email":"invitee@email.com","preset_id":1}
+----

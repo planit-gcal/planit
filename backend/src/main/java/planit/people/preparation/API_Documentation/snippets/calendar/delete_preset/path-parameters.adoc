@@ -1,0 +1,11 @@
+.+/plan-it/calendar/presets/{planit-user-id}/{preset-id}+
+|===
+|Parameter|Description
+
+|`+planit-user-id+`
+|the id of the PlanIt User who requested the delete
+
+|`+preset-id+`
+|the id of the preset to be deleted
+
+|===

@@ -14,6 +14,7 @@ import planit.people.preparation.APIs.API_Calendar;
 import planit.people.preparation.DAOs.*;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.DTOs.DTO_PresetDetail;
+import planit.people.preparation.DTOs.DTO_SharePreset;
 import planit.people.preparation.Entities.*;
 import planit.people.preparation.Responses.CalendarResponse;
 import planit.people.preparation.Services.Service_Calendar;
@@ -77,6 +78,17 @@ public class CalendarWebLayerTest {
                 guests,
                 availabilities
         );
+        preset.setId_event_preset(1L);
+        for (int i = 0; i < guests.size(); i++) {
+            guests.get(i).setId_event_guest(i+1L);
+            availabilities.get(i).setId_preset_availability(i+1L);
+        }
+        DTO_PresetDetail response  = new DTO_PresetDetail(
+                preset,
+                guests,
+                availabilities
+        );
+        doReturn(response).when(serviceCalendar).upsertPresetDetail(any(),any(), any());
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
@@ -90,6 +102,7 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("event_preset.name").description("The name of the preset to be created").type(String.class),
                                 fieldWithPath("event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
                                 fieldWithPath("event_preset.id_event_preset").ignored(),
+                                fieldWithPath("event_preset.shared_presets").ignored(),
                                 fieldWithPath("event_preset.min_length_of_single_event").description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
                                 fieldWithPath("event_preset.max_length_of_single_event").description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
                                 fieldWithPath("guests[].id_event_guest").ignored(),
@@ -107,6 +120,26 @@ public class CalendarWebLayerTest {
                         ),
                         pathParameters(
                                 parameterWithName("planit-user-id").description("the id of the PlanIt User for whom the preset will be created")
+                        ),
+                        responseFields(
+                                fieldWithPath("event_preset.name").description("The name of the preset to be created").type(String.class),
+                                fieldWithPath("event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
+                                fieldWithPath("event_preset.id_event_preset").description("The identifier of the Preset record, unique").type(Integer.class),
+                                fieldWithPath("event_preset.shared_presets").ignored(),
+                                fieldWithPath("event_preset.min_length_of_single_event").description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("event_preset.max_length_of_single_event").description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("guests[].id_event_guest").description("The identifier of the Preset Guest record, unique").type(Integer.class),
+                                fieldWithPath("guests[].entity_EventPreset").ignored(),
+                                fieldWithPath("guests[]").description("List of guests that should always be invites when the parent preset is selected"),
+                                fieldWithPath("guests[].email").description("The email of the guest").type(String.class),
+                                fieldWithPath("guests[].obligatory").description("The guest's attendance in the event is obligatory").type(Boolean.class),
+                                fieldWithPath("preset_availability[]").description("List of days availabilities that should be taken into account when scheduling an event"),
+                                fieldWithPath("preset_availability[].id_preset_availability").description("The identifier of the Preset Availability record, unique").type(Integer.class),
+                                fieldWithPath("preset_availability[].entity_EventPreset").ignored(),
+                                fieldWithPath("preset_availability[].day").description("The day of availability ").type(String.class),
+                                fieldWithPath("preset_availability[].start_available_time").optional().description("The start hour after when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].end_available_time").optional().description("The end hour before when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].day_off").description("No events can be created in this day").type(Boolean.class)
                         )));
 
     }
@@ -174,6 +207,7 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("[].event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
                                 fieldWithPath("[].event_preset.min_length_of_single_event").optional().description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
                                 fieldWithPath("[].event_preset.id_event_preset").description("The identifier of the Preset record, unique").type(Integer.class),
+                                fieldWithPath("[].event_preset.shared_presets[]").ignored(),
                                 fieldWithPath("[].event_preset.max_length_of_single_event").optional().description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
                                 fieldWithPath("[].guests[].id_event_guest").description("The identifier of the Guest record, unique").type(Integer.class),
                                 fieldWithPath("[].guests[].entity_EventPreset").ignored(),
@@ -255,6 +289,133 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("end_date.timeZoneShift").description("Time zone shift from UTC in minutes or 0 for date-only value.").type(Integer.class)
                         )
                 ));
+    }
+
+    @Test
+    public void updatePresetDetailTest() throws Exception {
+        Entity_EventPreset preset = TestUtils.createPreset("Test 1", false, null, null, 1L);
+        List<Entity_Guest> guests = new ArrayList<>() {
+            {
+                add(TestUtils.createGuest("test@gmail.com", true, 1L));
+                add(TestUtils.createGuest("test2@gmail.com", true, 2L));
+                add(TestUtils.createGuest("test3@gmail.com", true, 3L));
+            }
+        };
+        List<Entity_PresetAvailability> availabilities = new ArrayList<>() {
+            {
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, null, null, false, 1L));
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, null, null, true, 2L));
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true, 3L));
+            }
+        };
+        DTO_PresetDetail request = new DTO_PresetDetail(
+                preset,
+                guests,
+                availabilities
+        );
+        preset.setId_event_preset(4L);
+        for (int i = 0; i < guests.size(); i++) {
+            guests.get(i).setId_event_guest(i+3L);
+            availabilities.get(i).setId_preset_availability(i+3L);
+        }
+        DTO_PresetDetail response  = new DTO_PresetDetail(
+                preset,
+                guests,
+                availabilities
+        );
+        doReturn(response).when(serviceCalendar).upsertPresetDetail(any(),any(), any());
+        this.mockMvc
+                .perform(
+                        RestDocumentationRequestBuilders
+                                .patch("/plan-it/calendar/presets/{planit-user-id}", 20)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andDo(document("update_preset",
+                        requestFields(
+                                fieldWithPath("event_preset.name").description("The new name of the preset").type(String.class),
+                                fieldWithPath("event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
+                                fieldWithPath("event_preset.id_event_preset").description("The original identifier of the Event Preset record"),
+                                fieldWithPath("event_preset.shared_presets").ignored(),
+                                fieldWithPath("event_preset.min_length_of_single_event").description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("event_preset.max_length_of_single_event").description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("guests[].id_event_guest").description("The original identifier of the Preset Guest record").type(Integer.class),
+                                fieldWithPath("guests[].entity_EventPreset").ignored(),
+                                fieldWithPath("guests[]").description("List of guests that should always be invites when the parent preset is selected"),
+                                fieldWithPath("guests[].email").description("The email of the guest").type(String.class),
+                                fieldWithPath("guests[].obligatory").description("The guest's attendance in the event is obligatory").type(Boolean.class),
+                                fieldWithPath("preset_availability[]").description("List of days availabilities that should be taken into account when scheduling an event"),
+                                fieldWithPath("preset_availability[].id_preset_availability").description("The original identifier of the Preset Availability record").type(Integer.class),
+                                fieldWithPath("preset_availability[].entity_EventPreset").ignored(),
+                                fieldWithPath("preset_availability[].day").description("The day of availability ").type(String.class),
+                                fieldWithPath("preset_availability[].start_available_time").optional().description("The start hour after when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].end_available_time").optional().description("The end hour before when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].day_off").description("No events can be created in this day").type(Boolean.class)
+                        ),
+                        pathParameters(
+                                parameterWithName("planit-user-id").description("the id of the PlanIt User who requested the update")
+                        ),
+                        responseFields(
+                                fieldWithPath("event_preset.name").description("The name of the preset to be created").type(String.class),
+                                fieldWithPath("event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
+                                fieldWithPath("event_preset.id_event_preset").description("The identifier of the Preset record, unique").type(Integer.class),
+                                fieldWithPath("event_preset.shared_presets").ignored(),
+                                fieldWithPath("event_preset.min_length_of_single_event").description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("event_preset.max_length_of_single_event").description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("guests[].id_event_guest").description("The identifier of the Preset Guest record, unique").type(Integer.class),
+                                fieldWithPath("guests[].entity_EventPreset").ignored(),
+                                fieldWithPath("guests[]").description("List of guests that should always be invites when the parent preset is selected"),
+                                fieldWithPath("guests[].email").description("The email of the guest").type(String.class),
+                                fieldWithPath("guests[].obligatory").description("The guest's attendance in the event is obligatory").type(Boolean.class),
+                                fieldWithPath("preset_availability[]").description("List of days availabilities that should be taken into account when scheduling an event"),
+                                fieldWithPath("preset_availability[].id_preset_availability").description("The identifier of the Preset Availability record, unique").type(Integer.class),
+                                fieldWithPath("preset_availability[].entity_EventPreset").ignored(),
+                                fieldWithPath("preset_availability[].day").description("The day of availability ").type(String.class),
+                                fieldWithPath("preset_availability[].start_available_time").optional().description("The start hour after when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].end_available_time").optional().description("The end hour before when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].day_off").description("No events can be created in this day").type(Boolean.class)
+                        )));
+
+    }
+
+    @Test
+    public void deletePresetTest() throws Exception {
+        this.mockMvc
+                .perform(
+                        RestDocumentationRequestBuilders
+                                .delete("/plan-it/calendar/presets/{planit-user-id}/{preset-id}", 1,1)
+                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("delete_preset",
+                        pathParameters(
+                                parameterWithName("planit-user-id").description("the id of the PlanIt User who requested the delete"),
+                                parameterWithName("preset-id").description("the id of the preset to be deleted")
+                        )));
+    }
+
+    @Test
+    public void sharePresetTest() throws Exception {
+        DTO_SharePreset request = new DTO_SharePreset(
+                "inviter@email.com",
+                "invitee@email.com",
+                1L
+        );
+        this.mockMvc
+                .perform(
+                        RestDocumentationRequestBuilders
+                                .post("/plan-it/calendar/presets/share")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andDo(document("share_preset",
+                        requestFields(
+                                fieldWithPath("inviter_email").description("the email of the inviter"),
+                                fieldWithPath("invitee_email").description("the email of the invitee"),
+                                fieldWithPath("preset_id").description("the id of the preset to be shared")
+                        )));
     }
 
 }

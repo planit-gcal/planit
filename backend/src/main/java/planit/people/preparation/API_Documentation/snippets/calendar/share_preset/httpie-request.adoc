@@ -1,0 +1,6 @@
+[source,bash]
+----
+$ echo '{"inviter_email":"inviter@email.com","invitee_email":"invitee@email.com","preset_id":1}' | http POST 'http://localhost:8080/plan-it/calendar/presets/share' \
+    'Content-Type:application/json;charset=UTF-8' \
+    'Accept:application/json'
+----

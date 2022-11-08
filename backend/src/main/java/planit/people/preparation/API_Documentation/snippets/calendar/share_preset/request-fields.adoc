@@ -1,0 +1,16 @@
+|===
+|Path|Type|Description
+
+|`+inviter_email+`
+|`+String+`
+|the email of the inviter
+
+|`+invitee_email+`
+|`+String+`
+|the email of the invitee
+
+|`+preset_id+`
+|`+Number+`
+|the id of the preset to be shared
+
+|===
