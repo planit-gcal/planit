@@ -1,13 +1,25 @@
-function getPresetsFromStorage()
+function getPresetsFromStorage() : PresetDetails[]
 {
-    return getPresets()
-    // let presets = GetProperty<Preset[]>("Presets");
-    // if(!presets || presets.length === 0)
-    // {
-    //     presets = getPresets();
-    //     SetProperty("Presets", presets);
-    // }
-    // return presets;
+    let presets = GetProperty<PresetDetails[]>(presetString);
+    if(!presets || presets.length === 0 || theOnlyPresetIsTheDefaultOne(presets))
+    {
+        const returned = getPresets();
+        if(returned === "404")
+        {
+            presets = Array.of(defaultPreset)
+        }
+        else
+        {
+            presets = returned;
+        }
+        SetProperty(presetString, presets);
+    }
+    return presets;
+}
+
+function theOnlyPresetIsTheDefaultOne(presets : PresetDetails[]) : boolean
+{
+    return presets.length === 1 && JSON.stringify(defaultPreset) === JSON.stringify(presets[0]);
 }
 
 function getCurrentPresetFromStorage()

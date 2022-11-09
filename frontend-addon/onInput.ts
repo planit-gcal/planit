@@ -43,7 +43,7 @@ function onAddUser(e) {
 
     const newUser: Guest = {
         email: readEmail,
-        isRequired: true
+        obligatory: true
     };
     users = [newUser, ...users];
 
@@ -62,7 +62,7 @@ function onDeleteUser(e) {
 
 function onPresetChange(e) {
     const presetIndex = Number(e["formInputs"]["Preset"]);
-    const presets = getPresets();
+    const presets = getPresetsFromStorage();
     const preset = presets[presetIndex];
     const guests = preset.guests;
     SetProperty(usersString, guests);
@@ -111,7 +111,7 @@ function onRequiredChange(e) {
     const guests = getCurrentPresetFromStorage().guests
     console.log("guests")
     console.log(guests)
-    guests[index].isRequired = !guests[index].isRequired;
+    guests[index].obligatory = !guests[index].obligatory;
     console.log("updatedGuests")
     console.log(guests)
     SetProperty(usersString, guests);

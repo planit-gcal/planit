@@ -1,68 +1,46 @@
-type Guest = {
-    email : string,
-    isRequired : boolean
-}
-
-type Settings = {
-    startDate: Date,
-    endDate : Date,
-    durationInMinutes : number,
-    numberOfEvents : number,
-    minTimeBetweenEventsInMinutes : number,
-    maxTimeBetweenEventsInMinutes : number,
-    breakIntoSmallerEvents : boolean,
-    minLengthOfSingleEventInMinutes : number,
-    maxLengthOfSingleEventInMinutes : number,
-}
-
-type Preset = {
-    name : string,
-    settings : Settings,
-    guests : Guest[]
-}
-
-enum error
-{
+enum error {
     durationFormat = "durationFormat",
     date = "date",
     email = "email"
 }
 
-/*
-"number_of_events": 3,
-    "min_time_between_events": 999,
-    "max_time_between_events": 322,
-    "break_into_smaller_events": false,
-    "min_length_of_single_event": 23,
-    "max_length_of_single_event": 23
-},
-*/
 
-export interface EventPreset {
-    id_event_preset: number;
-    name: string;
-    break_into_smaller_events: boolean;
-    min_length_of_single_event?: any;
-    max_length_of_single_event?: any;
+type EventPreset = EventPresetBreakIntoSmaller | EventPresetNoBreakIntoSmaller;
+
+type EventPresetNoBreakIntoSmaller = {
+  name: string;
+  break_into_smaller_events: false;
 }
 
-export interface Guest {
-    id_event_guest: number;
-    entity_EventPreset?: any;
+type EventPresetBreakIntoSmaller = {
+    name: string;
+    break_into_smaller_events: true;
+    min_length_of_single_event: number;
+    max_length_of_single_event: number;
+}
+
+
+type Guest = {
     email: string;
     obligatory: boolean;
 }
 
-export interface PresetAvailability {
-    id_preset_availability: number;
-    entity_EventPreset?: any;
+type PresetAvailability = PresetAvailabilityDayOff | PresetAvailabilityNoDayOff
+
+type PresetAvailabilityDayOff =
+    {
+        day: string;
+        day_off: true;
+    }
+
+type PresetAvailabilityNoDayOff = {
     day: string;
     start_available_time: string;
     end_available_time: string;
-    day_off: boolean;
+    day_off: false;
 }
 
-export interface RootObject {
+type PresetDetails = {
     event_preset: EventPreset;
     guests: Guest[];
     preset_availability: PresetAvailability[];

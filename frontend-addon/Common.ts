@@ -4,22 +4,12 @@ function onHomepage() {
     SetProperty(maxDateString, msSinceEpocToday.valueOf() + weekInMs);
     SetProperty(durationString, "1:45");
     SetProperty(errorString, []);
-    SetProperty(addUserEmailString, "")
+    SetProperty(addUserEmailString, "");
+    SetProperty(presetString, Array.of(defaultPreset));
+    SetProperty(usersString, []);
     return createCard();
 }
 
-// const MAINURL = "https://planit-custom-domain.loca.lt"
-const MAINURL = "https://tidy-turtle-22.loca.lt"
-const weekInMs = 6.048e+8;
-const durationString = "duration";
-const eventNameString = "eventName"
-const usersString = "Users";
-const currentPresetIndexString = "currentPresetIndex";
-const minDateString = "startDate";
-const maxDateString = "endDate";
-const errorString = "inputErrors";
-const addUserEmailString = "addUserEmail"
-const msSinceEpocToday = new Date();
 
 function createCard() {
 
@@ -126,6 +116,9 @@ function createCard() {
 function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
     const users = GetProperty<Guest[]>(usersString);
 
+    console.log("Users")
+    console.log(users)
+
     const section = CardService.newCardSection()
         .setHeader("Guests")
 
@@ -185,10 +178,7 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
             .setControlType(CardService.SwitchControlType.CHECK_BOX)
             .setFieldName(`isRequired${i}`)
             .setValue(`isRequired${i}`)
-            .setSelected(user.isRequired);
-
-        console.log(`${user.email} ${user.isRequired}`);
-
+            .setSelected(user.obligatory);
 
         section.addWidget(
             CardService.newDecoratedText()
@@ -207,13 +197,6 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
 function presetDropdown() {
     const presets = getPresetsFromStorage();
 
-    console.log(presets);
-
-    if(presets.length === 0 || presets === "404")
-    {
-        return CardService.newTextParagraph().setText("No presets available")
-    }
-
     const currentIndex = GetProperty<Number>(currentPresetIndexString);
 
     const presetChangeAction = CardService.newAction()
@@ -225,7 +208,10 @@ function presetDropdown() {
         .setType(CardService.SelectionInputType.DROPDOWN)
         .setOnChangeAction(presetChangeAction)
 
-    presets.forEach((x, i) => dropdown.addItem(x.name, i, i === currentIndex))
+    console.log("Presets")
+    console.log(presets)
+
+    presets.forEach((x, i) => dropdown.addItem(x.event_preset.name, i, i === currentIndex))
     return dropdown
 }
 
