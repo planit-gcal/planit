@@ -160,7 +160,7 @@ public class GoogleConnector {
                 .setTimeZone(TIME_ZONE_SPECIFIER);
         String[] recurrence = new String[] { "RRULE:FREQ=DAILY;COUNT=1" };
         List<EventAttendee> attendees = new ArrayList<>();
-        for (Entity_Guest attendee : newEventDetail.attendee_emails()) {
+        for (Entity_Guest attendee : newEventDetail.preset_detail().guests()) {
             attendees.add(new EventAttendee().setEmail(attendee.getEmail()).setOptional(!attendee.getObligatory()));
         }
         EventReminder[] reminderOverrides = new EventReminder[] {

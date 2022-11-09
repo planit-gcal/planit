@@ -59,4 +59,4 @@ yarn-error.log*
 
 client_secret.json
 .clasp.json
-/backend/src/main/resources/application.yml
+/backend/src/main/resources/application.properties

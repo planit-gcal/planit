@@ -13,7 +13,7 @@ import planit.people.preparation.Services.Service_User;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "plan-it/user",
+@RequestMapping(path = "plan-it/users",
         produces = {MediaType.APPLICATION_JSON_VALUE})
 public class API_User {
     private final Service_User serviceUser;
@@ -25,7 +25,7 @@ public class API_User {
         this.idaoGoogleAccount = idaoGoogleAccount;
     }
 
-    @PostMapping(path = "token", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserCreationResponse> createNewUser(@RequestBody DTO_Code code) {
         System.out.println("dto code: " + code);
         try {
@@ -35,7 +35,7 @@ public class API_User {
         }
     }
 
-    @GetMapping(path = "emails/{planit-user-id}")
+    @GetMapping(path = "{planit-user-id}/emails")
     public ResponseEntity<List<String>> getAllEmailsForEmail(@PathVariable("planit-user-id") Long userId) {
         try {
             return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.FOUND);

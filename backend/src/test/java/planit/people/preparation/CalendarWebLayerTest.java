@@ -92,7 +92,7 @@ public class CalendarWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .post("/plan-it/calendar/presets/{planit-user-id}", 20)
+                                .post("/plan-it/calendar/users/{planit-user-id}/presets", 20)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -230,19 +230,33 @@ public class CalendarWebLayerTest {
 
     @Test
     public void createEventTest() throws Exception {
+        Entity_EventPreset preset = TestUtils.createPreset("Test 1", false, null, null);
+        List<Entity_Guest> guests = new ArrayList<>() {
+            {
+                add(TestUtils.createGuest("test@gmail.com", true));
+                add(TestUtils.createGuest("test2@gmail.com", true));
+                add(TestUtils.createGuest("test3@gmail.com", true));
+            }
+        };
+        List<Entity_PresetAvailability> availabilities = new ArrayList<>() {
+            {
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, null, null, false));
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, null, null, true));
+                add(TestUtils.createPresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+            }
+        };
+        DTO_PresetDetail presetDetail = new DTO_PresetDetail(
+                preset,
+                guests,
+                availabilities
+        );
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DTO_NewEventDetail newEventDetail = new DTO_NewEventDetail(
                 "TEST",
                 "Summary TEST",
                 "PWR",
                 "this is a unit test",
-                1,
-                new ArrayList<>() {
-                    {
-                        add(TestUtils.createGuest("test@gmail.com", true));
-                        add(TestUtils.createGuest("test5@gmail.com", false));
-                    }
-                },
+                presetDetail,
                 "owner@email.com",
                 format.parse("2022-1-10 12:00:00"),
                 format.parse("2022-2-10 12:00:00"),
@@ -272,11 +286,24 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("start_date").description("The start date after when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss"),
                                 fieldWithPath("end_date").description("The end date before when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss"),
                                 fieldWithPath("event_preset_id").description("The Id of the event preset used to configure the configure."),
-                                fieldWithPath("attendee_emails[]").description(""),
-                                fieldWithPath("attendee_emails[].id_event_guest").ignored(),
-                                fieldWithPath("attendee_emails[].entity_EventPreset").ignored(),
-                                fieldWithPath("attendee_emails[].email").description("The email of the attendee").type(String.class),
-                                fieldWithPath("attendee_emails[].obligatory").description("The guest's attendance is obligatory").type(Boolean.class)
+                                fieldWithPath("event_preset.name").description("The name of the preset to be created").type(String.class),
+                                fieldWithPath("event_preset.break_into_smaller_events").description("The event should be broken into smaller events if no timeslot was found with the provided event duration.").type(Boolean.class),
+                                fieldWithPath("event_preset.id_event_preset").description("The identifier of the Preset record, unique").type(Integer.class),
+                                fieldWithPath("event_preset.shared_presets").ignored(),
+                                fieldWithPath("event_preset.min_length_of_single_event").description("The minimum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("event_preset.max_length_of_single_event").description("The maximum duration for a small event (in minutes) in case \"break_into_smaller_events\" is set to true.").type(Integer.class),
+                                fieldWithPath("guests[].id_event_guest").description("The identifier of the Preset Guest record, unique").type(Integer.class),
+                                fieldWithPath("guests[].entity_EventPreset").ignored(),
+                                fieldWithPath("guests[]").description("List of guests that should always be invites when the parent preset is selected"),
+                                fieldWithPath("guests[].email").description("The email of the guest").type(String.class),
+                                fieldWithPath("guests[].obligatory").description("The guest's attendance in the event is obligatory").type(Boolean.class),
+                                fieldWithPath("preset_availability[]").description("List of days availabilities that should be taken into account when scheduling an event"),
+                                fieldWithPath("preset_availability[].id_preset_availability").description("The identifier of the Preset Availability record, unique").type(Integer.class),
+                                fieldWithPath("preset_availability[].entity_EventPreset").ignored(),
+                                fieldWithPath("preset_availability[].day").description("The day of availability ").type(String.class),
+                                fieldWithPath("preset_availability[].start_available_time").optional().description("The start hour after when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].end_available_time").optional().description("The end hour before when events can be created. The time is provided in the following format HH:mm").type(Time.class),
+                                fieldWithPath("preset_availability[].day_off").description("No events can be created in this day").type(Boolean.class)
                         ),
                         responseFields(
                                 fieldWithPath("start_date").description("The scheduled event start date").type(DateTime.class),

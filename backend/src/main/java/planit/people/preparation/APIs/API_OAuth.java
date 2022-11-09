@@ -25,7 +25,7 @@ public class API_OAuth {
         this.idaoGoogleAccount = idaoGoogleAccount;
     }
 
-    @GetMapping(path = "planit-user-id/{email}")
+    @GetMapping(path = "users?email={email}")
     public ResponseEntity<UserCreationResponse> getUserIdFromEmail(@PathVariable String email) {
         try {
             Entity_GoogleAccount account = idaoGoogleAccount.getIdOfUserFromEmail(Converter.decodeURLString(email));

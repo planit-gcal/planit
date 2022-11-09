@@ -30,7 +30,7 @@ public class API_Calendar {
      * @param newEventDetail the event details
      * @return HttpStatus.OK if event is created else HttpStatus.BAD_REQUEST
      */
-    @PostMapping(path = "event", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "events", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<CalendarResponse> createNewEvent(@RequestBody DTO_NewEventDetail newEventDetail) {
         try {
             System.out.println("request event: " + newEventDetail);
@@ -50,7 +50,7 @@ public class API_Calendar {
      * @return the new preset detail
      * @see Service_Calendar#upsertPresetDetail(Long, DTO_PresetDetail, Boolean)
      */
-    @PostMapping(path = "presets/{planit-user-id}", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "users/{planit-user-id}/presets", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<DTO_PresetDetail> createNewPreset(@PathVariable("planit-user-id") Integer planItUserId, @RequestBody DTO_PresetDetail dtoNewPreset) {
         try {
             System.out.println("createNewPreset request: " + dtoNewPreset);
@@ -67,7 +67,7 @@ public class API_Calendar {
      * @param planItUserId the PlanIt User Id for whom we need to get their Preset Details
      * @return List of Preset Detail
      */
-    @GetMapping(path = "presets/{planit-user-id}")
+    @GetMapping(path = "users/{planit-user-id}/presets")
     public ResponseEntity<List<DTO_PresetDetail>> getAllPresetFromPlanItUserId(@PathVariable("planit-user-id") Long planItUserId) {
         try {
             return new ResponseEntity<>(serviceCalendar.getEventPresetsByPlanItUserId(planItUserId), HttpStatus.FOUND);
@@ -85,7 +85,7 @@ public class API_Calendar {
      * @return the updated preset detail
      * @see Service_Calendar#upsertPresetDetail(Long, DTO_PresetDetail, Boolean)
      */
-    @PatchMapping(path = "presets/{planit-user-id}", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PatchMapping(path = "users/{planit-user-id}/presets", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<DTO_PresetDetail> updatePreset(@RequestBody DTO_PresetDetail dtoPresetDetail, @PathVariable("planit-user-id") Long planItUserId) {
         try {
             System.out.println("request: " + dtoPresetDetail);
@@ -103,7 +103,7 @@ public class API_Calendar {
      * @param presetId     the id of the EventPreset which should be removed.
      * @return HttpStatus.OK if deleted else HttpStatus.BAD_REQUEST
      */
-    @DeleteMapping(path = "presets/{planit-user-id}/{preset-id}")
+    @DeleteMapping(path = "users/{planit-user-id}/presets/{preset-id}")
     public ResponseEntity<Boolean> deletePreset(@PathVariable("planit-user-id") Long planItUserId, @PathVariable("preset-id") Long presetId) {
         try {
             serviceCalendar.deletePreset(planItUserId, presetId);
