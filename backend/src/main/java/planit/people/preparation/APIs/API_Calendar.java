@@ -30,7 +30,7 @@ public class API_Calendar {
      * @param newEventDetail the event details
      * @return HttpStatus.OK if event is created else HttpStatus.BAD_REQUEST
      */
-    @PostMapping(path = "new-event", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "event", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<CalendarResponse> createNewEvent(@RequestBody DTO_NewEventDetail newEventDetail) {
         try {
             System.out.println("request event: " + newEventDetail);

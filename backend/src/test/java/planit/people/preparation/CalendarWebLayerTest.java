@@ -255,7 +255,7 @@ public class CalendarWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .post("/plan-it/calendar/new-event", 20)
+                                .post("/plan-it/calendar/event", 20)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(newEventDetail)))
