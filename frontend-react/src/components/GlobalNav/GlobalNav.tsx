@@ -24,11 +24,11 @@ const GlobalNav = () => {
       console.log('succ: ', response);
       AxiosInstance.post('/plan-it/user/token', {
         code: response.code,
-        planit_userId: userDetails?.planitUserId || null,
+        planit_user_id: userDetails?.planitUserId || null,
       })
         .then((response) => {
           console.log(response);
-          // setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_userId! }));
+          // setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_user_id! }));
         })
         .catch((error) => console.log(error.message));
     },
