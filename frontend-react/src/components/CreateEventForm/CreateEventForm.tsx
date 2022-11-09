@@ -78,13 +78,11 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       children: (
         <Form layout="vertical" form={generalForm}>
           <Row gutter={16}>
-            <Col span={16}>
+            <Col span={8}>
               <Form.Item name="name" label="Event Name" required initialValue={''}>
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={8}>
               <Form.Item
                 name="duration"
@@ -95,7 +93,9 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
               </Form.Item>
             </Col>
-            <Col span={8}>
+          </Row>
+          <Row gutter={16}>
+            <Col span={16}>
               <Form.Item
                 name="start_end"
                 label="Event Between"
@@ -112,7 +112,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={8}>
+            <Col span={16}>
               <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
                 {(fields, { add, remove }) => (
                   <>

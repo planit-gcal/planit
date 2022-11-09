@@ -92,7 +92,14 @@ const GlobalNav = () => {
     { key: '2', label: <Link to="manage-presets">Manage presets</Link> },
   ];
 
-  return <Tabs items={items} tabBarExtraContent={OperationsSlot} tabBarStyle={{ margin: '0' }} />;
+  return (
+    <Tabs
+      items={items}
+      tabBarExtraContent={OperationsSlot}
+      tabBarStyle={{ margin: '0' }}
+      style={{ maxWidth: '1000px', margin: 'auto' }}
+    />
+  );
 };
 
 export default GlobalNav;
