@@ -1,38 +1,17 @@
-import { CloseOutlined, MinusCircleOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  Col,
-  Divider,
-  Form,
-  FormInstance,
-  Input,
-  InputNumber,
-  Modal,
-  Row,
-  Space,
-  Steps,
-  Switch,
-  Tabs,
-  TabsProps,
-  Typography,
-} from 'antd';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Col, Divider, Form, Input, Row, Space, Steps, Switch, Tabs, TabsProps, Typography } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { EventCreateRequest } from '../../models/event';
-import { formatToUTC } from '../../utils/date.utils';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
-import { AddEmail } from './AddEmail';
 
 type CreateEventFormProps = {
   owner: string;
   onSubmit: (result: EventCreateRequest) => void;
 };
-
-// todo fix default values
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
@@ -42,19 +21,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     guests: { email: string; obligatory: boolean }[];
   }>();
 
-  const [summary, setSummary] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [attendees, setAttendees] = useState<string[]>([]);
-  const [start_date, setStartDate] = useState('');
-  const [end_date, setEndDate] = useState('');
-  const [duration, setDuration] = useState(0);
-
   const [activeTabKey, setActiveTabKey] = useState('0');
-
-  const addEmail = (email: string) => {
-    setAttendees((prevState) => [...prevState, email]);
-  };
 
   const stepItems = [
     { title: 'General' },
@@ -273,78 +240,5 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         )}
       </Space>
     </div>
-  );
-
-  return (
-    <form>
-      <label htmlFor="summary">Event Summary</label>
-      <input
-        type="text"
-        id="summary"
-        placeholder="summary"
-        value={summary}
-        onChange={(e) => setSummary(e.target.value)}
-      />
-      <label htmlFor="location">Event Location</label>
-      <input
-        type="text"
-        id="location"
-        placeholder="location"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
-      <label htmlFor="description">Description</label>
-      <input
-        type="text"
-        id="description"
-        placeholder="description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <label htmlFor="attendees">Attendees</label>
-      <AddEmail emails={attendees} addEmail={addEmail}></AddEmail>
-      <label htmlFor="start_date">Start Date</label>
-      <input
-        type="datetime-local"
-        id="start_date"
-        placeholder="start date"
-        value={start_date}
-        onChange={(e) => setStartDate(e.target.value)}
-      />
-      <label htmlFor="end_date">End Date</label>
-      <input
-        type="datetime-local"
-        id="end_date"
-        placeholder="end date"
-        value={end_date}
-        onChange={(e) => setEndDate(e.target.value)}
-      />
-      <label htmlFor="duration">Event Duration</label>
-      <input
-        type="number"
-        id="duration"
-        placeholder="duration"
-        value={duration}
-        onChange={(e) => setDuration(+e.target.value)}
-      />
-
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          onSubmit({
-            summary,
-            location,
-            description,
-            attendee_emails: attendees,
-            start_date: formatToUTC(start_date),
-            end_date: formatToUTC(end_date),
-            duration,
-            owner_email: owner,
-          });
-        }}
-      >
-        submit
-      </button>
-    </form>
   );
 };
