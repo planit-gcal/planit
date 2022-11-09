@@ -11,8 +11,7 @@ import planit.people.preparation.Responses.UserCreationResponse;
 import planit.people.preparation.Scheduling.Converter;
 
 @RestController
-@RequestMapping(path = "plan-it/oauth",
-        produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "plan-it/oauth", produces = { MediaType.APPLICATION_JSON_VALUE })
 public class API_OAuth {
 
     private final IDAO_GoogleAccount idaoGoogleAccount;
