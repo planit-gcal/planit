@@ -4,13 +4,12 @@ import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
 
-import { EventCreateRequest } from '../../models/event';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
 
 type CreateEventFormProps = {
   owner: string;
-  onSubmit: (result: EventCreateRequest) => void;
+  onSubmit: (result: unknown) => void;
 };
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {

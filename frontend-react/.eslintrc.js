@@ -50,7 +50,7 @@ module.exports = {
     {
       files: ['!**/config.ts'],
       rules: {
-        'no-restricted-imports': ['error', { paths: ['axios'] }],
+        'no-restricted-imports': ['error', { importNames: ['default'], name: 'axios' }],
       },
     },
   ],

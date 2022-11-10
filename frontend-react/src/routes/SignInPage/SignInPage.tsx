@@ -1,29 +1,26 @@
-import { useGoogleLogin } from '@react-oauth/google';
+import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 import { useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { AxiosInstance } from '../../config';
+import { createNewUser } from '../../api/users/users.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const SignInPage = () => {
-  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const { setUserDetails } = useContext(PlanitUserContext);
   const navigate = useNavigate();
 
   const onSuccess = useCallback(
-    (response: any) => {
-      console.log('succ: ', response);
-      AxiosInstance.post('/plan-it/user/token', {
-        code: response.code,
-        planit_user_id: userDetails?.planitUserId || null,
-      })
-        .then((response) => {
-          console.log(response);
-          setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_user_id! }));
-          navigate('/create-events');
-        })
-        .catch((error) => console.log(error.message));
+    async ({ code }: CodeResponse) => {
+      try {
+        const response = await createNewUser(code);
+
+        setUserDetails((prev) => ({ ...prev, planitUserId: response.planit_user_id }));
+        navigate('/create-events');
+      } catch (e) {
+        console.log(e);
+      }
     },
-    [navigate, setUserDetails, userDetails?.planitUserId]
+    [navigate, setUserDetails]
   );
 
   const login = useGoogleLogin({

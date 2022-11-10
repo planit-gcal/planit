@@ -1,11 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { useGoogleLogin } from '@react-oauth/google';
+import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 import { Button, Divider, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
 import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { AxiosInstance } from '../../config';
+import { createNewAssignedUser } from '../../api/users/users.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 const { Text } = Typography;
@@ -20,19 +20,15 @@ const GlobalNav = () => {
   const { userDetails, setUserDetails, userEmails } = useContext(PlanitUserContext);
 
   const onSuccess = useCallback(
-    (response: any) => {
-      console.log('succ: ', response);
-      AxiosInstance.post('/plan-it/user/token', {
-        code: response.code,
-        planit_user_id: userDetails?.planitUserId || null,
-      })
-        .then((response) => {
-          console.log(response);
-          // setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_user_id! }));
-        })
-        .catch((error) => console.log(error.message));
+    async ({ code }: CodeResponse) => {
+      try {
+        const response = await createNewAssignedUser(code, userDetails!.planitUserId!);
+        console.log(response);
+      } catch (e) {
+        console.log(e);
+      }
     },
-    [userDetails?.planitUserId]
+    [userDetails]
   );
 
   const login = useGoogleLogin({
