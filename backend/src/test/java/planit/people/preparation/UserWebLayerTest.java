@@ -50,7 +50,7 @@ public class UserWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .post("/plan-it/user/token")
+                                .post("/plan-it/users")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(code)))
@@ -76,7 +76,7 @@ public class UserWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .post("/plan-it/user/token")
+                                .post("/plan-it/users")
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(code)))
@@ -107,10 +107,10 @@ public class UserWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .get("/plan-it/user/getAllEmails/{planit-user-id}", 1)
+                                .get("/plan-it/users/{planit-user-id}/emails", 1)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andDo(print())
                 .andDo(document("get-emails",

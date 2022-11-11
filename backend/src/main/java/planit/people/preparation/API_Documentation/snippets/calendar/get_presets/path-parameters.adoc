@@ -1,4 +1,4 @@
-.+/plan-it/calendar/presets/{planit-user-id}+
+.+/plan-it/calendar/users/{planit-user-id}/presets+
 |===
 |Parameter|Description
 

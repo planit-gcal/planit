@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ curl 'http://localhost:8080/plan-it/user/getAllEmails/1' -i -X GET \
+$ curl 'http://localhost:8080/plan-it/users/1/emails' -i -X GET \
     -H 'Accept: application/json'
 ----

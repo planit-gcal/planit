@@ -16,10 +16,8 @@ import planit.people.preparation.Scheduling.Converter;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,18 +36,18 @@ public class OAuthWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .get("/plan-it/oauth/planit-user-id/{email}", Converter.encodeString("user@email.com"))
+                                .get("/plan-it/oauth/users?email="+Converter.encodeString("user@email.com"))
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
-                .andExpect(status().isFound())
+                .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("get-planit-user-id",
-                        pathParameters(
-                                parameterWithName("email").description("The encoded email of the PlanIt User")
-                        ),
                         responseFields(
                                 fieldWithPath("planit_user_id").description("The unique identifier for the PlanIt User Account").type(Long.class),
                                 fieldWithPath("google_account_id").description("The unique identifier for the Google Account User").type(Long.class)
+                        ),
+                        requestParameters(
+                                parameterWithName("email").description("the email of the PlanIt user")
                         )));
     }
 

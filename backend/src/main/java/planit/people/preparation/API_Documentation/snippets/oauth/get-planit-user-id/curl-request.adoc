@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ curl 'http://localhost:8080/plan-it/oauth/planit-user-id/user@email.com' -i -X GET \
+$ curl 'http://localhost:8080/plan-it/oauth/users?email=user@email.com' -i -X GET \
     -H 'Accept: application/json'
 ----

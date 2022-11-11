@@ -1,6 +1,6 @@
 [source,http,options="nowrap"]
 ----
-GET /plan-it/user/getAllEmails/1 HTTP/1.1
+GET /plan-it/users/1/emails HTTP/1.1
 Accept: application/json
 Host: localhost:8080
 

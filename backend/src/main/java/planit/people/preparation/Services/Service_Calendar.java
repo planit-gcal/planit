@@ -43,7 +43,7 @@ public class Service_Calendar {
         List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountByEmail(new ArrayList<>() {
             {
                 add(newEventDetail.owner_email());
-                for (Entity_Guest guest : newEventDetail.preset_detail().guests()) {
+                for (Entity_Guest guest : newEventDetail.event_preset_detail().guests()) {
                     add(guest.getEmail());
                 }
             }

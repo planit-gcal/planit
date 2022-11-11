@@ -70,10 +70,10 @@ public class API_Calendar {
     @GetMapping(path = "users/{planit-user-id}/presets")
     public ResponseEntity<List<DTO_PresetDetail>> getAllPresetFromPlanItUserId(@PathVariable("planit-user-id") Long planItUserId) {
         try {
-            return new ResponseEntity<>(serviceCalendar.getEventPresetsByPlanItUserId(planItUserId), HttpStatus.FOUND);
+            return new ResponseEntity<>(serviceCalendar.getEventPresetsByPlanItUserId(planItUserId), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ curl 'http://localhost:8080/plan-it/calendar/presets/1/1' -i -X DELETE \
+$ curl 'http://localhost:8080/plan-it/calendar/users/1/presets/1' -i -X DELETE \
     -H 'Accept: application/json'
 ----

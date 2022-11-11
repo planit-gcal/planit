@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ http DELETE 'http://localhost:8080/plan-it/calendar/presets/1/1' \
+$ http DELETE 'http://localhost:8080/plan-it/calendar/users/1/presets/1' \
     'Accept:application/json'
 ----

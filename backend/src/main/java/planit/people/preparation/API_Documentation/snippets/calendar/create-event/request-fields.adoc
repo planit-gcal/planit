@@ -33,20 +33,64 @@
 |`+String+`
 |The end date before when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss
 
-|`+event_preset_id+`
-|`+Number+`
-|The Id of the event preset used to configure the configure.
-
-|`+attendee_emails[]+`
-|`+Array+`
-|
-
-|`+attendee_emails[].email+`
+|`+event_preset_detail.event_preset.name+`
 |`+class java.lang.String+`
-|The email of the attendee
+|The name of the preset to be created
 
-|`+attendee_emails[].obligatory+`
+|`+event_preset_detail.event_preset.break_into_smaller_events+`
 |`+class java.lang.Boolean+`
-|The guest's attendance is obligatory
+|The event should be broken into smaller events if no timeslot was found with the provided event duration.
+
+|`+event_preset_detail.event_preset.id_event_preset+`
+|`+class java.lang.Integer+`
+|The identifier of the Preset record, unique
+
+|`+event_preset_detail.event_preset.min_length_of_single_event+`
+|`+class java.lang.Integer+`
+|The minimum duration for a small event (in minutes) in case "break_into_smaller_events" is set to true.
+
+|`+event_preset_detail.event_preset.max_length_of_single_event+`
+|`+class java.lang.Integer+`
+|The maximum duration for a small event (in minutes) in case "break_into_smaller_events" is set to true.
+
+|`+event_preset_detail.guests[].id_event_guest+`
+|`+class java.lang.Integer+`
+|The identifier of the Preset Guest record, unique
+
+|`+event_preset_detail.guests[]+`
+|`+Array+`
+|List of guests that should always be invites when the parent preset is selected
+
+|`+event_preset_detail.guests[].email+`
+|`+class java.lang.String+`
+|The email of the guest
+
+|`+event_preset_detail.guests[].obligatory+`
+|`+class java.lang.Boolean+`
+|The guest's attendance in the event is obligatory
+
+|`+event_preset_detail.preset_availability[]+`
+|`+Array+`
+|List of days availabilities that should be taken into account when scheduling an event
+
+|`+event_preset_detail.preset_availability[].id_preset_availability+`
+|`+class java.lang.Integer+`
+|The identifier of the Preset Availability record, unique
+
+|`+event_preset_detail.preset_availability[].day+`
+|`+class java.lang.String+`
+|The day of availability 
+
+|`+event_preset_detail.preset_availability[].start_available_time+`
+|`+class java.sql.Time+`
+|The start hour after when events can be created. The time is provided in the following format HH:mm
+
+|`+event_preset_detail.preset_availability[].end_available_time+`
+|`+class java.sql.Time+`
+|The end hour before when events can be created. The time is provided in the following format HH:mm
+
+|`+event_preset_detail.preset_availability[].day_off+`
+|`+class java.lang.Boolean+`
+|No events can be created in this day
 
 |===

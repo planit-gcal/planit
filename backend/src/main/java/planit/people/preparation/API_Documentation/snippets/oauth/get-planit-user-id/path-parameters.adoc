@@ -1,8 +1,0 @@
-.+/plan-it/oauth/planit-user-id/{email}+
-|===
-|Parameter|Description
-
-|`+email+`
-|The encoded email of the PlanIt User
-
-|===

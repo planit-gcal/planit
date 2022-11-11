@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ http GET 'http://localhost:8080/plan-it/user/getAllEmails/1' \
+$ http GET 'http://localhost:8080/plan-it/users/1/emails' \
     'Accept:application/json'
 ----

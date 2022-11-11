@@ -11,7 +11,7 @@ public record DTO_NewEventDetail(
         String summary,
         String location,
         String description,
-        DTO_PresetDetail event_preset,
+        DTO_PresetDetail event_preset_detail,
         String owner_email,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date start_date,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date end_date,
