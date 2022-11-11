@@ -24,6 +24,9 @@ All APIs' requests, responses and attributes are documented using [Spring REST D
 - Create New Event 
 - Create New Event Preset Detail
 - Get All Event Preset Details For A PlanIt User
+- Update Event Preset
+- Delete Event Preset
+- Share Preset Event
 
 [`OAuth APIs.adoc` file](src/main/java/planit/people/preparation/API_Documentation/OAuth_APIs.adoc) contains the documentations for all APIs that belong to the [plan-it/oauth endpoint](src/main/java/planit/people/preparation/APIs/API_OAuth.java):
 - Get PlanIt User Id From Their Email
