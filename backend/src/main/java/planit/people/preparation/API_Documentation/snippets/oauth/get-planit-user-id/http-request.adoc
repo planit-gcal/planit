@@ -1,6 +1,6 @@
 [source,http,options="nowrap"]
 ----
-GET /plan-it/oauth/planit-user-id/user@email.com HTTP/1.1
+GET /plan-it/oauth/users?email=user@email.com HTTP/1.1
 Accept: application/json
 Host: localhost:8080
 

@@ -32,11 +32,52 @@ public class Entity_User {
     /**
      * Create a helper table for the Many-Many relation between Entity_User and Entity_EventPreset
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade =
+                    {
+                            CascadeType.DETACH,
+                            CascadeType.MERGE,
+                            CascadeType.REFRESH,
+                            CascadeType.PERSIST
+                    },
+            targetEntity = Entity_EventPreset.class)
     @JoinTable(name = "planit_user_event_presets",
-            joinColumns = @JoinColumn(name = "planit_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "id_event_preset"))
+            joinColumns = @JoinColumn(name = "planit_user_id",
+                    nullable = false,
+                    updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "id_event_preset",
+                    nullable = false,
+                    updatable = false),
+            foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT),
+            inverseForeignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     private Set<Entity_EventPreset> entity_EventPresets = new LinkedHashSet<>();
+
+    /**
+     * Create a bidirectional relation with Entity_SharePreset in order to enable CASCADE deletion
+     */
+    @OneToMany(mappedBy = "inviter_user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Entity_SharePreset> pending_shared_presets_requests = new LinkedHashSet<>();
+    /**
+     * Create a bidirectional relation with Entity_SharePreset in order to enable CASCADE deletion
+     */
+    @OneToMany(mappedBy = "invitee_user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
+    private Set<Entity_SharePreset> pending_shared_presets_invites = new LinkedHashSet<>();
+
+    public Set<Entity_SharePreset> getPending_shared_presets_invites() {
+        return pending_shared_presets_invites;
+    }
+
+    public void setPending_shared_presets_invites(Set<Entity_SharePreset> pending_shared_presets_invites) {
+        this.pending_shared_presets_invites = pending_shared_presets_invites;
+    }
+
+    public Set<Entity_SharePreset> getPending_shared_presets_requests() {
+        return pending_shared_presets_requests;
+    }
+
+    public void setPending_shared_presets_requests(Set<Entity_SharePreset> pending_shared_presets_requests) {
+        this.pending_shared_presets_requests = pending_shared_presets_requests;
+    }
 
     /**
      * Empty constructor needed by Spring.
@@ -115,6 +156,14 @@ public class Entity_User {
         preset.getEntityUsers().add(this);
     }
 
+    /**
+     * Util method added to ease the process of removing an event preset instance for the current PlanIt user
+     * @param eventPreset the event preset to be deleted.
+     */
+    public void removePreset(Entity_EventPreset eventPreset){
+        this.entity_EventPresets.remove(eventPreset);
+//        eventPreset.getEntityUsers().remove(this);
+    }
     @Override
     public String toString() {
         return "Entity_User{" +

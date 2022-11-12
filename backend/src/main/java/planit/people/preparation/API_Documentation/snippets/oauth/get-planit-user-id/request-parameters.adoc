@@ -1,0 +1,7 @@
+|===
+|Parameter|Description
+
+|`+email+`
+|the email of the PlanIt user
+
+|===

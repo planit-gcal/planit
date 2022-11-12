@@ -1,5 +1,5 @@
 [source,bash]
 ----
-$ http GET 'http://localhost:8080/plan-it/calendar/presets/1' \
+$ http GET 'http://localhost:8080/plan-it/calendar/users/1/presets' \
     'Accept:application/json'
 ----

@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "event_preset")
@@ -46,19 +44,30 @@ public class Entity_EventPreset {
     /**
      * defines the Many-Many relation between Entity_User and Entity_EventPreset
      */
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            },
-            mappedBy = "entity_EventPresets")
+    @ManyToMany(mappedBy = "entity_EventPresets",fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, targetEntity = Entity_User.class)
     @JsonIgnore
     private Set<Entity_User> entityUsers = new HashSet<>();
+    /**
+     * Create a bidirectional relation with Entity_PresetAvailability in order to enable CASCADE deletion
+     */
+    @OneToMany(mappedBy = "entity_EventPreset", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Entity_PresetAvailability> presetAvailabilities = new ArrayList<>();
+    /**
+     * Create a bidirectional relation with Entity_Guest in order to enable CASCADE deletion
+     */
+    @OneToMany(mappedBy = "entity_EventPreset", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Entity_Guest> guests = new ArrayList<>();
+    /**
+     * Create a bidirectional relation with Entity_SharePreset in order to enable CASCADE deletion
+     */
+    @OneToMany(mappedBy = "shared_preset", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
+    private Set<Entity_SharePreset> shared_presets = new LinkedHashSet<>();
 
     /**
      * constructor used to retrieve records from the DB and create new ones.
-     * @param name name of preset
-     * @param break_into_smaller_events should an event be broken into smaller events when no proper timeslot is found
+     *
+     * @param name                       name of preset
+     * @param break_into_smaller_events  should an event be broken into smaller events when no proper timeslot is found
      * @param min_length_of_single_event minimum duration for an event that is resulted by setting "break_into_smaller_events" to true
      * @param max_length_of_single_event maximum duration for an event that is resulted by setting "break_into_smaller_events" to true
      */
@@ -71,9 +80,42 @@ public class Entity_EventPreset {
     }
 
     /**
+     * constructor used to create an instance of EventPreset used to add the record as a FK in different tables
+     * @param id_event_preset the id of the EventPreset
+     */
+    public Entity_EventPreset(Long id_event_preset) {
+        this.id_event_preset = id_event_preset;
+    }
+
+    /**
      * Empty constructor needed by Spring.
      */
     public Entity_EventPreset() {
+    }
+
+    public Set<Entity_SharePreset> getShared_presets() {
+        return shared_presets;
+    }
+
+    public void setShared_presets(Set<Entity_SharePreset> shared_presets) {
+        this.shared_presets = shared_presets;
+    }
+    /**
+     * Util method added to ease the process of adding a PlanIt user instance for the current EventPreset
+     * @param user the PlanIt user to be added
+     */
+    public void addUser(Entity_User user) {
+        this.entityUsers.add(user);
+        user.getEntity_EventPresets().add(this);
+    }
+
+    /**
+     * Util method added to ease the process of removing a PlanIt user instance for the current EventPreset
+     * @param user the PlanIt user to be removed
+     */
+    public void removeUser(Entity_User user) {
+        this.entityUsers.remove(user);
+        user.getEntity_EventPresets().remove(this);
     }
 
     public Set<Entity_User> getEntityUsers() {
@@ -139,12 +181,6 @@ public class Entity_EventPreset {
 
     @Override
     public String toString() {
-        return "Entity_EventPreset{" +
-                "id_event_preset=" + id_event_preset +
-                ", name='" + name + '\'' +
-                ", break_into_smaller_events=" + break_into_smaller_events +
-                ", min_length_of_single_event=" + min_length_of_single_event +
-                ", max_length_of_single_event=" + max_length_of_single_event +
-                '}';
+        return "Entity_EventPreset{" + "id_event_preset=" + id_event_preset + ", name='" + name + '\'' + ", break_into_smaller_events=" + break_into_smaller_events + ", min_length_of_single_event=" + min_length_of_single_event + ", max_length_of_single_event=" + max_length_of_single_event + '}';
     }
 }

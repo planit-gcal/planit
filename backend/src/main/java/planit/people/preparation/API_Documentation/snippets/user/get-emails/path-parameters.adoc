@@ -1,4 +1,4 @@
-.+/plan-it/user/getAllEmails/{planit-user-id}+
+.+/plan-it/users/{planit-user-id}/emails+
 |===
 |Parameter|Description
 

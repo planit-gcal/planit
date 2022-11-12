@@ -9,6 +9,6 @@ import planit.people.preparation.Entities.Entity_PresetAvailability;
 import java.util.List;
 
 public interface IDAO_PresetAvailability extends CrudRepository<Entity_PresetAvailability, Long> {
-    @Query("SELECT new Entity_PresetAvailability(av.id_preset_availability, av.entity_EventPreset, av.day, av.day_off, av.start_available_time, av.start_available_time) FROM Entity_PresetAvailability av WHERE av.entity_EventPreset IN (:EventPresets)")
+    @Query("SELECT new Entity_PresetAvailability(av.id_preset_availability, av.entity_EventPreset, av.day, av.day_off, av.start_available_time, av.end_available_time) FROM Entity_PresetAvailability av WHERE av.entity_EventPreset IN (:EventPresets)")
     List<Entity_PresetAvailability> getAllByIdEventPreset(@Param("EventPresets") List<Entity_EventPreset> eventPresets);
 }

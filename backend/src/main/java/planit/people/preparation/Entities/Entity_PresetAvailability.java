@@ -6,6 +6,9 @@ import planit.people.preparation.Utils.SqlTimeDeserializer;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Table(name = "preset_availability", uniqueConstraints = {
@@ -24,7 +27,13 @@ public class Entity_PresetAvailability {
     /**
      * Foreign Key references the EventPreset for each PresetAvailability record.
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade =
+            {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.REFRESH,
+                    CascadeType.PERSIST
+            })
     @JoinColumn(name = "id_event_preset")
     private Entity_EventPreset entity_EventPreset;
 

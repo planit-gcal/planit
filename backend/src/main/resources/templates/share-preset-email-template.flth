@@ -1,0 +1,9 @@
+<html>
+<head></head>
+<body>
+<p>Dear Mustafa Mari Mari,</p>
+<p>Your friend Mustafa Mari Mari would like you to join his preset</p>
+<a href="http://localhost:3000" onclick="fetch('http://localhost:8080/plan-it/calendar/presets/accept/${inviteCode}')"><input type="button" value="accept"/></a>
+<p>Thanks</p>
+</body>
+</html>

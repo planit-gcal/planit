@@ -1,0 +1,7 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/plan-it/calendar/presets/share' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{"inviter_email":"inviter@email.com","invitee_email":"invitee@email.com","preset_id":1}'
+----

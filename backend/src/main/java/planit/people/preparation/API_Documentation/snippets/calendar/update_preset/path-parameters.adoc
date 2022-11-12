@@ -1,0 +1,8 @@
+.+/plan-it/calendar/users/{planit-user-id}/presets+
+|===
+|Parameter|Description
+
+|`+planit-user-id+`
+|the id of the PlanIt User who requested the update
+
+|===

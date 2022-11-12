@@ -13,9 +13,9 @@ include::snippets/oauth/get-planit-user-id/http-request.adoc[]
 
 include::snippets/oauth/get-planit-user-id/http-response.adoc[]
 
-=== all possible request attributes
+=== all possible request parameters attributes
 
-include::snippets/oauth/get-planit-user-id/path-parameters.adoc[]
+include::snippets/oauth/get-planit-user-id/request-parameters.adoc[]
 
 === all possible response attributes
 

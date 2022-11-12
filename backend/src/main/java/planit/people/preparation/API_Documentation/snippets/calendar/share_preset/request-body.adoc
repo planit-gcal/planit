@@ -1,0 +1,4 @@
+[source,options="nowrap"]
+----
+{"inviter_email":"inviter@email.com","invitee_email":"invitee@email.com","preset_id":1}
+----
