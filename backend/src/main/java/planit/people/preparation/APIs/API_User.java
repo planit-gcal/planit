@@ -31,7 +31,7 @@ public class API_User {
         try {
             return new ResponseEntity<>(serviceUser.getGoogleAccountId(code), HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -41,7 +41,7 @@ public class API_User {
             return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

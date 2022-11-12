@@ -28,7 +28,7 @@ public class API_Calendar {
      * create a new event
      *
      * @param newEventDetail the event details
-     * @return HttpStatus.OK if event is created else HttpStatus.BAD_REQUEST
+     * @return HttpStatus.OK if event is created else HttpStatus.NOT_FOUND
      */
     @PostMapping(path = "events", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<CalendarResponse> createNewEvent(@RequestBody DTO_NewEventDetail newEventDetail) {
@@ -37,7 +37,7 @@ public class API_Calendar {
             return new ResponseEntity<>(serviceCalendar.createEvent(newEventDetail), HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
     }
@@ -57,7 +57,7 @@ public class API_Calendar {
             return new ResponseEntity<>(serviceCalendar.upsertPresetDetail(Long.valueOf(planItUserId), dtoNewPreset, false), HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -73,7 +73,7 @@ public class API_Calendar {
             return new ResponseEntity<>(serviceCalendar.getEventPresetsByPlanItUserId(planItUserId), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -92,7 +92,7 @@ public class API_Calendar {
             return new ResponseEntity<>(serviceCalendar.upsertPresetDetail(planItUserId, dtoPresetDetail, true), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -101,7 +101,7 @@ public class API_Calendar {
      *
      * @param planItUserId the id of the PlanIt user whose instance should be removed.
      * @param presetId     the id of the EventPreset which should be removed.
-     * @return HttpStatus.OK if deleted else HttpStatus.BAD_REQUEST
+     * @return HttpStatus.OK if deleted else HttpStatus.NOT_FOUND
      */
     @DeleteMapping(path = "users/{planit-user-id}/presets/{preset-id}")
     public ResponseEntity<Boolean> deletePreset(@PathVariable("planit-user-id") Long planItUserId, @PathVariable("preset-id") Long presetId) {
@@ -110,7 +110,7 @@ public class API_Calendar {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -118,7 +118,7 @@ public class API_Calendar {
      * share an EventPreset with another PlanIt User
      *
      * @param sharePreset contains the sharing information
-     * @return HttpStatus.OK if invite email is sent else HttpStatus.BAD_REQUEST
+     * @return HttpStatus.OK if invite email is sent else HttpStatus.NOT_FOUND
      */
     @PostMapping(path = "presets/share", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> sharePreset(@RequestBody DTO_SharePreset sharePreset) {
@@ -127,7 +127,7 @@ public class API_Calendar {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -135,7 +135,7 @@ public class API_Calendar {
      * accept the invite to join a preset
      * @apiNote NOT COMPLETE
      * @param eventCode the hash code used to identify the shared event information
-     * @return HttpStatus.OK if the user is able to join the preset else HttpStatus.BAD_REQUEST
+     * @return HttpStatus.OK if the user is able to join the preset else HttpStatus.NOT_FOUND
      */
 
     @GetMapping(path = "presets/accept/{event-code}")
@@ -145,7 +145,7 @@ public class API_Calendar {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
