@@ -1,6 +1,6 @@
 import { Card, Layout } from 'antd';
 import { Header, Content } from 'antd/lib/layout/layout';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import './App.css';
