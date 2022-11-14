@@ -1,10 +1,10 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
 
-import { AxiosInstance } from '../config';
+import { getUserEmails } from '../api/users/users.api';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type UserDetails = {
-  planitUserId?: string;
+  planitUserId?: number;
   ownerEmail?: string;
 };
 
@@ -12,6 +12,7 @@ type State = {
   userDetails: UserDetails | null;
   setUserDetails: (userDetails: React.SetStateAction<UserDetails>) => void;
   userEmails: string[];
+  isLoggedIn: boolean;
 };
 
 export const PlanitUserContext = createContext<State>({} as State);
@@ -26,9 +27,13 @@ export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
       return;
     }
 
-    AxiosInstance.get(`/plan-it/user/getAllEmails/${userDetails.planitUserId}`).then((response) =>
-      setUserEmails(response.data)
-    );
+    const fetchAndSetEmails = async () => {
+      const userEmails = await getUserEmails(userDetails.planitUserId!);
+
+      setUserEmails(userEmails);
+    };
+
+    fetchAndSetEmails();
   }, [userDetails?.planitUserId]);
 
   useEffect(() => {
@@ -42,6 +47,7 @@ export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
       userDetails,
       setUserDetails,
       userEmails,
+      isLoggedIn: !!userDetails?.planitUserId,
     }),
     [userDetails, setUserDetails, userEmails]
   );
