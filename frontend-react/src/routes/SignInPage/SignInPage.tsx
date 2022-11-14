@@ -1,13 +1,17 @@
 import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { createNewUser } from '../../api/users/users.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 export const SignInPage = () => {
-  const { setUserDetails } = useContext(PlanitUserContext);
+  const { isLoggedIn, setUserDetails } = useContext(PlanitUserContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    isLoggedIn && navigate('/create-events');
+  }, [isLoggedIn, navigate]);
 
   const onSuccess = useCallback(
     async ({ code }: CodeResponse) => {

@@ -12,6 +12,7 @@ type State = {
   userDetails: UserDetails | null;
   setUserDetails: (userDetails: React.SetStateAction<UserDetails>) => void;
   userEmails: string[];
+  isLoggedIn: boolean;
 };
 
 export const PlanitUserContext = createContext<State>({} as State);
@@ -46,6 +47,7 @@ export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
       userDetails,
       setUserDetails,
       userEmails,
+      isLoggedIn: !!userDetails?.planitUserId,
     }),
     [userDetails, setUserDetails, userEmails]
   );

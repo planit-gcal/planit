@@ -8,9 +8,7 @@ import GlobalNav from './components/GlobalNav/GlobalNav';
 import { PlanitUserContext } from './contexts/PlanitUserContext';
 
 function MainLayout() {
-  const { userDetails } = useContext(PlanitUserContext);
-
-  const isLoggedIn = useMemo(() => !!userDetails?.planitUserId, [userDetails?.planitUserId]);
+  const { isLoggedIn } = useContext(PlanitUserContext);
 
   return (
     <Layout style={{ backgroundColor: '#D8D8D8', height: '100%' }}>
