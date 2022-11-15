@@ -1,11 +1,28 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import {Button, Col, Divider, Form, Input, Row, Select, Space, Steps, Switch, Tabs, TabsProps, Typography} from 'antd';
+import {
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  Steps,
+  Switch,
+  Tabs,
+  TabsProps,
+  Tag,
+  Typography
+} from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
+import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
+import styled from "styled-components";
 
 type CreateEventFormProps = {
   owner: string;
@@ -13,6 +30,28 @@ type CreateEventFormProps = {
 };
 
 const { TextArea } = Input;
+
+// type CustomTagProps = {
+//   value: string;
+//   label: string;
+// }
+
+const tagRender = (value:string, label:string) => {
+  return (
+      <Space>
+        <div style={{paddingLeft: 8, display:"flex", alignItems:"center"}}>
+          <svg height="12" width="12">
+            <circle cx="6" cy="6" r="6" fill={value} />
+          </svg>
+        </div>
+        {label}
+      </Space>
+  );
+};
+
+const CustomSelect = styled(Select)`
+  .ant-select-item {padding-left:0}
+`
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
@@ -39,8 +78,6 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     </>
   );
 
-  const handleColorChange = (value: {value:string, label: React.ReactNode}) => console.log(value);
-
   const colorOptions = [
     {value: '#DC2127', label: 'Tomato'},
     {value: '#FF887C', label: 'Flamingo'},
@@ -52,7 +89,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     {value: '#5484ED', label: 'Blueberry'},
     {value: '#A4BDFC', label: 'Lavender'},
     {value: '#DBADFF', label: 'Grape'},
-    {value: '#616161', label: 'Graphite'},
+    {value: '#616161', label: 'Graphite'}
   ]
 
   const items = [
@@ -156,9 +193,8 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             <Row gutter={16}>
               <Col span={16}>
                 <Form.Item name="event_description" label={
-                  <>Event description <Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                  <Space>{`Event description `}<Typography.Text type='secondary'>(optional)</Typography.Text></Space>
                 }>
-                  {/*<Text type="secondary">(optional)</Text>*/}
                   <TextArea rows={4} placeholder={'What is the meeting about?'}/>
                 </Form.Item>
               </Col>
@@ -166,13 +202,17 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             <Row gutter={16}>
               <Col span={16}>
                 <Form.Item name="event_color" label={
-                  <>Event color{' '}<Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                  <Space>{`Event color `}<Typography.Text type='secondary'>(optional)</Typography.Text></Space>
                 }>
                   <Select
+                      className={"custom-select"}
                     labelInValue
-                    defaultValue={{value: '#5484ED', label: 'Blueberry'}}
-                    onChange={handleColorChange}
-                    options={colorOptions}
+                    mode={'multiple'}
+                    showArrow
+                    tagRender={(props) => <>{props.label}</>}
+                    defaultValue={'#5484ED'}
+                    options={colorOptions.map(e=>({...e, label:tagRender(e.value,e.label)}))}
+                    maxTagCount={1}
                   />
                 </Form.Item>
               </Col>
@@ -180,7 +220,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             <Row gutter={16}>
               <Col span={16}>
                 <Form.Item name="event_location" label={
-                  <>Event location <Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                  <Space>{`Event location `}<Typography.Text type='secondary'>(optional)</Typography.Text></Space>
                 }>
                   <Input placeholder={'Where are you meeting at?'}/>
                 </Form.Item>
