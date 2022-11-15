@@ -166,7 +166,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             <Row gutter={16}>
               <Col span={16}>
                 <Form.Item name="event_color" label={
-                  <>Event color<Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                  <>Event color{' '}<Typography.Text type='secondary'> (optional)</Typography.Text>:</>
                 }>
                   <Select
                     labelInValue
