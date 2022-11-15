@@ -17,18 +17,18 @@ const Tabs = styled(AntdTabs)`
 `;
 
 const GlobalNav = () => {
-  const { userDetails, setUserDetails, userEmails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails, userEmails, fetchAndSetEmails } = useContext(PlanitUserContext);
 
   const onSuccess = useCallback(
     async ({ code }: CodeResponse) => {
       try {
-        const response = await createNewAssignedUser(code, userDetails!.planitUserId!);
-        console.log(response);
+        await createNewAssignedUser(code, userDetails!.planitUserId!);
+        fetchAndSetEmails();
       } catch (e) {
         console.log(e);
       }
     },
-    [userDetails]
+    [fetchAndSetEmails, userDetails]
   );
 
   const login = useGoogleLogin({
