@@ -52,7 +52,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     {value: '#5484ED', label: 'Blueberry'},
     {value: '#A4BDFC', label: 'Lavender'},
     {value: '#DBADFF', label: 'Grape'},
-    {value: '#E1E1E1', label: 'Graphite'},
+    {value: '#616161', label: 'Graphite'},
   ]
 
   const items = [
