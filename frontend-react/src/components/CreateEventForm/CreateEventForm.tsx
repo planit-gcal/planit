@@ -1,5 +1,5 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, Divider, Form, Input, Row, Space, Steps, Switch, Tabs, TabsProps, Typography } from 'antd';
+import {Button, Col, Divider, Form, Input, Row, Select, Space, Steps, Switch, Tabs, TabsProps, Typography} from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
@@ -11,6 +11,8 @@ type CreateEventFormProps = {
   owner: string;
   onSubmit: (result: unknown) => void;
 };
+
+const { TextArea } = Input;
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
@@ -36,6 +38,22 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       <Divider />
     </>
   );
+
+  const handleColorChange = (value: {value:string, label: React.ReactNode}) => console.log(value);
+
+  const colorOptions = [
+    {value: '#DC2127', label: 'Tomato'},
+    {value: '#FF887C', label: 'Flamingo'},
+    {value: '#FFB878', label: 'Tangerine'},
+    {value: '#FBD75B', label: 'Banana'},
+    {value: '#7AE7BF', label: 'Sage'},
+    {value: '#51B749', label: 'Basil'},
+    {value: '#46D6DB', label: 'Peacock'},
+    {value: '#5484ED', label: 'Blueberry'},
+    {value: '#A4BDFC', label: 'Lavender'},
+    {value: '#DBADFF', label: 'Grape'},
+    {value: '#E1E1E1', label: 'Graphite'},
+  ]
 
   const items = [
     {
@@ -134,9 +152,41 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '2',
       children: (
-        <Form.Item name="event_name" label="Description" required>
-          <Input />
-        </Form.Item>
+          <Form layout="vertical" form={generalForm}>
+            <Row gutter={16}>
+              <Col span={16}>
+                <Form.Item name="event_description" label={
+                  <>Event description <Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                }>
+                  {/*<Text type="secondary">(optional)</Text>*/}
+                  <TextArea rows={4} placeholder={'What is the meeting about?'}/>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={16}>
+                <Form.Item name="event_color" label={
+                  <>Event color<Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                }>
+                  <Select
+                    labelInValue
+                    defaultValue={{value: '#5484ED', label: 'Blueberry'}}
+                    onChange={handleColorChange}
+                    options={colorOptions}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={16}>
+                <Form.Item name="event_location" label={
+                  <>Event location <Typography.Text type='secondary'> (optional)</Typography.Text>:</>
+                }>
+                  <Input placeholder={'Where are you meeting at?'}/>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
       ),
       forceRender: true,
     },
