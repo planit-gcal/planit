@@ -28,7 +28,7 @@ public class API_User {
     public ResponseEntity<UserCreationResponse> createNewUser(@RequestBody DTO_Code code) {
         System.out.println("dto code: " + code);
         try {
-            return new ResponseEntity<>(serviceUser.getGoogleAccountId(code), HttpStatus.CREATED);
+            return new ResponseEntity<>(serviceUser.createGoogleAccount(code), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
