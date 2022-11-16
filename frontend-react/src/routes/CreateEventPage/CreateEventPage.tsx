@@ -1,25 +1,18 @@
 import { useContext } from 'react';
 
+import { createEvent } from '../../api/calendar/calendar.api';
+import { EventCreateRequest } from '../../api/calendar/calendar.dto';
 import { CreateEventForm } from '../../components/CreateEventForm/CreateEventForm';
-import { AxiosInstance } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
-import { EventCreateRequest } from '../../models/event';
 
 export const CreateEventPage = () => {
   const { userDetails } = useContext(PlanitUserContext);
 
-  const onEventSubmit = (result: EventCreateRequest) => {
+  const onEventSubmit = async (result: unknown) => {
     console.log('succ: ', result);
-    AxiosInstance.post('/plan-it/calendar/new-event', result)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => console.log(error.message));
+
+    await createEvent(result as EventCreateRequest);
   };
 
-  return (
-    <div>
-      <CreateEventForm onSubmit={onEventSubmit} owner={userDetails?.ownerEmail || ''}></CreateEventForm>
-    </div>
-  );
+  return <CreateEventForm onSubmit={onEventSubmit} owner={userDetails?.ownerEmail || ''}></CreateEventForm>;
 };

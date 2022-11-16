@@ -1,10 +1,10 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AxiosInstance } from '../config';
+import { getUserEmails } from '../api/users/users.api';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type UserDetails = {
-  planitUserId?: string;
+  planitUserId?: number;
   ownerEmail?: string;
 };
 
@@ -12,6 +12,8 @@ type State = {
   userDetails: UserDetails | null;
   setUserDetails: (userDetails: React.SetStateAction<UserDetails>) => void;
   userEmails: string[];
+  isLoggedIn: boolean;
+  fetchAndSetEmails: () => void;
 };
 
 export const PlanitUserContext = createContext<State>({} as State);
@@ -21,15 +23,19 @@ export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
   const [userDetails, setUserDetails] = useLocalStorage<UserDetails>('userDetails', {});
   const [userEmails, setUserEmails] = useState<string[]>([]);
 
+  const fetchAndSetEmails = useCallback(async () => {
+    const userEmails = await getUserEmails(userDetails.planitUserId!);
+
+    setUserEmails(userEmails);
+  }, [userDetails.planitUserId]);
+
   useEffect(() => {
     if (!userDetails?.planitUserId) {
       return;
     }
 
-    AxiosInstance.get(`/plan-it/user/getAllEmails/${userDetails.planitUserId}`).then((response) =>
-      setUserEmails(response.data)
-    );
-  }, [userDetails?.planitUserId]);
+    fetchAndSetEmails();
+  }, [userDetails?.planitUserId, fetchAndSetEmails]);
 
   useEffect(() => {
     if (!userDetails?.ownerEmail && userEmails.length > 0) {
@@ -42,8 +48,10 @@ export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
       userDetails,
       setUserDetails,
       userEmails,
+      isLoggedIn: !!userDetails?.planitUserId,
+      fetchAndSetEmails,
     }),
-    [userDetails, setUserDetails, userEmails]
+    [userDetails, setUserDetails, userEmails, fetchAndSetEmails]
   );
 
   return <PlanitUserContext.Provider value={value}>{children}</PlanitUserContext.Provider>;

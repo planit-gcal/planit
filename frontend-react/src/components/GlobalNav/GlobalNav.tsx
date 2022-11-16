@@ -1,11 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { useGoogleLogin } from '@react-oauth/google';
+import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 import { Button, Divider, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
 import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { AxiosInstance } from '../../config';
+import { createNewAssignedUser } from '../../api/users/users.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 const { Text } = Typography;
@@ -17,22 +17,18 @@ const Tabs = styled(AntdTabs)`
 `;
 
 const GlobalNav = () => {
-  const { userDetails, setUserDetails, userEmails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails, userEmails, fetchAndSetEmails } = useContext(PlanitUserContext);
 
   const onSuccess = useCallback(
-    (response: any) => {
-      console.log('succ: ', response);
-      AxiosInstance.post('/plan-it/user/token', {
-        code: response.code,
-        planit_userId: userDetails?.planitUserId || null,
-      })
-        .then((response) => {
-          console.log(response);
-          // setUserDetails((prev) => ({ ...prev, planitUserId: response.data.planit_userId! }));
-        })
-        .catch((error) => console.log(error.message));
+    async ({ code }: CodeResponse) => {
+      try {
+        await createNewAssignedUser(code, userDetails!.planitUserId!);
+        fetchAndSetEmails();
+      } catch (e) {
+        console.log(e);
+      }
     },
-    [userDetails?.planitUserId]
+    [fetchAndSetEmails, userDetails]
   );
 
   const login = useGoogleLogin({
@@ -92,7 +88,14 @@ const GlobalNav = () => {
     { key: '2', label: <Link to="manage-presets">Manage presets</Link> },
   ];
 
-  return <Tabs items={items} tabBarExtraContent={OperationsSlot} tabBarStyle={{ margin: '0' }} />;
+  return (
+    <Tabs
+      items={items}
+      tabBarExtraContent={OperationsSlot}
+      tabBarStyle={{ margin: '0' }}
+      style={{ maxWidth: '1000px', margin: 'auto' }}
+    />
+  );
 };
 
 export default GlobalNav;

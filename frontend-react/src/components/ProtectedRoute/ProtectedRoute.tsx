@@ -5,9 +5,8 @@ import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 type ProtectedRouteProps = React.PropsWithChildren;
 export const ProtectedRoute = ({ children }: ProtectedRouteProps): ReactElement => {
-  const { userDetails } = useContext(PlanitUserContext);
+  const { isLoggedIn } = useContext(PlanitUserContext);
 
-  const isLoggedIn = !!userDetails?.planitUserId;
   if (!isLoggedIn) {
     return <Navigate to="/" replace />;
   }
