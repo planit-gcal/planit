@@ -244,7 +244,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 //   }),
                 // ]}
               >
-                {/*  <TimePicker.RangePicker format={'HH:mm'} defaultValue={}*/}
+                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
               </Form.Item>
             </Col>
           </Row>
@@ -256,8 +256,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             </Col>
             <Col span={8}>
               <Form.Item name="duration_of_event" label={'Duration of a single event'} initialValue={true}>
-                {/*a default time range picker is sufficient for this, however this one isnt imported cuz we are modifying them*/}
-                {/*  <TimePicker.RangePicker format={'HH:mm'} defaultValue={}*/}
+                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
               </Form.Item>
             </Col>
           </Row>
