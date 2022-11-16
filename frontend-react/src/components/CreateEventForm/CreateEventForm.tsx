@@ -13,12 +13,12 @@ import {
   Tabs,
   TabsProps,
   Tag,
-  Typography
+  Typography,
+  InputNumber
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
-import type { CustomTagProps } from 'rc-select/lib/BaseSelect';
 
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
@@ -59,6 +59,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     duration: number;
     event_between: [string, string];
     guests: { email: string; obligatory: boolean }[];
+  }>();
+
+  const [googleEventForm] = Form.useForm<{
+    event_description: string;
+    event_location: string;
+    event_color: string;
+  }>();
+
+  const [searchForm] = Form.useForm<{
+    num_of_events: number;
+    time_between_events: [number, number];
+    break_event: boolean;
+    duration_of_event: [number, number];
   }>();
 
   const [activeTabKey, setActiveTabKey] = useState('0');
@@ -189,7 +202,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '2',
       children: (
-          <Form layout="vertical" form={generalForm}>
+          <Form layout="vertical" form={googleEventForm}>
             <Row gutter={16}>
               <Col span={16}>
                 <Form.Item name="event_description" label={
@@ -201,18 +214,22 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             </Row>
             <Row gutter={16}>
               <Col span={16}>
-                <Form.Item name="event_color" label={
+                <Form.Item name="event_color"
+                           shouldUpdate
+                           getValueProps={v => ({value:[v]})}
+                           normalize={(v) => v[0]}
+                           label={
                   <Space>{`Event color `}<Typography.Text type='secondary'>(optional)</Typography.Text></Space>
                 }>
                   <Select
                       className={"custom-select"}
                     labelInValue
                     mode={'multiple'}
+                      onChange={value => googleEventForm.setFieldsValue({...googleEventForm.getFieldsValue(true), event_color: value})}
                     showArrow
                     tagRender={(props) => <>{props.label}</>}
                     defaultValue={'#5484ED'}
                     options={colorOptions.map(e=>({...e, label:tagRender(e.value,e.label)}))}
-                    maxTagCount={1}
                   />
                 </Form.Item>
               </Col>
@@ -234,9 +251,42 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '3',
       children: (
-        <Form.Item name="event_name" label="Number of events" required>
-          <Input />
-        </Form.Item>
+          <Form layout="vertical" form={searchForm}>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item name="num_of_events" label={'How many events to create?'} required initialValue={1}>
+                  <InputNumber style={{ width: '100%' }} min={1} max={5}/>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                {/*todo time range picker*/}
+                {/*needs a time range picker in the format d:HH:mm*/}
+                <Form.Item name="time_between_events" label={'Time between multiple events'} required
+                           // initialValue={[
+                           //   new Date(),
+                           //   add(new Date(), {
+                           //     days: 3,
+                           //   }),
+                           // ]}
+                >
+                {/*  <TimePicker.RangePicker format={'HH:mm'} defaultValue={}*/}
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item name="break_event" label={'Break events if can\'t find?'} initialValue={true}>
+                  <Switch defaultChecked style={{ display: 'block' }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="duration_of_event" label={'Duration of a single event'} initialValue={true}>
+                  {/*a default time range picker is sufficient for this, however this one isnt imported cuz we are modifying them*/}
+                  {/*  <TimePicker.RangePicker format={'HH:mm'} defaultValue={}*/}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
       ),
       forceRender: true,
     },
