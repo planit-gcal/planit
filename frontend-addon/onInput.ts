@@ -63,10 +63,8 @@ function onDeleteUser(e) {
 function onPresetChange(e) {
     const presetIndex = Number(e["formInputs"]["Preset"]);
     const presets = getPresetsFromStorage();
-    const preset = presets[presetIndex];
-    const guests = preset.guests;
-    SetProperty(usersString, guests);
     SetProperty(currentPresetIndexString, presetIndex);
+    updateGuests(presets, presetIndex)
     return update();
 }
 
@@ -97,6 +95,7 @@ function onDurationChange(e) {
     const groups = regex.exec(input);
     console.log("groups")
     console.log(groups)
+
     if (UpdateError(error.durationFormat, !groups)) {
         return update();
     }
@@ -116,4 +115,10 @@ function onRequiredChange(e) {
     console.log(guests)
     SetProperty(usersString, guests);
     return update();
+}
+
+function onCreateButtonPressed(e)
+{
+    const finalJson = createEventJSON(e);
+    createEvent(finalJson);
 }

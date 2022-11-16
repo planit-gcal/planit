@@ -8,8 +8,8 @@ enum error {
 type EventPreset = EventPresetBreakIntoSmaller | EventPresetNoBreakIntoSmaller;
 
 type EventPresetNoBreakIntoSmaller = {
-  name: string;
-  break_into_smaller_events: false;
+    name: string;
+    break_into_smaller_events: false;
 }
 
 type EventPresetBreakIntoSmaller = {
@@ -44,4 +44,16 @@ type PresetDetails = {
     event_preset: EventPreset;
     guests: Guest[];
     preset_availability: PresetAvailability[];
+}
+
+type CreateEventDTO = {
+    name: string;
+    summary: string;
+    location: string;
+    description: string;
+    event_preset_detail: PresetDetails;
+    owner_email: string;
+    start_date: string;
+    end_date: string;
+    duration: number;
 }

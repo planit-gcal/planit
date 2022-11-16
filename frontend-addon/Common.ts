@@ -7,6 +7,7 @@ function onHomepage() {
     SetProperty(addUserEmailString, "");
     SetProperty(presetString, Array.of(defaultPreset));
     SetProperty(usersString, []);
+    SetProperty(currentPresetIndexString, 0)
     return createCard();
 }
 
@@ -103,7 +104,7 @@ function createCard() {
                     .setOnClickAction(
                         CardService
                             .newAction()
-                            .setFunctionName("onDeleteUser")
+                            .setFunctionName("onCreateButtonPressed")
                     ));
     section.addWidget(presetDropdown())
     card.addSection(section);
@@ -194,10 +195,17 @@ function buildUserSection(): GoogleAppsScript.Card_Service.CardSection {
     return section;
 }
 
+function updateGuests(presets: PresetDetails[], currentIndex: number) {
+    console.log({presets, currentIndex});
+    const preset = presets[currentIndex];
+    const guests = preset.guests;
+    SetProperty(usersString, guests);
+}
+
 function presetDropdown() {
     const presets = getPresetsFromStorage();
 
-    const currentIndex = GetProperty<Number>(currentPresetIndexString);
+    const currentIndex = GetProperty<number>(currentPresetIndexString);
 
     const presetChangeAction = CardService.newAction()
         .setFunctionName("onPresetChange");

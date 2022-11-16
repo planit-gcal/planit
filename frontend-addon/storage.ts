@@ -4,6 +4,7 @@ function getPresetsFromStorage() : PresetDetails[]
     if(!presets || presets.length === 0 || theOnlyPresetIsTheDefaultOne(presets))
     {
         const returned = getPresets();
+        console.log(returned)
         if(returned === "404")
         {
             presets = Array.of(defaultPreset)
@@ -11,6 +12,7 @@ function getPresetsFromStorage() : PresetDetails[]
         else
         {
             presets = returned;
+            presets.unshift(defaultPreset);
         }
         SetProperty(presetString, presets);
     }
