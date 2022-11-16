@@ -73,7 +73,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '1',
       children: (
         <Form layout="vertical" form={generalForm}>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={8}>
               <Form.Item name="name" label="Event Name" required initialValue={''}>
                 <Input />
@@ -90,7 +90,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="start_end"
@@ -107,7 +107,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
                 {(fields, { add, remove }) => (
@@ -165,7 +165,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '2',
       children: (
         <Form layout="vertical" form={googleEventForm}>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="event_description"
@@ -180,7 +180,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="event_color"
@@ -200,7 +200,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="event_location"
@@ -224,7 +224,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '3',
       children: (
         <Form layout="vertical" form={searchForm}>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={8}>
               <Form.Item name="num_of_events" label={'How many events to create?'} required initialValue={1}>
                 <InputNumber style={{ width: '100%' }} min={1} max={5} />
@@ -248,7 +248,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={8}>
               <Form.Item name="break_event" label={"Break events if can't find?"} initialValue={true}>
                 <Switch defaultChecked style={{ display: 'block' }} />
