@@ -7,7 +7,7 @@ import App from './App';
 import { PlanitUserProvider } from './contexts/PlanitUserContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import SignIn from "./routes/SignInPage/SignIn";
+import SignIn from './routes/SignInPage/SignIn';
 
 ReactDOM.render(
   <BrowserRouter>
@@ -15,7 +15,9 @@ ReactDOM.render(
       {/*<PlanitUserProvider>*/}
       {/*  <App />*/}
       {/*</PlanitUserProvider>*/}
-        <SignIn/>
+      <PlanitUserProvider>
+        <SignIn />
+      </PlanitUserProvider>
     </GoogleOAuthProvider>
   </BrowserRouter>,
   document.getElementById('root')

@@ -24,7 +24,7 @@ public class API_User {
         this.idaoGoogleAccount = idaoGoogleAccount;
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<UserCreationResponse> createNewUser(@RequestBody DTO_Code code) {
         System.out.println("dto code: " + code);
         try {
@@ -58,6 +58,15 @@ public class API_User {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(path = "emails/{email}/planit-user-id")
+    public ResponseEntity<Long> getEntityGoogleAccountByEmail(@PathVariable("email") String email) {
+        try {
+            return new ResponseEntity<>(idaoGoogleAccount.getPlanitUserIdFromEmail(email), HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
