@@ -1,29 +1,8 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Select,
-  SelectProps,
-  Space,
-  Steps,
-  Switch,
-  Tabs,
-  TabsProps,
-  Tag,
-  Typography,
-} from 'antd';
-import { DefaultOptionType } from 'antd/lib/select';
-import { useCallback, useMemo, useState } from 'react';
-
-function toRawValue(optionValue: any) {
-  return typeof optionValue === 'object' ? optionValue.value : optionValue;
-}
+import { Select, SelectProps } from 'antd';
+import { useCallback } from 'react';
 
 type LimitedSelectProps = Omit<SelectProps, 'mode'> & { maxSelected: number };
+
 const LimitedMultiSelect = ({
   maxSelected,
   options: originalOptions,

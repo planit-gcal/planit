@@ -6,23 +6,20 @@ import {
   Form,
   Input,
   Row,
-  Select,
   Space,
   Steps,
   Switch,
   Tabs,
   TabsProps,
-  Tag,
   Typography,
   InputNumber,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
-import styled from 'styled-components';
 
+import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
-import LimitedMultiSelect from '../LimitedMultiSelect/LimitedMultiSelect';
 import TimePicker from '../TimePicker/TimePicker';
 
 type CreateEventFormProps = {
@@ -31,24 +28,6 @@ type CreateEventFormProps = {
 };
 
 const { TextArea } = Input;
-
-// type CustomTagProps = {
-//   value: string;
-//   label: string;
-// }
-
-const tagRender = (value: string, label: string) => {
-  return (
-    <Space>
-      <div style={{ paddingLeft: 8, display: 'flex', alignItems: 'center' }}>
-        <svg height="12" width="12">
-          <circle cx="6" cy="6" r="6" fill={value} />
-        </svg>
-      </div>
-      {label}
-    </Space>
-  );
-};
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
@@ -87,20 +66,6 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       <Divider />
     </>
   );
-
-  const colorOptions = [
-    { value: '#DC2127', label: 'Tomato' },
-    { value: '#FF887C', label: 'Flamingo' },
-    { value: '#FFB878', label: 'Tangerine' },
-    { value: '#FBD75B', label: 'Banana' },
-    { value: '#7AE7BF', label: 'Sage' },
-    { value: '#51B749', label: 'Basil' },
-    { value: '#46D6DB', label: 'Peacock' },
-    { value: '#5484ED', label: 'Blueberry' },
-    { value: '#A4BDFC', label: 'Lavender' },
-    { value: '#DBADFF', label: 'Grape' },
-    { value: '#616161', label: 'Graphite' },
-  ];
 
   const items = [
     {
@@ -231,14 +196,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 }
                 initialValue={'#5484ED'}
               >
-                <LimitedMultiSelect
-                  className={'custom-select'}
-                  labelInValue
-                  showArrow
-                  tagRender={(props) => <>{props.label}</>}
-                  options={colorOptions.map((e) => ({ ...e, label: tagRender(e.value, e.label) }))}
-                  maxSelected={1}
-                />
+                <ColorSelect />
               </Form.Item>
             </Col>
           </Row>
