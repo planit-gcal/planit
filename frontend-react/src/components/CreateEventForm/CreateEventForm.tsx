@@ -84,7 +84,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 name="duration"
                 label="Event Duration"
                 required
-                initialValue={parse('1:30', 'HH:mm', new Date())}
+                initialValue={parse('1:00', 'HH:mm', new Date())}
               >
                 <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
               </Form.Item>
