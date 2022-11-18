@@ -1,9 +1,24 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, Divider, Form, Input, Row, Space, Steps, Switch, Tabs, TabsProps, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Row,
+  Space,
+  Steps,
+  Switch,
+  Tabs,
+  TabsProps,
+  Typography,
+  InputNumber,
+} from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
 import { useState } from 'react';
 
+import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
 
@@ -12,12 +27,27 @@ type CreateEventFormProps = {
   onSubmit: (result: unknown) => void;
 };
 
+const { TextArea } = Input;
+
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<{
     name: string;
     duration: number;
     event_between: [string, string];
     guests: { email: string; obligatory: boolean }[];
+  }>();
+
+  const [googleEventForm] = Form.useForm<{
+    event_description: string;
+    event_location: string;
+    event_color: string;
+  }>();
+
+  const [searchForm] = Form.useForm<{
+    num_of_events: number;
+    time_between_events: [number, number];
+    break_event: boolean;
+    duration_of_event: [number, number];
   }>();
 
   const [activeTabKey, setActiveTabKey] = useState('0');
@@ -43,7 +73,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '1',
       children: (
         <Form layout="vertical" form={generalForm}>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={8}>
               <Form.Item name="name" label="Event Name" required initialValue={''}>
                 <Input />
@@ -54,13 +84,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 name="duration"
                 label="Event Duration"
                 required
-                initialValue={parse('1:30', 'HH:mm', new Date())}
+                initialValue={parse('1:00', 'HH:mm', new Date())}
               >
                 <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="start_end"
@@ -77,7 +107,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
                 {(fields, { add, remove }) => (
@@ -134,9 +164,58 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '2',
       children: (
-        <Form.Item name="event_name" label="Description" required>
-          <Input />
-        </Form.Item>
+        <Form layout="vertical" form={googleEventForm}>
+          <Row gutter={16} justify="center">
+            <Col span={16}>
+              <Form.Item
+                name="event_description"
+                label={
+                  <Space>
+                    {`Event description `}
+                    <Typography.Text type="secondary">(optional)</Typography.Text>
+                  </Space>
+                }
+              >
+                <TextArea rows={4} placeholder={'What is the meeting about?'} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16} justify="center">
+            <Col span={16}>
+              <Form.Item
+                name="event_color"
+                key="event_color"
+                shouldUpdate
+                getValueProps={(v) => ({ value: [v] })}
+                normalize={(v) => (v ? v[0] : v)}
+                label={
+                  <Space>
+                    {`Event color `}
+                    <Typography.Text type="secondary">(optional)</Typography.Text>
+                  </Space>
+                }
+                initialValue={'#5484ED'}
+              >
+                <ColorSelect />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16} justify="center">
+            <Col span={16}>
+              <Form.Item
+                name="event_location"
+                label={
+                  <Space>
+                    {`Event location `}
+                    <Typography.Text type="secondary">(optional)</Typography.Text>
+                  </Space>
+                }
+              >
+                <Input placeholder={'Where are you meeting at?'} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       ),
       forceRender: true,
     },
@@ -144,9 +223,44 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '3',
       children: (
-        <Form.Item name="event_name" label="Number of events" required>
-          <Input />
-        </Form.Item>
+        <Form layout="vertical" form={searchForm}>
+          <Row gutter={16} justify="center">
+            <Col span={8}>
+              <Form.Item name="num_of_events" label={'How many events to create?'} required initialValue={1}>
+                <InputNumber style={{ width: '100%' }} min={1} max={5} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              {/*todo time range picker*/}
+              {/*needs a time range picker in the format d:HH:mm*/}
+              <Form.Item
+                name="time_between_events"
+                label={'Time between multiple events'}
+                required
+                // initialValue={[
+                //   new Date(),
+                //   add(new Date(), {
+                //     days: 3,
+                //   }),
+                // ]}
+              >
+                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16} justify="center">
+            <Col span={8}>
+              <Form.Item name="break_event" label={"Break events if can't find?"} initialValue={true}>
+                <Switch defaultChecked style={{ display: 'block' }} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="duration_of_event" label={'Duration of a single event'} initialValue={true}>
+                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       ),
       forceRender: true,
     },
