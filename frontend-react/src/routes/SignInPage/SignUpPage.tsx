@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { createNewUser } from '../../api/users/users.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
-export const SignInPage = () => {
+export const SignUpPage = () => {
   const { isLoggedIn, setUserDetails } = useContext(PlanitUserContext);
   const navigate = useNavigate();
 

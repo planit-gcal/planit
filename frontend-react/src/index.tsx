@@ -11,12 +11,9 @@ import SignIn from './routes/SignInPage/SignIn';
 
 ReactDOM.render(
   <BrowserRouter>
-    <GoogleOAuthProvider clientId={'597544385697-i377oetpc36gvu981mic15rpe8or16oi.apps.googleusercontent.com'}>
-      {/*<PlanitUserProvider>*/}
-      {/*  <App />*/}
-      {/*</PlanitUserProvider>*/}
+    <GoogleOAuthProvider clientId={'937013173995-cmhpl3s97umb1njiseqtk3c049guefi5.apps.googleusercontent.com'}>
       <PlanitUserProvider>
-        <SignIn />
+        <App />
       </PlanitUserProvider>
     </GoogleOAuthProvider>
   </BrowserRouter>,

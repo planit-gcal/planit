@@ -76,7 +76,7 @@ const GlobalNav = () => {
           options={userEmails.map((item) => ({ label: item, value: item }))}
         />
 
-        <Button type="primary" danger onClick={() => setUserDetails({})}>
+        <Button type="primary" danger onClick={() => setUserDetails({ planitUserId: null, ownerEmail: null })}>
           Logout
         </Button>
       </Space>

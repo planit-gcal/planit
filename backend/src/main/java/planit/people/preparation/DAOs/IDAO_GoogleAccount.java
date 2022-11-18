@@ -7,6 +7,7 @@ import planit.people.preparation.Entities.Entity_GoogleAccount;
 import planit.people.preparation.Entities.Entity_User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface IDAO_GoogleAccount extends CrudRepository<Entity_GoogleAccount, Long> {
@@ -20,7 +21,7 @@ public interface IDAO_GoogleAccount extends CrudRepository<Entity_GoogleAccount,
     List<String> getEmailsFromUserId(@Param("userId") Long userId);
 
     @Query("SELECT google.the_user.user_id FROM Entity_GoogleAccount google WHERE google.email = (:email)")
-    Long getPlanitUserIdFromEmail(@Param("email") String email);
+    Optional<Long> getPlanitUserIdFromEmail(@Param("email") String email);
 
     @Query("SELECT new Entity_GoogleAccount(ac.id, ac.email, ac.the_user, ac.refresh_token) FROM Entity_GoogleAccount ac WHERE ac.email = :email")
     Entity_GoogleAccount getIdOfUserFromEmail(@Param("email") String email);

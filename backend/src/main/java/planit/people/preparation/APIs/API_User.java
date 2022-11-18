@@ -11,6 +11,7 @@ import planit.people.preparation.Responses.UserCreationResponse;
 import planit.people.preparation.Services.Service_User;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "plan-it/users", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -63,9 +64,9 @@ public class API_User {
     }
 
     @GetMapping(path = "emails/{email}/planit-user-id")
-    public ResponseEntity<Long> getEntityGoogleAccountByEmail(@PathVariable("email") String email) {
+    public ResponseEntity<Optional<Long>> getEntityGoogleAccountByEmail(@PathVariable("email") String email) {
         try {
-            return new ResponseEntity<>(idaoGoogleAccount.getPlanitUserIdFromEmail(email), HttpStatus.OK);
+            return new ResponseEntity<Optional<Long>>(idaoGoogleAccount.getPlanitUserIdFromEmail(email), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
