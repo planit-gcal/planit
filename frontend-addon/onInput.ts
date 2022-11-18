@@ -62,7 +62,10 @@ function onDeleteUser(e) {
 
 function onPresetChange(e) {
     const presetIndex = Number(e["formInputs"]["Preset"]);
+    console.log("On preset change")
+    console.log({presetIndex})
     const presets = getPresetsFromStorage();
+    console.log({presets})
     SetProperty(currentPresetIndexString, presetIndex);
     updateGuests(presets, presetIndex)
     return update();

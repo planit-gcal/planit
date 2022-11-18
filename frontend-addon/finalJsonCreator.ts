@@ -6,7 +6,7 @@ function createEventJSON(e) {
         event_preset_detail: {
             event_preset: getCurrentPresetFromStorage().event_preset,
             guests: GetProperty<Guest[]>(usersString),
-            preset_availability: getCurrentPresetFromStorage().preset_availability
+            preset_availability: convertAvailabilities()
         },
         location: "",
         name: GetProperty<string>(eventNameString),
@@ -35,4 +35,27 @@ function getDuration(e): number {
 
 function getOwnerEmail() : string {
     return Session.getActiveUser().getEmail();
+}
+
+function convertAvailabilities()
+{
+    const presetAvailabilities = getCurrentPresetFromStorage().preset_availability;
+    presetAvailabilities.forEach(presetAvailability => {
+        if(presetAvailability.day_off === false)
+        {
+            const casted = presetAvailability as PresetAvailabilityNoDayOff
+            casted.end_available_time = sliceLastThreeCharacters(casted.end_available_time);
+            casted.start_available_time = sliceLastThreeCharacters(casted.start_available_time);
+        }
+    })
+    return presetAvailabilities;
+}
+
+function sliceLastThreeCharacters(text : string) : string
+{
+    if(text.length === 8)
+    {
+        return text.slice(0, text.length - 3);
+    }
+    return text;
 }

@@ -26,10 +26,11 @@ function createEvent(createEventDTO: CreateEventDTO)
         'headers' : {
             'Bypass-Tunnel-Reminder': '1',
         },
-        'body' : createEventDTO,
+        'payload' : JSON.stringify(createEventDTO),
     }
+
+    console.log(JSON.stringify(createEventDTO));
     const response = UrlFetchApp.fetch(url, options);
-    console.log(response);
     if(response.getResponseCode() === 200)
     {
         return onHomepage();

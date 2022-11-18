@@ -1,5 +1,6 @@
 function getPresetsFromStorage() : PresetDetails[]
 {
+    console.log("getPresetsFromStorage")
     let presets = GetProperty<PresetDetails[]>(presetString);
     if(!presets || presets.length === 0 || theOnlyPresetIsTheDefaultOne(presets))
     {
@@ -16,6 +17,7 @@ function getPresetsFromStorage() : PresetDetails[]
         }
         SetProperty(presetString, presets);
     }
+    console.log({presets})
     return presets;
 }
 
@@ -26,6 +28,8 @@ function theOnlyPresetIsTheDefaultOne(presets : PresetDetails[]) : boolean
 
 function getCurrentPresetFromStorage()
 {
+    console.log("getCurrentPresetFromStorage")
     const index = GetProperty<number>(currentPresetIndexString);
+    console.log({index})
     return getPresetsFromStorage()[index];
 }
