@@ -57,3 +57,17 @@ include::snippets/user/get-emails/path-parameters.adoc[]
 === all possible response attributes
 
 include::snippets/user/get-emails/response-fields.adoc[]
+
+== Delete PlanIt User
+
+=== successful request
+
+include::snippets/user/delete_user/http-request.adoc[]
+
+=== successful response
+
+include::snippets/user/delete_user/http-response.adoc[]
+
+=== all possible path parameters
+
+include::snippets/user/delete_user/path-parameters.adoc[]

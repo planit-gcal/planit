@@ -121,4 +121,19 @@ public class UserWebLayerTest {
                                 parameterWithName("planit-user-id").description("The id of the PlanIt User whose emails should be returned")
                         )));
     }
+    @Test
+    public void revokePlanItUserAccess() throws Exception {
+        this.mockMvc
+                .perform(
+                        RestDocumentationRequestBuilders
+                                .delete("/plan-it/users/{planit-user-id}", 1)
+                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isOk())
+                .andDo(document("delete_user",
+                        pathParameters(
+                                parameterWithName("planit-user-id").description("the id of the PlanIt User who requested for their user to be deleted")
+                        )));
+
+    }
 }
