@@ -42,7 +42,7 @@ const GoogleAuth = () => {
     return () => clearScript(src);
   }, [handleCredentialResponse, navigate, userDetails]);
 
-  return <div ref={googleButton}></div>;
+  return <div ref={googleButton} />;
 };
 
 export default GoogleAuth;
