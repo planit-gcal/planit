@@ -8,6 +8,11 @@ export const loadScript = (src: string) =>
     document.body.appendChild(script);
   });
 
+export const clearScript = (src: string) => {
+  const scriptTag = document.querySelector(`script[src="${src}"]`);
+  if (scriptTag) document.body.removeChild(scriptTag);
+};
+
 export const parseJwt = (token: string) => {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

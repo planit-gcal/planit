@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getPlanItUserIdFromEmail } from '../../api/oauth/oauth.api';
 import { googleOAuthClientId } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
-import { parseJwt, loadScript } from '../../utils/oauth.utils';
+import { parseJwt, loadScript, clearScript } from '../../utils/oauth.utils';
 
 const src = 'https://accounts.google.com/gsi/client';
 
@@ -39,10 +39,7 @@ const GoogleAuth = () => {
       })
       .catch(console.error);
 
-    return () => {
-      const scriptTag = document.querySelector(`script[src="${src}"]`);
-      if (scriptTag) document.body.removeChild(scriptTag);
-    };
+    return () => clearScript(src);
   }, [handleCredentialResponse, navigate, userDetails]);
 
   return <div ref={googleButton}></div>;
