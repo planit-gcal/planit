@@ -1,13 +1,5 @@
 function onHomepage() {
-    SetProperty(eventNameString, "PlanIt Event");
-    SetProperty(minDateString, msSinceEpocToday.valueOf());
-    SetProperty(maxDateString, msSinceEpocToday.valueOf() + weekInMs);
-    SetProperty(durationString, "1:45");
-    SetProperty(errorString, []);
-    SetProperty(addUserEmailString, "");
-    SetProperty(presetString, Array.of(defaultPreset));
-    SetProperty(usersString, []);
-    SetProperty(currentPresetIndexString, 0)
+    resetProperties()
     return createCard();
 }
 

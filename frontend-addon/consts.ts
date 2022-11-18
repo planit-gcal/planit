@@ -64,4 +64,5 @@ const maxDateString = "endDate";
 const errorString = "inputErrors";
 const addUserEmailString = "addUserEmail";
 const presetString = "Presets";
+const userTokenString = "userToken"
 const msSinceEpocToday = new Date();
