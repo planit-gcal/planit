@@ -3,10 +3,10 @@ import { useCallback, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { getPlanItUserIdFromEmail } from '../../api/oauth/oauth.api';
+import { googleOAuthClientId } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 const src = 'https://accounts.google.com/gsi/client';
-const id = '937013173995-cmhpl3s97umb1njiseqtk3c049guefi5.apps.googleusercontent.com';
 
 const loadScript = (src: any) =>
   new Promise<void>((resolve, reject) => {
@@ -68,7 +68,7 @@ const GoogleAuth = () => {
           console.log(google);
           // @ts-ignore
           google.accounts.id.initialize({
-            client_id: id,
+            client_id: googleOAuthClientId,
             callback: handleCredentialResponse,
           });
           // @ts-ignore
