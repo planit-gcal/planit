@@ -1,5 +1,12 @@
 function onHomepage() {
     resetProperties()
+    if(!isAuthenticated())
+    {
+        console.log("Not authenticated")
+        // return authenticationCard();
+        authenticate();
+    }
+    console.log("Authenticated")
     return createCard();
 }
 

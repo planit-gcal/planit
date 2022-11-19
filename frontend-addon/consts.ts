@@ -51,7 +51,7 @@ const defaultPreset: PresetDetails =
         ]
     }
 
-const MAINURL = "https://planit-custom-domain2.loca.lt"
+const MAINURL = "https://planit-custom-domain.loca.lt"
 // const MAINURL = "https://tidy-turtle-22.loca.lt"
 // const MAINURL = "http://localhost:8080"
 const weekInMs = 6.048e+8;
