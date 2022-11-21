@@ -6,10 +6,15 @@ import org.springframework.stereotype.Service;
 import planit.people.preparation.DAOs.IDAO_GoogleAccount;
 import planit.people.preparation.DAOs.IDAO_User;
 import planit.people.preparation.DTOs.DTO_Code;
+import planit.people.preparation.Entities.Entity_EventPreset;
 import planit.people.preparation.Entities.Entity_GoogleAccount;
 import planit.people.preparation.Entities.Entity_User;
+import planit.people.preparation.GoogleConnector.GoogleConnector;
 import planit.people.preparation.GoogleConnector.GoogleHelper;
 import planit.people.preparation.Responses.UserCreationResponse;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class Service_User {
@@ -25,8 +30,7 @@ public class Service_User {
     public Entity_User create_new_user(Entity_User user) {
         try {
             System.out.println("newly Entity_User user: " + user);
-            Entity_User entity_user = idaoUser
-                    .save(new Entity_User(user.getName(), user.getSurname()));
+            Entity_User entity_user = idaoUser.save(new Entity_User(user.getName(), user.getSurname()));
             System.out.println("newly created user: " + entity_user);
             return entity_user;
         } catch (Exception e) {
@@ -38,8 +42,7 @@ public class Service_User {
 
     public UserCreationResponse create_new_google_account(Entity_GoogleAccount google_account) {
         try {
-            Entity_GoogleAccount entity_google_account = idaoGoogleAccount
-                    .save(new Entity_GoogleAccount(google_account.getEmail(), google_account.getThe_user(), google_account.getRefresh_token()));
+            Entity_GoogleAccount entity_google_account = idaoGoogleAccount.save(new Entity_GoogleAccount(google_account.getEmail(), google_account.getThe_user(), google_account.getRefresh_token()));
             System.out.println("newly created user: " + entity_google_account);
             return new UserCreationResponse(entity_google_account.getThe_user().getUser_id(), entity_google_account.getId());
         } catch (Exception e) {
@@ -69,6 +72,42 @@ public class Service_User {
             return null;
         }
 
+    }
+
+    /**
+     * Remove a PlanIt User. the deletion process will be done in the following steps:
+     * -Check if the provided PlanIt Id exists, if yes
+     * a- retrieve the PlanIt User from DB
+     * b- retrieve all Google Accounts that belong to the retrieved PlanIt User
+     * c- make a callout to google in order to revoke the RefreshToken for each Google Account
+     * d- delete all google account from DB
+     * e- remove all Event Preset that belong to the retrieved PlanIt User
+     * d- delete the PlanIt User form DB.
+     * In case no PlanIt User was found with the provided planItUserId, an error will be thrown.
+     *
+     * @param planItUserId the id of the PlanIt user who should be removed from the DB.
+     * @see GoogleConnector#revokeAccess
+     */
+    public void revokeUserAccess(Long planItUserId) {
+        if (idaoUser.existsById(planItUserId)) {
+            Entity_User planItUser = idaoUser.findById(planItUserId).orElse(null);
+            assert planItUser != null;
+            List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountsByPlanItUsers(Set.of(planItUser));
+            System.out.println("Google Accounts: " + googleAccounts);
+            if (googleAccounts != null && !googleAccounts.isEmpty()) {
+                for (Entity_GoogleAccount googleAccount : googleAccounts) {
+                    GoogleConnector.revokeAccess(googleAccount.getRefresh_token());
+                }
+                idaoGoogleAccount.deleteAll(googleAccounts);
+                List<Entity_EventPreset> eventPresets = idaoUser.getAllEventPresetByPlanItId(planItUserId);
+                for (Entity_EventPreset eventPreset : eventPresets) {
+                    planItUser.removePreset(eventPreset);
+                }
+                idaoUser.delete(planItUser);
+            }
+        } else {
+            //TODO THROW USER NOT FOUND ERROR
+        }
     }
 
 
