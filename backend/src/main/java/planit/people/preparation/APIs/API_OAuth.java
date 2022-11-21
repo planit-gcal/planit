@@ -27,7 +27,6 @@ public class API_OAuth {
     @GetMapping(path = "users")
     public ResponseEntity<UserCreationResponse> getUserIdFromEmail(@RequestParam(name = "email") String email) {
         try {
-
             Entity_GoogleAccount account = idaoGoogleAccount.getIdOfUserFromEmail(Converter.decodeURLString(email));
             UserCreationResponse response = account != null ?
                     new UserCreationResponse(account.getThe_user().getUser_id(), account.getId()) :
