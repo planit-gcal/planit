@@ -18,6 +18,7 @@ All APIs' requests, responses and attributes are documented using [Spring REST D
 - Create New PlanIt User
 - Add A New Google Account Email to a PlanIt User
 - Get All Emails For A PlanIt User
+- Delete A PlanIt User
 
 [`Calendar APIs.adoc` file](src/main/java/planit/people/preparation/API_Documentation/Calendar_APIs.adoc) contains the documentations for all APIs that belong to the [plan-it/calendar endpoint](src/main/java/planit/people/preparation/APIs/API_Calendar.java).
 

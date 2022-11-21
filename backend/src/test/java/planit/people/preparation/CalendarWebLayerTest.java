@@ -410,7 +410,7 @@ public class CalendarWebLayerTest {
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
-                                .delete("/plan-it/calendar/users/{preset-id}/presets/{planit-user-id}", 1,1)
+                                .delete("/plan-it/calendar/users/{planit-user-id}/presets/{preset-id}", 1,1)
                                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())

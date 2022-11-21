@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ http DELETE 'http://localhost:8080/plan-it/users/1' \
+    'Accept:application/json'
+----

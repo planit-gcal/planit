@@ -15,12 +15,16 @@ import com.google.api.services.calendar.model.*;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.UserCredentials;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.Entities.Entity_Guest;
 import planit.people.preparation.Responses.CalendarResponse;
 
 import planit.people.preparation.ConfigurationProperties.IntegrationProperties;
 import planit.people.preparation.Utils.SpringContext;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,6 +43,7 @@ public class GoogleConnector {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
     private static final NetHttpTransport HTTP_TRANSPORT;
+    private static final String REVOKE_ACCESS_ENDPOINT = "https://oauth2.googleapis.com/revoke";
 
     private static IntegrationProperties getIntegrationProperties() {
         return SpringContext.getBean(IntegrationProperties.class);
@@ -214,5 +219,22 @@ public class GoogleConnector {
             freeBusyRequestItems.add(new FreeBusyRequestItem().set("id", id));
         }
         return freeBusyRequestItems;
+    }
+
+    /**
+     * Revoke RefreshToken of a Google Account by calling the standard endpoint provided by Google.
+     *
+     * @param refreshToken the Google Account's RefreshToken which was provided by Google upon the creation of the account.
+     * @see #REVOKE_ACCESS_ENDPOINT
+     */
+    public static void revokeAccess(String refreshToken){
+        WebClient client = WebClient
+                .builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .baseUrl(REVOKE_ACCESS_ENDPOINT)
+                .defaultUriVariables(Collections.singletonMap("token", refreshToken))
+                .build();
+        Mono<Object> res = client.post().retrieve().bodyToMono(Object.class);
+        System.out.println("res: " + res);
     }
 }

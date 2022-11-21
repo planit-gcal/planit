@@ -1,0 +1,8 @@
+.+/plan-it/users/{planit-user-id}+
+|===
+|Parameter|Description
+
+|`+planit-user-id+`
+|the id of the PlanIt User who requested for their user to be deleted
+
+|===
