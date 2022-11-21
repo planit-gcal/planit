@@ -77,9 +77,10 @@ const EditableCell: React.FC<EditableCellProps> = ({
                 <DatePicker.RangePicker style={{ width: '100%' }} picker="time" format={'HH:mm'}/>
             </Form.Item>
         ) : (
-            <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>
-                {children}
-            </div>
+            // <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={toggleEdit}>
+            //     {children}
+            // </div>
+            <div></div>
         );
     }
 
