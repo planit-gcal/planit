@@ -51,6 +51,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     duration_of_event_unit: number;
   }>();
 
+  const [excludeForm] = Form.useForm<{
+    days: {name: string, exclude: boolean, availability: [number, number]}[];
+  }>();
+
   const [activeTabKey, setActiveTabKey] = useState('0');
 
   const stepItems = [
@@ -65,7 +69,17 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     { value: 1, label: 'Minutes' },
     { value: 60, label: 'Hours' },
     { value: 1440, label: 'Days' },
-  ]
+  ];
+
+  const weekDays = [
+    {label: 'Monday', exclude: true, availability: ['08:00', '16:00']},
+    {label: 'Tuesday', exclude: true, availability: ['08:00', '16:00']},
+    {label: 'Wednesday', exclude: true, availability: ['08:00', '16:00']},
+    {label: 'Thursday', exclude: true, availability: ['08:00', '16:00']},
+    {label: 'Friday', exclude: true, availability: ['08:00', '16:00']},
+    {label: 'Saturday', exclude: false, availability: ['12:00', '20:00']},
+    {label: 'Sunday', exclude: false, availability: ['12:00', '20:00']},
+  ];
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
     <>
@@ -286,9 +300,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '5',
       children: (
-        <Form.Item name="event_name" label="Confirm" required>
-          <Input />
-        </Form.Item>
+          <Form layout="vertical" form={excludeForm}>
+            <Row gutter={16} justify="center">
+              <Col span={8}>
+
+              </Col>
+            </Row>
+          </Form>
       ),
       forceRender: true,
     },
