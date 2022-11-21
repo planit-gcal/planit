@@ -15,6 +15,7 @@ import planit.people.preparation.Responses.UserCreationResponse;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
 @Service
 public class Service_User {
@@ -50,28 +51,44 @@ public class Service_User {
         }
     }
 
-    public UserCreationResponse getGoogleAccountId(DTO_Code dto_code) {
-        try {
-            GoogleHelper google_helper = new GoogleHelper(dto_code.code(), false);
-            System.out.println("google helper: " + google_helper);
-            Entity_User entity_user;
-            Userinfo userinfo = google_helper.getUserInfo();
-            System.out.println("google userinfo: " + userinfo);
-            if (dto_code.planit_user_id() == null) {
-                entity_user = create_new_user(new Entity_User(userinfo.getGivenName(), userinfo.getFamilyName()));
-                System.out.println("google entity_user: " + entity_user);
-            } else {
-                entity_user = new Entity_User(dto_code.planit_user_id());
-                System.out.println("google entity_user2: " + entity_user);
-            }
-            System.out.println("Entity User: " + entity_user);
-            Entity_GoogleAccount google_account = new Entity_GoogleAccount(userinfo.getEmail(), entity_user, google_helper.getRefreshToken());
-            return create_new_google_account(google_account);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    public UserCreationResponse createGoogleAccount(DTO_Code dto_code) throws Exception {
+        validateCreateGoogleAccountRequest(dto_code);
+        GoogleHelper google_helper = new GoogleHelper(dto_code.code(), false);
+        System.out.println("google helper: " + google_helper);
+        Entity_User entity_user;
+        Userinfo userinfo = google_helper.getUserInfo();
+        System.out.println("google userinfo: " + userinfo);
+        Entity_GoogleAccount existingAccount = idaoGoogleAccount.getIdOfUserFromEmail(userinfo.getEmail());
+        if (existingAccount != null) {
+            return updateUserRefreshToken(existingAccount, google_helper.getRefreshToken(), dto_code.planit_user_id());
         }
+        if (dto_code.planit_user_id() == null) {
+            entity_user = create_new_user(new Entity_User(userinfo.getGivenName(), userinfo.getFamilyName()));
+            System.out.println("google entity_user: " + entity_user);
+        } else {
+            entity_user = new Entity_User(dto_code.planit_user_id());
+            System.out.println("google entity_user2: " + entity_user);
+        }
+        System.out.println("Entity User: " + entity_user);
+        Entity_GoogleAccount google_account = new Entity_GoogleAccount(userinfo.getEmail(), entity_user, google_helper.getRefreshToken());
+        return create_new_google_account(google_account);
+    }
 
+    private UserCreationResponse updateUserRefreshToken(Entity_GoogleAccount existingAccount, String newRT, Long requestPlanItUser) {
+        if (requestPlanItUser != null && !existingAccount.getThe_user().getUser_id().equals(requestPlanItUser)) {
+            idaoUser.findById(requestPlanItUser).ifPresent(existingAccount::setThe_user);
+        }
+        existingAccount.setRefresh_token(newRT);
+        idaoGoogleAccount.save(existingAccount);
+        return new UserCreationResponse(existingAccount.getThe_user().getUser_id(), existingAccount.getId());
+    }
+
+    private void validateCreateGoogleAccountRequest(DTO_Code code) throws Exception {
+        if (code.code() == null) {
+            throw new Exception("DATA VALIDATION ERROR: Code must be provided");
+        }else if(code.planit_user_id() != null && !idaoUser.existsById(code.planit_user_id())){
+            throw new Exception("DATA VALIDATION ERROR: Provided planit_user_id does NOT exist");
+        }
     }
 
     /**
