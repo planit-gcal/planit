@@ -12,15 +12,16 @@ import {
   Tabs,
   TabsProps,
   Typography,
-  InputNumber, Select, Slider,
+  InputNumber, Select, Slider, FormInstance,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
+import ExcludeTable from "../ExcludeTable/ExcludeTable";
 
 type CreateEventFormProps = {
   owner: string;
@@ -54,6 +55,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [excludeForm] = Form.useForm<{
     days: {name: string, exclude: boolean, availability: [number, number]}[];
   }>();
+
 
   const [activeTabKey, setActiveTabKey] = useState('0');
 
@@ -290,9 +292,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '4',
       children: (
-        <Form.Item name="event_name" label="Exclude" required>
-          <Input />
-        </Form.Item>
+          <Form layout="vertical" form={excludeForm}>
+            <Row gutter={16} justify="center">
+              <Col span={8}>
+                <ExcludeTable></ExcludeTable>
+              </Col>
+            </Row>
+          </Form>
       ),
       forceRender: true,
     },
@@ -300,13 +306,9 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '5',
       children: (
-          <Form layout="vertical" form={excludeForm}>
-            <Row gutter={16} justify="center">
-              <Col span={8}>
-
-              </Col>
-            </Row>
-          </Form>
+          <Form.Item name="event_name" label="Exclude" required>
+            <Input />
+          </Form.Item>
       ),
       forceRender: true,
     },
