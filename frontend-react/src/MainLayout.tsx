@@ -23,12 +23,12 @@ function MainLayout() {
       >
         <GlobalNav />
       </Header>
-      <Layout style={{ padding: '56px 50px 0' }}>
+      <Layout style={{ padding: '56px 45px 0' }}>
         <Content>
           <Card
             style={{
               boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)',
-              height: '800px',
+              height: '500px',
               maxWidth: '1000px',
               margin: 'auto',
             }}
