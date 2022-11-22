@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
-import ExcludeTable from '../ExcludeTable/ExcludeTable';
+// import ExcludeTable from '../ExcludeTable/ExcludeTable';
 import TimePicker from '../TimePicker/TimePicker';
 import { ExcludeForm, GeneralForm, GoogleEventForm, SearchForm } from './models';
 
@@ -63,6 +63,20 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       <Divider />
     </>
   );
+
+  function toTime(time : string){
+    return parse(time,'HH:mm', new Date())
+  }
+
+  const weekDays = [
+    { label: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { label: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { label: 'Wednesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { label: 'Thursday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { label: 'Friday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { label: 'Saturday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
+    { label: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
+  ];
 
   const items = [
     {
@@ -268,7 +282,57 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       children: (
         <Row gutter={16} justify="center">
           <Col span={16}>
-            <ExcludeTable form={excludeForm} />
+            {/*<ExcludeTable form={excludeForm} />*/}
+            <Form layout="vertical" form={excludeForm}>
+
+              <Row gutter={16} justify="center">
+                <Col span={6}>
+                  <h3>Day</h3>
+                </Col>
+                <Col span={6}>
+                  <h3>Exclude</h3>
+                </Col>
+                <Col span={12}>
+                  <h3>Availability</h3>
+                </Col>
+              </Row>
+              <Form.List name={'excludeWeekDays'} initialValue={weekDays}>
+                {fields => (
+                    <div>
+                      {fields.map(({key, name, ...restField}) => (
+                          <Row gutter={16} justify="center" key={key}>
+                            <Col span={6}>
+                              <Form.Item name={[name, 'label']}>
+                                <Input></Input>
+                              </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                              <Form.Item name={[name, 'exclude']} valuePropName="checked">
+                                <Switch />
+                              </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                              <Form.Item {...restField} name={[name, 'availability']} shouldUpdate>
+                                {(() => {
+                                  console.log(excludeForm.getFieldsValue([name, 'exclude']))
+                                })()}
+                                {/*{() => {*/}
+                                {/*  return <DatePicker.RangePicker*/}
+                                {/*      style={{ width: '100%' }}*/}
+                                {/*      picker="time"*/}
+                                {/*      format={'HH:mm'}*/}
+                                {/*      placeholder={['From', 'To']}*/}
+                                {/*      disabled ={excludeForm.getFieldValue([name, 'exclude'])}*/}
+                                {/*  />*/}
+                                {/*}}*/}
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                      ))}
+                    </div>
+                )}
+              </Form.List>
+            </Form>
           </Col>
         </Row>
       ),
