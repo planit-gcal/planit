@@ -274,13 +274,11 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '4',
       children: (
-        <Form layout="vertical" form={excludeForm}>
-          <Row gutter={16} justify="center">
-            <Col span={8}>
-              <ExcludeTable></ExcludeTable>
-            </Col>
-          </Row>
-        </Form>
+        <Row gutter={16} justify="center">
+          <Col span={16}>
+            <ExcludeTable form={excludeForm} />
+          </Col>
+        </Row>
       ),
       forceRender: true,
     },
@@ -299,7 +297,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const onNextButton = () => {
     setActiveTabKey((prev) => `${+prev + 1}`);
 
-    generalForm
+    excludeForm
       .validateFields()
       .then((val) => {
         console.log(val);
