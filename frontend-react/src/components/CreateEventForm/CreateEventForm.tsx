@@ -55,15 +55,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     { value: 1440, label: 'Days' },
   ];
 
-  const weekDays = [
-    { label: 'Monday', exclude: true, availability: ['08:00', '16:00'] },
-    { label: 'Tuesday', exclude: true, availability: ['08:00', '16:00'] },
-    { label: 'Wednesday', exclude: true, availability: ['08:00', '16:00'] },
-    { label: 'Thursday', exclude: true, availability: ['08:00', '16:00'] },
-    { label: 'Friday', exclude: true, availability: ['08:00', '16:00'] },
-    { label: 'Saturday', exclude: false, availability: ['12:00', '20:00'] },
-    { label: 'Sunday', exclude: false, availability: ['12:00', '20:00'] },
-  ];
+
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
     <>
@@ -114,7 +106,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
           </Row>
           <Row gutter={16} justify="center">
             <Col span={16}>
-              {/*TODO make this scrollable*/}
+              {/* TODO make this scrollable */}
               <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
                 {(fields, { add, remove }) => (
                   <>
