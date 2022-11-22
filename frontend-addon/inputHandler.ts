@@ -61,10 +61,10 @@ class InputHandler {
         const presetIndex = Number(e["formInputs"]["Preset"]);
         console.log("On preset change")
         console.log({presetIndex})
-        const presets = getPresetsFromStorage();
+        const presets = Storage.getPresets();
         console.log({presets})
         PropertyManager.setProperty(currentPresetIndexString, presetIndex);
-        updateGuests(presets, presetIndex)
+        Storage.updateGuests(presets, presetIndex)
         return update();
     }
 

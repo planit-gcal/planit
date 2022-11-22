@@ -6,7 +6,7 @@ class FinalJsonCreator {
             duration: this.getDuration(e),
             end_date: PropertyManager.getProperty<string>(maxDateString),
             event_preset_detail: {
-                event_preset: getCurrentPresetFromStorage().event_preset,
+                event_preset: Storage.getCurrentPreset().event_preset,
                 guests: PropertyManager.getProperty<Guest[]>(usersString),
                 preset_availability: this.convertAvailabilities()
             },
@@ -40,7 +40,7 @@ class FinalJsonCreator {
     }
 
     static convertAvailabilities() {
-        const presetAvailabilities = getCurrentPresetFromStorage().preset_availability;
+        const presetAvailabilities = Storage.getCurrentPreset().preset_availability;
         presetAvailabilities.forEach(presetAvailability => {
             if (presetAvailability.day_off === false) {
                 const casted = presetAvailability as PresetAvailabilityNoDayOff

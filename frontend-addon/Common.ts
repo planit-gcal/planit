@@ -9,16 +9,16 @@ function onHomepage() {
 
 function eventCard() {
     return CardService.newCardBuilder()
-        .addSection(advertisementSection())
-        .addSection(eventFormSection())
-        .addSection(userSection())
-        .setFixedFooter(footer())
+        .addSection(Components.advertisementSection())
+        .addSection(Components.eventFormSection())
+        .addSection(Components.userSection())
+        .setFixedFooter(Components.footer())
         .build()
 }
 
 function authenticationCard() {
     return CardService.newCardBuilder()
-        .addSection(signUpSection())
+        .addSection(Components.signUpSection())
         .build();
 }
 
