@@ -1,5 +1,5 @@
 function getPresets(): PresetDetails[] | "404" {
-    let id = 1;
+    let id = getId();
     const url = `${MAINURL}/plan-it/calendar/users/${id}/presets`
     const options = {
         'method': 'get' as const,

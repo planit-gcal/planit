@@ -11,7 +11,7 @@ function getId() : string
 
 function setId(id : string)
 {
-    SetProperty(usersString, id);
+    SetProperty(userTokenString, id);
 }
 
 function authenticate() : boolean
@@ -28,7 +28,7 @@ function authenticate() : boolean
         return false;
     }
     console.log({id})
-    SetProperty(userTokenString, id);
+    setId(id);
     return true;
 }
 
