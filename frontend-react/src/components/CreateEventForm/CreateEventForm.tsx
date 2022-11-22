@@ -12,7 +12,9 @@ import {
   Tabs,
   TabsProps,
   Typography,
-  InputNumber, Select, Slider, FormInstance,
+  InputNumber,
+  Select,
+  Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
@@ -20,8 +22,9 @@ import React, { useState } from 'react';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
+import ExcludeTable from '../ExcludeTable/ExcludeTable';
 import TimePicker from '../TimePicker/TimePicker';
-import ExcludeTable from "../ExcludeTable/ExcludeTable";
+import { ExcludeForm, GeneralForm, GoogleEventForm, SearchForm } from './models';
 
 type CreateEventFormProps = {
   owner: string;
@@ -31,31 +34,10 @@ type CreateEventFormProps = {
 const { TextArea } = Input;
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
-  const [generalForm] = Form.useForm<{
-    name: string;
-    duration: number;
-    event_between: [string, string];
-    guests: { email: string; obligatory: boolean }[];
-  }>();
-
-  const [googleEventForm] = Form.useForm<{
-    event_description: string;
-    event_location: string;
-    event_color: string;
-  }>();
-
-  const [searchForm] = Form.useForm<{
-    num_of_events: number;
-    time_between_events: [number, number];
-    break_event: boolean;
-    duration_of_event: [number, number];
-    duration_of_event_unit: number;
-  }>();
-
-  const [excludeForm] = Form.useForm<{
-    days: {name: string, exclude: boolean, availability: [number, number]}[];
-  }>();
-
+  const [generalForm] = Form.useForm<GeneralForm>();
+  const [googleEventForm] = Form.useForm<GoogleEventForm>();
+  const [searchForm] = Form.useForm<SearchForm>();
+  const [excludeForm] = Form.useForm<ExcludeForm>();
 
   const [activeTabKey, setActiveTabKey] = useState('0');
 
@@ -74,13 +56,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   ];
 
   const weekDays = [
-    {label: 'Monday', exclude: true, availability: ['08:00', '16:00']},
-    {label: 'Tuesday', exclude: true, availability: ['08:00', '16:00']},
-    {label: 'Wednesday', exclude: true, availability: ['08:00', '16:00']},
-    {label: 'Thursday', exclude: true, availability: ['08:00', '16:00']},
-    {label: 'Friday', exclude: true, availability: ['08:00', '16:00']},
-    {label: 'Saturday', exclude: false, availability: ['12:00', '20:00']},
-    {label: 'Sunday', exclude: false, availability: ['12:00', '20:00']},
+    { label: 'Monday', exclude: true, availability: ['08:00', '16:00'] },
+    { label: 'Tuesday', exclude: true, availability: ['08:00', '16:00'] },
+    { label: 'Wednesday', exclude: true, availability: ['08:00', '16:00'] },
+    { label: 'Thursday', exclude: true, availability: ['08:00', '16:00'] },
+    { label: 'Friday', exclude: true, availability: ['08:00', '16:00'] },
+    { label: 'Saturday', exclude: false, availability: ['12:00', '20:00'] },
+    { label: 'Sunday', exclude: false, availability: ['12:00', '20:00'] },
   ];
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
@@ -257,16 +239,11 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             <Col span={8}>
               <Form.Item label={'Time between multiple events'}>
                 <Row>
-                  <Form.Item
-                      name="time_between_events"
-                      required
-                      initialValue={[30, 60]}
-                      noStyle
-                  >
+                  <Form.Item name="time_between_events" required initialValue={[30, 60]} noStyle>
                     <Slider style={{ width: 'calc(100% - 115px)' }} range max={60} />
                   </Form.Item>
                   <Form.Item name="time_between_events_unit" initialValue={'Minutes'} noStyle>
-                    <Select style={{ width: '95px', marginLeft: '8px' }} options={timeUnitOptions}/>
+                    <Select style={{ width: '95px', marginLeft: '8px' }} options={timeUnitOptions} />
                   </Form.Item>
                 </Row>
               </Form.Item>
@@ -280,7 +257,12 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             </Col>
             <Col span={8}>
               <Form.Item name="duration_of_event" label={'Duration of a single event'} initialValue={true}>
-                <DatePicker.RangePicker style={{ width: '100%' }} picker="time" format={'HH:mm'} placeholder={['Min duration','Max duration']}/>
+                <DatePicker.RangePicker
+                  style={{ width: '100%' }}
+                  picker="time"
+                  format={'HH:mm'}
+                  placeholder={['Min duration', 'Max duration']}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -292,13 +274,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '4',
       children: (
-          <Form layout="vertical" form={excludeForm}>
-            <Row gutter={16} justify="center">
-              <Col span={8}>
-                <ExcludeTable></ExcludeTable>
-              </Col>
-            </Row>
-          </Form>
+        <Form layout="vertical" form={excludeForm}>
+          <Row gutter={16} justify="center">
+            <Col span={8}>
+              <ExcludeTable></ExcludeTable>
+            </Col>
+          </Row>
+        </Form>
       ),
       forceRender: true,
     },
@@ -306,9 +288,9 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '5',
       children: (
-          <Form.Item name="event_name" label="Exclude" required>
-            <Input />
-          </Form.Item>
+        <Form.Item name="event_name" label="Exclude" required>
+          <Input />
+        </Form.Item>
       ),
       forceRender: true,
     },
