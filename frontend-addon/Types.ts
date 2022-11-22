@@ -57,3 +57,8 @@ type CreateEventDTO = {
     end_date: string;
     duration: number;
 }
+
+type LoginResponse = {
+    planit_user_id: string,
+    google_account_id: string
+}

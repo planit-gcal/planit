@@ -35,7 +35,7 @@ function createEvent(createEventDTO: CreateEventDTO) {
 }
 
 function getIdFromMail(email: string) {
-    const url = `${MAINURL}/api/plan-it/oauth/users?email=${email}`
+    const url = `${MAINURL}/plan-it/oauth/users?email=${email}`
     console.log({url})
     const options = {
         'headers': {

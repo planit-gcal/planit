@@ -1,10 +1,9 @@
 function onHomepage() {
     resetProperties()
-    if(!isAuthenticated())
+    if(!isAuthenticated() && !authenticate())
     {
         console.log("Not authenticated")
-        // return authenticationCard();
-        authenticate();
+        return authenticationCard();
     }
     console.log("Authenticated")
     return createCard();
