@@ -1,54 +1,33 @@
-function isAuthenticated() : boolean
-{
-    const token = GetProperty<string>(userTokenString);
-    return !!token && token !== "";
-}
+class Authenticator {
 
-function getId() : string
-{
-    return GetProperty<string>(userTokenString)
-}
-
-function setId(id : string)
-{
-    SetProperty(userTokenString, id);
-}
-
-function authenticate() : boolean
-{
-    const userEmail = Session.getActiveUser().getEmail();
-    const response = getIdFromMail(userEmail);
-    console.log("response")
-    console.log(response.toString())
-    const loginResponse = JSON.parse(response.toString()) as LoginResponse;
-    const id = loginResponse.planit_user_id;
-    if(id === null)
-    {
-        console.log("id is null")
-        return false;
+    static isAuthenticated(): boolean {
+        const token = PropertyManager.getProperty<string>(userTokenString);
+        return !!token && token !== "";
     }
-    console.log({id})
-    setId(id);
-    return true;
-}
 
-function authenticationCard()
-{
-    const url = MAINURL;
-    const onClose = CardService.OnClose.RELOAD_ADD_ON;
-    const openLink = CardService.newOpenLink().setUrl(url).setOnClose(onClose).setOpenAs(CardService.OpenAs.OVERLAY);
-    const card = CardService.newCardBuilder();
-    const section = CardService.newCardSection()
-        .setHeader("Sign up")
-        .addWidget(
-            CardService.newTextButton()
-                .setText("Open sign in popup")
-                .setOpenLink(openLink)
-        )
-        .addWidget(
-            CardService.newTextParagraph()
-                .setText("Log in screen?")
-        )
-    card.addSection(section)
-    return card.build();
+    static getId(): string {
+        return PropertyManager.getProperty<string>(userTokenString)
+    }
+
+    static setId(id: string) {
+        PropertyManager.setProperty(userTokenString, id);
+    }
+
+    static authenticate(): boolean {
+        const userEmail = Session.getActiveUser().getEmail();
+        const response = API.getIdFromMail(userEmail);
+        console.log({response})
+        if (!response) {
+            console.log("Error trying to authenticate")
+            return false;
+        }
+        const id = response.planit_user_id;
+        if (id === null) {
+            console.log("id is null")
+            return false;
+        }
+        console.log({id})
+        Authenticator.setId(id);
+        return true;
+    }
 }

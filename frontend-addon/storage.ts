@@ -1,10 +1,10 @@
 function getPresetsFromStorage() : PresetDetails[]
 {
     console.log("getPresetsFromStorage")
-    let presets = GetProperty<PresetDetails[]>(presetString);
+    let presets = PropertyManager.getProperty<PresetDetails[]>(presetString);
     if(!presets || presets.length === 0 || theOnlyPresetIsTheDefaultOne(presets))
     {
-        const returned = getPresets();
+        const returned = API.getPresets();
         console.log(returned)
         if(returned === "404")
         {
@@ -15,7 +15,7 @@ function getPresetsFromStorage() : PresetDetails[]
             presets = returned;
             presets.unshift(defaultPreset);
         }
-        SetProperty(presetString, presets);
+        PropertyManager.setProperty(presetString, presets);
     }
     console.log({presets})
     return presets;
@@ -29,7 +29,14 @@ function theOnlyPresetIsTheDefaultOne(presets : PresetDetails[]) : boolean
 function getCurrentPresetFromStorage()
 {
     console.log("getCurrentPresetFromStorage")
-    const index = GetProperty<number>(currentPresetIndexString);
+    const index = PropertyManager.getProperty<number>(currentPresetIndexString);
     console.log({index})
     return getPresetsFromStorage()[index];
+}
+
+function updateGuests(presets: PresetDetails[], currentIndex: number) {
+    console.log({presets, currentIndex});
+    const preset = presets[currentIndex];
+    const guests = preset.guests;
+    PropertyManager.setProperty(usersString, guests);
 }
