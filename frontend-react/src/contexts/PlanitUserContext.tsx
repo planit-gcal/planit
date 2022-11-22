@@ -4,8 +4,8 @@ import { getUserEmails } from '../api/users/users.api';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type UserDetails = {
-  planitUserId?: number;
-  ownerEmail?: string;
+  planitUserId: number | null;
+  ownerEmail: string | null;
 };
 
 type State = {
@@ -20,7 +20,10 @@ export const PlanitUserContext = createContext<State>({} as State);
 
 type PlanitUserProviderProps = { children: React.ReactNode };
 export const PlanitUserProvider = ({ children }: PlanitUserProviderProps) => {
-  const [userDetails, setUserDetails] = useLocalStorage<UserDetails>('userDetails', {});
+  const [userDetails, setUserDetails] = useLocalStorage<UserDetails>('userDetails', {
+    planitUserId: null,
+    ownerEmail: null,
+  });
   const [userEmails, setUserEmails] = useState<string[]>([]);
 
   const fetchAndSetEmails = useCallback(async () => {

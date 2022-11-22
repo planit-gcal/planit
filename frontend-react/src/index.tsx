@@ -4,13 +4,14 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
+import { googleOAuthClientId } from './config';
 import { PlanitUserProvider } from './contexts/PlanitUserContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <BrowserRouter>
-    <GoogleOAuthProvider clientId={'937013173995-cmhpl3s97umb1njiseqtk3c049guefi5.apps.googleusercontent.com'}>
+    <GoogleOAuthProvider clientId={googleOAuthClientId}>
       <PlanitUserProvider>
         <App />
       </PlanitUserProvider>

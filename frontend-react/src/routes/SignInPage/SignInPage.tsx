@@ -1,42 +1,47 @@
-import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { createNewUser } from '../../api/users/users.api';
+import { getPlanItUserIdFromEmail } from '../../api/oauth/oauth.api';
+import { googleOAuthClientId } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
+import { parseJwt, loadScript, clearScript } from '../../utils/oauth.utils';
 
-export const SignInPage = () => {
-  const { isLoggedIn, setUserDetails } = useContext(PlanitUserContext);
+const src = 'https://accounts.google.com/gsi/client';
+
+const GoogleAuth = () => {
+  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    isLoggedIn && navigate('/create-events');
-  }, [isLoggedIn, navigate]);
+  const googleButton = useRef<HTMLDivElement>(null);
 
-  const onSuccess = useCallback(
-    async ({ code }: CodeResponse) => {
-      try {
-        const response = await createNewUser(code);
+  const handleCredentialResponse = useCallback(
+    async (response: google.CredentialResponse) => {
+      const email = parseJwt(response.credential).email;
 
-        setUserDetails((prev) => ({ ...prev, planitUserId: response.planit_user_id }));
-        navigate('/create-events');
-      } catch (e) {
-        console.log(e);
-      }
+      const planitUserId = await getPlanItUserIdFromEmail(email);
+
+      setUserDetails({ planitUserId, ownerEmail: email });
+
+      navigate(!!planitUserId ? '/create-events' : '/sign-up');
     },
     [navigate, setUserDetails]
   );
 
-  const login = useGoogleLogin({
-    onSuccess,
-    flow: 'auth-code',
-    scope:
-      'profile email openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly',
-  });
+  useEffect(() => {
+    loadScript(src)
+      .then(async () => {
+        google.accounts.id.initialize({
+          client_id: googleOAuthClientId,
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.renderButton(googleButton.current!, { theme: 'outline', size: 'large' });
+      })
+      .catch(console.error);
 
-  return (
-    <div>
-      <button onClick={() => login()}>Sign in with Google 🚀</button>
-    </div>
-  );
+    return () => clearScript(src);
+  }, [handleCredentialResponse, navigate, userDetails]);
+
+  return <div ref={googleButton} />;
 };
+
+export default GoogleAuth;

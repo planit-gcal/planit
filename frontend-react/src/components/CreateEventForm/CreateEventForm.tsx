@@ -12,7 +12,7 @@ import {
   Tabs,
   TabsProps,
   Typography,
-  InputNumber,
+  InputNumber, Select, Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, parse } from 'date-fns';
@@ -48,6 +48,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     time_between_events: [number, number];
     break_event: boolean;
     duration_of_event: [number, number];
+    duration_of_event_unit: number;
   }>();
 
   const [activeTabKey, setActiveTabKey] = useState('0');
@@ -59,6 +60,12 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     { title: 'Availability' },
     { title: 'Confirm' },
   ];
+
+  const timeUnitOptions = [
+    { value: 1, label: 'Minutes' },
+    { value: 60, label: 'Hours' },
+    { value: 1440, label: 'Days' },
+  ]
 
   const renderTabBar: TabsProps['renderTabBar'] = () => (
     <>
@@ -109,6 +116,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
           </Row>
           <Row gutter={16} justify="center">
             <Col span={16}>
+              {/*TODO make this scrollable*/}
               <Form.List name="guests" initialValue={[{ email: '', obligatory: true }]}>
                 {(fields, { add, remove }) => (
                   <>
@@ -231,20 +239,20 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              {/*todo time range picker*/}
-              {/*needs a time range picker in the format d:HH:mm*/}
-              <Form.Item
-                name="time_between_events"
-                label={'Time between multiple events'}
-                required
-                // initialValue={[
-                //   new Date(),
-                //   add(new Date(), {
-                //     days: 3,
-                //   }),
-                // ]}
-              >
-                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
+              <Form.Item label={'Time between multiple events'}>
+                <Row>
+                  <Form.Item
+                      name="time_between_events"
+                      required
+                      initialValue={[30, 60]}
+                      noStyle
+                  >
+                    <Slider style={{ width: 'calc(100% - 115px)' }} range max={60} />
+                  </Form.Item>
+                  <Form.Item name="time_between_events_unit" initialValue={'Minutes'} noStyle>
+                    <Select style={{ width: '95px', marginLeft: '8px' }} options={timeUnitOptions}/>
+                  </Form.Item>
+                </Row>
               </Form.Item>
             </Col>
           </Row>
@@ -256,7 +264,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             </Col>
             <Col span={8}>
               <Form.Item name="duration_of_event" label={'Duration of a single event'} initialValue={true}>
-                <DatePicker.RangePicker picker="time" format={'HH:mm'} />
+                <DatePicker.RangePicker style={{ width: '100%' }} picker="time" format={'HH:mm'} placeholder={['Min duration','Max duration']}/>
               </Form.Item>
             </Col>
           </Row>

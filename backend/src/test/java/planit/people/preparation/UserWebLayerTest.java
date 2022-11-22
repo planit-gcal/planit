@@ -46,7 +46,7 @@ public class UserWebLayerTest {
     public void createNewUserTest() throws Exception {
         DTO_Code code = new DTO_Code(null, "code");
         UserCreationResponse response = new UserCreationResponse(1L, 1L);
-        doReturn(response).when(serviceUser).getGoogleAccountId(code);
+        doReturn(response).when(serviceUser).createGoogleAccount(code);
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders
@@ -72,7 +72,7 @@ public class UserWebLayerTest {
     public void addANewEmailForAnAlreadyExistingPlanItAccount() throws Exception {
         DTO_Code code = new DTO_Code(1L, "code");
         UserCreationResponse response = new UserCreationResponse(1L, 2L);
-        doReturn(response).when(serviceUser).getGoogleAccountId(code);
+        doReturn(response).when(serviceUser).createGoogleAccount(code);
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders

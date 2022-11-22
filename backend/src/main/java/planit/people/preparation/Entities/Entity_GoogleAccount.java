@@ -97,6 +97,14 @@ public class Entity_GoogleAccount {
         this.id = id;
     }
 
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
+    }
+
+    public void setThe_user(Entity_User the_user) {
+        this.the_user = the_user;
+    }
+
     @Override
     public String toString() {
         return "Entity_GoogleAccount{" +
