@@ -55,8 +55,6 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     { value: 1440, label: 'Days' },
   ];
 
-
-
   const renderTabBar: TabsProps['renderTabBar'] = () => (
     <>
       <Steps size="small" items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
@@ -64,18 +62,18 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     </>
   );
 
-  function toTime(time : string){
-    return parse(time,'HH:mm', new Date())
+  function toTime(time: string) {
+    return parse(time, 'HH:mm', new Date());
   }
 
   const weekDays = [
-    { label: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
-    { label: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
-    { label: 'Wednesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
-    { label: 'Thursday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
-    { label: 'Friday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
-    { label: 'Saturday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
-    { label: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
+    { name: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { name: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { name: 'Wednesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { name: 'Thursday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { name: 'Friday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+    { name: 'Saturday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
+    { name: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
   ];
 
   const items = [
@@ -286,11 +284,9 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       label: '',
       key: '4',
       children: (
-        <Row gutter={16} justify="center">
-          <Col span={16}>
-            {/*<ExcludeTable form={excludeForm} />*/}
-            <Form layout="vertical" form={excludeForm}>
-
+        <Form layout="vertical" form={excludeForm}>
+          <Row gutter={16} justify="center">
+            <Col span={16}>
               <Row gutter={16} justify="center">
                 <Col span={6}>
                   <h3>Day</h3>
@@ -302,45 +298,42 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                   <h3>Availability</h3>
                 </Col>
               </Row>
-              <Form.List name={'excludeWeekDays'} initialValue={weekDays}>
-                {fields => (
+              <Form.List name="excludeWeekDays" initialValue={weekDays}>
+                {(fields, { add, remove }) => {
+                  return (
                     <div>
-                      {fields.map(({key, name, ...restField}) => (
-                          <Row gutter={16} justify="center" key={key}>
-                            <Col span={6}>
-                              <Form.Item name={[name, 'label']}>
-                                <Input></Input>
-                              </Form.Item>
-                            </Col>
-                            <Col span={6}>
-                              <Form.Item name={[name, 'exclude']} valuePropName="checked">
-                                <Switch />
-                              </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                              <Form.Item {...restField} name={[name, 'availability']} shouldUpdate>
-                                {(() => {
-                                  console.log(excludeForm.getFieldsValue([name, 'exclude']))
-                                })()}
-                                {/*{() => {*/}
-                                {/*  return <DatePicker.RangePicker*/}
-                                {/*      style={{ width: '100%' }}*/}
-                                {/*      picker="time"*/}
-                                {/*      format={'HH:mm'}*/}
-                                {/*      placeholder={['From', 'To']}*/}
-                                {/*      disabled ={excludeForm.getFieldValue([name, 'exclude'])}*/}
-                                {/*  />*/}
-                                {/*}}*/}
-                              </Form.Item>
-                            </Col>
-                          </Row>
+                      {fields.map((field, index) => (
+                        <div key={field.key}>
+                          <Form.Item name={[index, 'name']} label="name">
+                            <Input />
+                          </Form.Item>
+                          <Form.Item name={[index, 'exclude']} label="exclude" valuePropName="checked">
+                            <Switch />
+                          </Form.Item>
+                          <Form.Item noStyle shouldUpdate>
+                            {() => {
+                              return (
+                                <Form.Item name={[index, 'availability']} label="availability">
+                                  <DatePicker.RangePicker
+                                    style={{ width: '100%' }}
+                                    picker="time"
+                                    format={'HH:mm'}
+                                    placeholder={['From', 'To']}
+                                    disabled={excludeForm.getFieldValue(['excludeWeekDays', index, 'exclude'])}
+                                  />
+                                </Form.Item>
+                              );
+                            }}
+                          </Form.Item>
+                        </div>
                       ))}
                     </div>
-                )}
+                  );
+                }}
               </Form.List>
-            </Form>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </Form>
       ),
       forceRender: true,
     },
