@@ -144,6 +144,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                             {...restField}
                             name={[name, 'obligatory']}
                             label={name === 0 ? 'Obligatory?' : undefined}
+                            valuePropName="checked"
                           >
                             <Switch defaultChecked style={{ display: 'block' }} />
                           </Form.Item>
@@ -257,7 +258,12 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
           </Row>
           <Row gutter={16} justify="center">
             <Col span={8}>
-              <Form.Item name="break_event" label={"Break events if can't find?"} initialValue={true}>
+              <Form.Item
+                name="break_event"
+                label={"Break events if can't find?"}
+                initialValue={true}
+                valuePropName="checked"
+              >
                 <Switch defaultChecked style={{ display: 'block' }} />
               </Form.Item>
             </Col>
