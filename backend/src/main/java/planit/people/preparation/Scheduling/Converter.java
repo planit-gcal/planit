@@ -3,6 +3,7 @@ package planit.people.preparation.Scheduling;
 import com.google.api.services.calendar.model.TimePeriod;
 import org.joda.time.Interval;
 import org.springframework.web.util.UriUtils;
+import planit.people.preparation.Entities.Entity_PresetAvailability;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -25,5 +26,10 @@ public class Converter {
 
     public static String encodeString(String value) {
         return UriUtils.encodePath(value, "UTF-8");
+    }
+
+    public static Interval convertAvailabilityToInterval(Entity_PresetAvailability availability)
+    {
+        return new Interval(availability.getStart_available_time().getTime(), availability.getEnd_available_time().getTime());
     }
 }

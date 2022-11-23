@@ -1,12 +1,12 @@
 package planit.people.preparation.Scheduling;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
+import planit.people.preparation.Entities.Entity_PresetAvailability;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class used for finding time intervals fitting provided parameters
@@ -15,10 +15,11 @@ public final class Scheduler {
 
     /**
      * Finds available time slot (interval) between the given dates of given duration. If not found, returns null.
+     *
      * @param busyTime Time intervals during which the time is marked as busy.
      * @param duration Actual duration of time the event should take.
-     * @param start The soonest date the event should be scheduled at.
-     * @param end The latest date the event should be scheduled at.
+     * @param start    The soonest date the event should be scheduled at.
+     * @param end      The latest date the event should be scheduled at.
      * @return First found interval matching all parameters or null.
      * @see org.joda.time.Interval
      * @see org.joda.time.Duration
@@ -33,10 +34,11 @@ public final class Scheduler {
      * Finds available time slots (intervals) between the given dates of given duration. If not found, returns empty.
      * This method will find multiple time slots with total length of duration.
      * This might not be so useful for now.
+     *
      * @param busyTime Time intervals during which the time is marked as busy.
      * @param duration Actual duration of time the event should take.
-     * @param start The soonest date the event should be scheduled at.
-     * @param end The latest date the event should be scheduled at.
+     * @param start    The soonest date the event should be scheduled at.
+     * @param end      The latest date the event should be scheduled at.
      * @return List of first intervals matching all parameters. Can be empty if none found.
      * @see org.joda.time.Interval
      * @see org.joda.time.Duration
@@ -50,9 +52,10 @@ public final class Scheduler {
 
     /**
      * Returns all available time slots between start and end date. Does not filter them.
+     *
      * @param busyTime Time intervals during which the time is marked as busy.
-     * @param start The soonest date the event should be scheduled at.
-     * @param end The latest date the event should be scheduled at.
+     * @param start    The soonest date the event should be scheduled at.
+     * @param end      The latest date the event should be scheduled at.
      * @return List of all intervals matching the parameters or empty.
      */
     public static List<Interval> getAllAvailable(List<Interval> busyTime, DateTime start, DateTime end) {
@@ -64,8 +67,9 @@ public final class Scheduler {
 
     /**
      * Finds intervals of total length equal to provided duration. Might return multiple intervals of one minute. Might cut last interval short to match duration.
+     *
      * @param available List of intervals of <strong>free</strong> time.
-     * @param duration Duration of the event.
+     * @param duration  Duration of the event.
      * @return Intervals of total duration equal to duration or empty.
      */
     private static List<Interval> getIntervalsOfTotalDuration(List<Interval> available, Duration duration) {
@@ -93,9 +97,10 @@ public final class Scheduler {
 
     /**
      * "Inverts" a list of intervals provided to get "free" time.
+     *
      * @param mergedIntervals List of <strong>non-overlapping and sorted</strong> intervals being "busy".
-     * @param start The soonest date the event should be scheduled at. <strong>When inverting, interval starting from this date will be created if possible.</strong>
-     * @param end The latest date the event should be scheduled at. <strong>When inverting, interval ending at this date will be created if possible.</strong>
+     * @param start           The soonest date the event should be scheduled at. <strong>When inverting, interval starting from this date will be created if possible.</strong>
+     * @param end             The latest date the event should be scheduled at. <strong>When inverting, interval ending at this date will be created if possible.</strong>
      * @return Inverted list of intervals provided. Might additionally add intervals starting at start or ending at end. Might return empty.
      */
     private static List<Interval> getFreeIntervalsFromMergedIntervals(List<Interval> mergedIntervals, DateTime start, DateTime end) {
@@ -127,6 +132,7 @@ public final class Scheduler {
 
     /**
      * Merges provided intervals. "Merge" means join any overlapping intervals together, leaving no overlaps. Provided interval list must be <strong>sorted</strong>.
+     *
      * @param intervals list of <strong>sorted</strong> intervals
      * @return merged list of intervals
      */
@@ -155,9 +161,10 @@ public final class Scheduler {
 
     /**
      * Filters the given intervals so that only the intervals between start and end are returned. If any interval goes beyond boundaries, it will be cut.
+     *
      * @param intervals List of intervals to filter.
-     * @param start The date before which no event can start.
-     * @param end The date after which no event can end.
+     * @param start     The date before which no event can start.
+     * @param end       The date after which no event can end.
      * @return List of intervals starting on or after start and ending before or at end. Might return empty.
      */
     private static List<Interval> filterIntervals(List<Interval> intervals, DateTime start, DateTime end) {
@@ -173,7 +180,8 @@ public final class Scheduler {
 
     /**
      * Joins two intervals into one. <strong>Order of arguments does not matter.</strong>
-     * @param first interval to merge
+     *
+     * @param first  interval to merge
      * @param second interval to merge
      * @return Interval starting at earliest date from provided intervals and ending at latest date from provided intervals.
      */
@@ -193,8 +201,9 @@ public final class Scheduler {
 
     /**
      * Returns an interval of matching duration. Cuts the interval short if needed. Returns null if not found
+     *
      * @param available List of "free" intervals too chose from.
-     * @param duration The duration of event.
+     * @param duration  The duration of event.
      * @return An interval from list of exact duration or null.
      */
     private static Interval getFirstIntervalMatchingDuration(List<Interval> available, Duration duration) {
@@ -207,6 +216,69 @@ public final class Scheduler {
         return null;
     }
 
+    public static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) throws Exception {
+        var availableIntervals = new ArrayList<Interval>();
+        var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
+        for (Interval freeInterval : freeIntervals) {
+            var dayOfWeek = freeInterval.getStart().dayOfWeek().get();
+            var availabilityForDay = mappedAvailabilities.get(dayOfWeek);
+            if (freeInterval.overlaps(availabilityForDay)) {
+                var clampedInterval = clampInterval(freeInterval, availabilityForDay);
+                availableIntervals.add(clampedInterval);
+            }
+        }
+        return availableIntervals;
+    }
+
+    public static Interval clampInterval(Interval intervalToBeClamped, Interval interval) {
+        Interval newInterval = clampIntervalStart(intervalToBeClamped, interval.getStart());
+        newInterval = clampIntervalEnd(newInterval, interval.getEnd());
+        return newInterval;
+    }
+
+    public static Interval clampIntervalStart(Interval interval, DateTime start)
+    {
+        if(interval.getStart().isBefore(start))
+        {
+            return new Interval(start, interval.getEnd());
+        }
+        return interval;
+    }
+
+    public static Interval clampIntervalEnd(Interval interval, DateTime end)
+    {
+        if(interval.getEnd().isAfter(end))
+        {
+            return new Interval(interval.getStart(), end);
+        }
+        return interval;
+    }
+
+    public static Map<Integer, Interval> mapAvailabilitiesToDaysOfWeek(List<Entity_PresetAvailability> availabilities) {
+        HashMap<Integer, Interval> map = new HashMap<Integer, Interval>();
+        for (Entity_PresetAvailability availability :
+                availabilities) {
+            switch (availability.getDay()) {
+                case MONDAY ->
+                        map.putIfAbsent(DateTimeConstants.MONDAY, Converter.convertAvailabilityToInterval(availability));
+                case TUESDAY ->
+                        map.putIfAbsent(DateTimeConstants.TUESDAY, Converter.convertAvailabilityToInterval(availability));
+                case WEDNESDAY ->
+                        map.putIfAbsent(DateTimeConstants.WEDNESDAY, Converter.convertAvailabilityToInterval(availability));
+                case THURSDAY ->
+                        map.putIfAbsent(DateTimeConstants.THURSDAY, Converter.convertAvailabilityToInterval(availability));
+                case FRIDAY ->
+                        map.putIfAbsent(DateTimeConstants.FRIDAY, Converter.convertAvailabilityToInterval(availability));
+                case SATURDAY ->
+                        map.putIfAbsent(DateTimeConstants.SATURDAY, Converter.convertAvailabilityToInterval(availability));
+                case SUNDAY ->
+                        map.putIfAbsent(DateTimeConstants.SUNDAY, Converter.convertAvailabilityToInterval(availability));
+                default -> {
+                }
+            }
+        }
+        return map;
+    }
 
     public static class IntervalStartComparator implements Comparator<Interval> {
         @Override
