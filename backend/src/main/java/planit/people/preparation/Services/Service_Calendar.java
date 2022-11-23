@@ -40,7 +40,7 @@ public class Service_Calendar {
     }
 
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException {
-        List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountByEmail(new ArrayList<>() {
+        Map<Long, Set<String>> userGoogleAccountMappedToPlanItUserId = getAllRefreshTokensPerPlanItUser(new ArrayList<>() {
             {
                 add(newEventDetail.owner_email());
                 for (Entity_Guest guest : newEventDetail.event_preset_detail().guests()) {
@@ -48,9 +48,10 @@ public class Service_Calendar {
                 }
             }
         });
-        GoogleHelper google_helper = new GoogleHelper(getOwnerRefreshToken(googleAccounts, newEventDetail.owner_email()), true);
+        String ownerRefreshToken = idaoGoogleAccount.getGoogleAccountFromEmail(newEventDetail.owner_email()).getRefresh_token();
+        GoogleHelper google_helper = new GoogleHelper(ownerRefreshToken, true);
         System.out.println("DTO_NewEventDetail: " + newEventDetail);
-        return google_helper.createEvent(newEventDetail, getAttendeeRefreshTokens(googleAccounts));
+        return google_helper.createEvent(newEventDetail, userGoogleAccountMappedToPlanItUserId);
     }
 
     private String getOwnerRefreshToken(List<Entity_GoogleAccount> googleAccounts, String ownerEmail) {
@@ -60,6 +61,21 @@ public class Service_Calendar {
             }
         }
         return null;
+    }
+
+    private Map<Long, Set<String>> getAllRefreshTokensPerPlanItUser(List<String> emails) {
+        Map<Long, Set<String>> result = new HashMap<>();
+        Set<Entity_User> planItUserIds = new HashSet<>();
+        idaoGoogleAccount.getEntityGoogleAccountByEmail(emails).forEach((googleAccount)->planItUserIds.add(googleAccount.getThe_user()));
+        idaoGoogleAccount.getEntityGoogleAccountsByPlanItUsers(planItUserIds).forEach(
+                (googleAccount)-> {
+                    Long planItUserId = googleAccount.getThe_user().getUser_id();
+                    Set<String> userRefreshTokens = result.getOrDefault(planItUserId, new HashSet<>());
+                    userRefreshTokens.add(googleAccount.getRefresh_token());
+                    result.put(planItUserId, userRefreshTokens);
+                }
+        );
+        return result;
     }
 
     private Set<Entity_User> getPlanItUserIdsFromEmails(List<Entity_GoogleAccount> googleAccountsFromEmail) {
@@ -119,7 +135,7 @@ public class Service_Calendar {
                 idaoEventPreset.save(modifiedPreset);
                 idaoUser.saveAll(users);
                 return new PresetDetailResponse(planItUserId, modifiedPreset.getId_event_preset());
-            }else {
+            } else {
                 //TODO: THROW PRESET NOT FOUND
                 throw new Exception();
             }
@@ -173,6 +189,7 @@ public class Service_Calendar {
 
     /**
      * Create a new Preset detail or update an already existing record for a PlanIt user.
+     *
      * @param planItUserId the PlanIt user Id for whom the system is creating the new preset.
      * @param dtoNewPreset the body of the new preset detail.
      * @param isUpdate     indicates whether the function is used for an insert or an update operation.
@@ -183,7 +200,7 @@ public class Service_Calendar {
         PresetDetailResponse upsertedPresetIds = upsertPresetDetailIntoDB(planItUserId, dtoNewPreset, isUpdate);
         List<DTO_PresetDetail> allPresetsOfUser = getEventPresetsByPlanItUserId(planItUserId);
         for (DTO_PresetDetail detail : allPresetsOfUser) {
-            if (detail.event_preset().getId_event_preset().equals(upsertedPresetIds.eventPresetId())){
+            if (detail.event_preset().getId_event_preset().equals(upsertedPresetIds.eventPresetId())) {
                 return detail;
             }
         }
@@ -228,35 +245,29 @@ public class Service_Calendar {
     /**
      * Delete Preset Detail. the deletion process can happen in 2 ways
      * 1 - Delete all instances of a preset. this process is used for either
-     *      a- the preset detail update process,
-     *      b- there is only one owner of the preset,
-     *      c- there is no owner of the preset.
+     * a- the preset detail update process,
+     * b- there is only one owner of the preset,
+     * c- there is no owner of the preset.
      * 1.1 - In case of a and b,we first delete all PlanIt User instances in order to not violate the constraints in the PlanItUser-EventPreset helper table.
      * 1.2 - Delete the PlanItEvent record which would trigger the deletion of all related Guest and Availability records
      * 2 - Delete only the instance for the given PlanItUserId
      *
      * @param planItUserId the id of the PlanIt user whose instance should be removed.
-     * @param presetId the id of the EventPreset which should be removed.
+     * @param presetId     the id of the EventPreset which should be removed.
      */
     public void deletePreset(Long planItUserId, Long presetId) {
         Entity_EventPreset presetToBeDeleted = idaoEventPreset.findById(presetId).orElse(null);
         System.out.println("presetToBeDeleted: " + presetToBeDeleted);
         if (presetToBeDeleted != null) {
             System.out.println("Number of users owning the preset: " + presetToBeDeleted.getEntityUsers());
-            if (presetToBeDeleted.getEntityUsers().isEmpty() ||
-                    planItUserId == null ||
-                    (
-                            presetToBeDeleted.getEntityUsers().size() == 1 &&
-                            Objects.equals(presetToBeDeleted.getEntityUsers().stream().toList().get(0).getUser_id(), planItUserId)
-                    )
-            ) {
+            if (presetToBeDeleted.getEntityUsers().isEmpty() || planItUserId == null || (presetToBeDeleted.getEntityUsers().size() == 1 && Objects.equals(presetToBeDeleted.getEntityUsers().stream().toList().get(0).getUser_id(), planItUserId))) {
                 if (!presetToBeDeleted.getEntityUsers().isEmpty()) {
                     Set<Entity_User> updatedUsers = new HashSet<>();
                     for (Entity_User presetOwner : presetToBeDeleted.getEntityUsers()) {
                         presetOwner.removePreset(presetToBeDeleted);
                         updatedUsers.add(presetOwner);
                     }
-                        idaoUser.saveAll(updatedUsers);
+                    idaoUser.saveAll(updatedUsers);
                 }
                 System.out.println("deleting all instances of the event preset");
                 idaoEventPreset.delete(presetToBeDeleted);
@@ -280,14 +291,15 @@ public class Service_Calendar {
      * 2- Get the preset to be shared
      * 3- Create a new record for Entity_SharedPreset in order to generate the new sharing code.
      * 4- Send an email using EmailHelper
+     *
      * @param sharePreset contains the sharing information
      * @throws MessagingException in case of any errors with Java Mail
      * @see EmailHelper#sendEmail(Entity_GoogleAccount, Entity_GoogleAccount, UUID, Configuration)
      */
     @Transactional
     public void sharePreset(DTO_SharePreset sharePreset) throws MessagingException {
-        Entity_GoogleAccount inviteeAccount = idaoGoogleAccount.getIdOfUserFromEmail(sharePreset.invitee_email());
-        Entity_GoogleAccount inviterAccount = idaoGoogleAccount.getIdOfUserFromEmail(sharePreset.inviter_email());
+        Entity_GoogleAccount inviteeAccount = idaoGoogleAccount.getGoogleAccountFromEmail(sharePreset.invitee_email());
+        Entity_GoogleAccount inviterAccount = idaoGoogleAccount.getGoogleAccountFromEmail(sharePreset.inviter_email());
         if (inviterAccount != null) {
             if (inviteeAccount != null) {
                 Entity_User inviterUser = inviterAccount.getThe_user();

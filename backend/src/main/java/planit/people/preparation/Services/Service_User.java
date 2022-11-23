@@ -15,7 +15,6 @@ import planit.people.preparation.Responses.UserCreationResponse;
 
 import java.util.List;
 import java.util.Set;
-import java.util.Objects;
 
 @Service
 public class Service_User {
@@ -58,7 +57,7 @@ public class Service_User {
         Entity_User entity_user;
         Userinfo userinfo = google_helper.getUserInfo();
         System.out.println("google userinfo: " + userinfo);
-        Entity_GoogleAccount existingAccount = idaoGoogleAccount.getIdOfUserFromEmail(userinfo.getEmail());
+        Entity_GoogleAccount existingAccount = idaoGoogleAccount.getGoogleAccountFromEmail(userinfo.getEmail());
         if (existingAccount != null) {
             return updateUserRefreshToken(existingAccount, google_helper.getRefreshToken(), dto_code.planit_user_id());
         }

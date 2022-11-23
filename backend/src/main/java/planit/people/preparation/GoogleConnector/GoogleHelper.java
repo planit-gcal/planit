@@ -8,15 +8,13 @@ import com.google.api.services.oauth2.model.Userinfo;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
+import planit.people.preparation.Entities.Entity_GoogleAccount;
 import planit.people.preparation.Responses.CalendarResponse;
 import planit.people.preparation.Scheduling.Converter;
 import planit.people.preparation.Scheduling.Scheduler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GoogleHelper {
     private final GoogleConnector googleConnector = new GoogleConnector();
@@ -40,22 +38,34 @@ public class GoogleHelper {
         return googleConnector.getRefreshToken();
     }
 
-    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, Set<String> refreshTokens) throws IOException {
-        DateTime startDate = getStartDate(newEventDetail.start_date(), newEventDetail.end_date(), newEventDetail.duration(), refreshTokens);
-        return googleConnector.createEvent(newEventDetail, startDate);
+    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, Map<Long, Set<String>> userGoogleAccountMappedToPlanItUserId) throws IOException {
+        DateTime startDate = getStartDate(newEventDetail.start_date(), newEventDetail.end_date(), newEventDetail.duration(), userGoogleAccountMappedToPlanItUserId);
+        //TODO return this when function is ready. return googleConnector.createEvent(newEventDetail, startDate);
+        return new CalendarResponse(startDate, startDate);
     }
 
-    public DateTime getStartDate(Date startDate, Date endDate, Long duration, Set<String> refreshTokens) throws IOException {
+    public DateTime getStartDate(Date startDate, Date endDate, Long duration, Map<Long, Set<String>> userGoogleAccountMappedToPlanItUserId) throws IOException {
         org.joda.time.DateTime jodaStartDateTime = new org.joda.time.DateTime(startDate);
-        org.joda.time.DateTime jodaStopDateTime = new org.joda.time.DateTime(endDate);
+        org.joda.time.DateTime jodaEndDateTime = new org.joda.time.DateTime(endDate);
         Duration durationInMinutes = Duration.standardMinutes(duration);
-        List<Interval> freeBusyForAllAttendee = getFreeBusyForAll(startDate, endDate, refreshTokens);
-        Interval firstInterval = Scheduler.getOneTimeSlotBetweenDatesOfLength(freeBusyForAllAttendee, durationInMinutes, jodaStartDateTime, jodaStopDateTime);
-        Date eventStartDate = firstInterval.getStart().toDate();
-        return new DateTime(eventStartDate);
+        Map<Long, List<Interval>> freeTimeForAll = new HashMap<>();
+        for (Long userId : userGoogleAccountMappedToPlanItUserId.keySet()) {
+            List<Interval> busyPerUser = getFreeBusyForAllUserAccounts(
+                    startDate,
+                    endDate,
+                    userGoogleAccountMappedToPlanItUserId.get(userId));
+            freeTimeForAll.put(userId,
+                    Scheduler.getAllAvailable(
+                            busyPerUser,
+                            jodaStartDateTime,
+                            jodaEndDateTime));
+        }
+        System.out.println("freeTimeForAll: " + freeTimeForAll);
+        //TODO call the search method.
+        return new DateTime(startDate);
     }
 
-    private List<Interval> getFreeBusyForAll(Date startDate, Date endDate, Set<String> refreshTokens) throws IOException {
+    private List<Interval> getFreeBusyForAllUserAccounts(Date startDate, Date endDate, Set<String> refreshTokens) throws IOException {
         List<Interval> busyForAll = new ArrayList<>();
         for (String refreshToken : refreshTokens) {
             busyForAll.addAll(getFreeBusy(startDate, endDate, refreshToken));
