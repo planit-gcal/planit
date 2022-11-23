@@ -303,34 +303,42 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                   return (
                     <div>
                       {fields.map((field, name) => (
-                        <div key={field.key}>
+                        <Row gutter={8} justify="center" key={field.key}>
                           <Form.Item name={[name, 'name']} label="name" noStyle>
                             <Input hidden></Input>
                           </Form.Item>
-                          <Form.Item noStyle shouldUpdate>
-                            {() => {
-                              return <div>{excludeForm.getFieldValue(['excludeWeekDays', name, 'name'])}</div>;
-                            }}
-                          </Form.Item>
-                          <Form.Item name={[name, 'exclude']} label="exclude" valuePropName="checked">
-                            <Switch />
-                          </Form.Item>
-                          <Form.Item noStyle shouldUpdate>
-                            {() => {
-                              return (
-                                <Form.Item name={[name, 'availability']} label="availability">
-                                  <DatePicker.RangePicker
-                                    style={{ width: '100%' }}
-                                    picker="time"
-                                    format={'HH:mm'}
-                                    placeholder={['From', 'To']}
-                                    disabled={excludeForm.getFieldValue(['excludeWeekDays', name, 'exclude'])}
-                                  />
-                                </Form.Item>
-                              );
-                            }}
-                          </Form.Item>
-                        </div>
+                          <Col span={6}>
+                            <Form.Item noStyle shouldUpdate style={{ marginBottom: '8px' }}>
+                              {() => {
+                                return <div>{excludeForm.getFieldValue(['excludeWeekDays', name, 'name'])}</div>;
+                              }}
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={6}>
+                            <Form.Item name={[name, 'exclude']} valuePropName="checked" style={{ marginBottom: '8px' }}>
+                              <Switch />
+                            </Form.Item>
+                          </Col>
+
+                          <Col span={12}>
+                            <Form.Item noStyle shouldUpdate>
+                              {() => {
+                                return (
+                                  <Form.Item name={[name, 'availability']} style={{ marginBottom: '8px' }}>
+                                    <DatePicker.RangePicker
+                                      style={{ width: '100%' }}
+                                      picker="time"
+                                      format={'HH:mm'}
+                                      placeholder={['From', 'To']}
+                                      disabled={excludeForm.getFieldValue(['excludeWeekDays', name, 'exclude'])}
+                                    />
+                                  </Form.Item>
+                                );
+                              }}
+                            </Form.Item>
+                          </Col>
+                        </Row>
                       ))}
                     </div>
                   );
@@ -389,36 +397,47 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
       <Divider />
 
-      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'end' }}>
-        {activeTabKey === '0' && (
-          <>
-            <Button onClick={onJumpButton}>Jump to Confirm</Button>
-            <Button onClick={onNextButton} type="primary">
-              Next
-            </Button>
-          </>
-        )}
+      <Space
+        direction="horizontal"
+        style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '0' ? undefined : 'none' }}
+      >
+        <Button onClick={onJumpButton} style={{ minWidth: '85px' }}>
+          Jump to Confirm
+        </Button>
+        <Button onClick={onNextButton} type="primary" style={{ minWidth: '85px' }}>
+          Next
+        </Button>
+      </Space>
 
-        {['1', '2', '3'].includes(activeTabKey) && (
-          <>
-            <Button onClick={onBackButton}>Back</Button>
-            <Button onClick={onNextButton} type="primary">
-              Next
-            </Button>
-          </>
-        )}
+      <Space
+        direction="horizontal"
+        style={{
+          width: '100%',
+          justifyContent: 'end',
+          display: ['1', '2', '3'].includes(activeTabKey) ? undefined : 'none',
+        }}
+      >
+        <Button onClick={onBackButton} style={{ minWidth: '85px' }}>
+          Back
+        </Button>
+        <Button onClick={onNextButton} type="primary" style={{ minWidth: '85px' }}>
+          Next
+        </Button>
+      </Space>
 
-        {activeTabKey === '4' && (
-          <>
-            <Button onClick={onSaveToPresetButton} type="dashed">
-              Save to preset
-            </Button>
-            <Button onClick={onBackButton}>Back</Button>
-            <Button onClick={onConfirmButton} type="primary">
-              Confirm
-            </Button>
-          </>
-        )}
+      <Space
+        direction="horizontal"
+        style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '4' ? undefined : 'none' }}
+      >
+        <Button onClick={onSaveToPresetButton} type="dashed">
+          Save to preset
+        </Button>
+        <Button onClick={onBackButton} style={{ minWidth: '85px' }}>
+          Back
+        </Button>
+        <Button onClick={onConfirmButton} type="primary" style={{ minWidth: '85px' }}>
+          Confirm
+        </Button>
       </Space>
     </div>
   );
