@@ -56,6 +56,8 @@ public final class Scheduler {
      * @return List of all intervals matching the parameters or empty.
      */
     private static List<Interval> getAllAvailable(List<Interval> busyTime, DateTime start, DateTime end) {
+        start.dayOfWeek();
+        start.dayOfWeek();
         List<Interval> filtered = filterIntervals(busyTime, start, end);
         filtered.sort(new IntervalStartComparator());
         List<Interval> merged = mergeSortedIntervals(filtered);
