@@ -48,7 +48,6 @@ const ColorSelect = ({ onChange: originalOnChange, ...selectProps }: ColorSelect
     <LimitedMultiSelect
       {...selectProps}
       open={open}
-      labelInValue
       showSearch={false}
       showArrow
       tagRender={(props) => <>{props.label}</>}

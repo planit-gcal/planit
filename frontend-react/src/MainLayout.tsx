@@ -28,8 +28,8 @@ function MainLayout() {
           <Card
             style={{
               boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.15)',
-              height: '500px',
-              maxWidth: '1000px',
+              height: '600px',
+              maxWidth: '900px',
               margin: 'auto',
             }}
             bodyStyle={{ height: '100%' }}
