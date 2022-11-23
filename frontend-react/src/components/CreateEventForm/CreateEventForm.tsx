@@ -302,24 +302,29 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 {(fields, { add, remove }) => {
                   return (
                     <div>
-                      {fields.map((field, index) => (
+                      {fields.map((field, name) => (
                         <div key={field.key}>
-                          <Form.Item name={[index, 'name']} label="name">
-                            <Input />
+                          <Form.Item name={[name, 'name']} label="name" noStyle>
+                            <Input hidden></Input>
                           </Form.Item>
-                          <Form.Item name={[index, 'exclude']} label="exclude" valuePropName="checked">
+                          <Form.Item noStyle shouldUpdate>
+                            {() => {
+                              return <div>{excludeForm.getFieldValue(['excludeWeekDays', name, 'name'])}</div>;
+                            }}
+                          </Form.Item>
+                          <Form.Item name={[name, 'exclude']} label="exclude" valuePropName="checked">
                             <Switch />
                           </Form.Item>
                           <Form.Item noStyle shouldUpdate>
                             {() => {
                               return (
-                                <Form.Item name={[index, 'availability']} label="availability">
+                                <Form.Item name={[name, 'availability']} label="availability">
                                   <DatePicker.RangePicker
                                     style={{ width: '100%' }}
                                     picker="time"
                                     format={'HH:mm'}
                                     placeholder={['From', 'To']}
-                                    disabled={excludeForm.getFieldValue(['excludeWeekDays', index, 'exclude'])}
+                                    disabled={excludeForm.getFieldValue(['excludeWeekDays', name, 'exclude'])}
                                   />
                                 </Form.Item>
                               );
