@@ -1,12 +1,12 @@
 package planit.people.preparation.Scheduling;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
+import planit.people.preparation.Entities.Entity_PresetAvailability;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class used for finding time intervals fitting provided parameters
@@ -207,6 +207,64 @@ public final class Scheduler {
         return null;
     }
 
+    public static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) throws Exception {
+        var availableIntervals = new ArrayList<Interval>();
+        var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
+        for (Interval freeInterval : freeIntervals) {
+            var dayOfWeek = freeInterval.getStart().dayOfWeek().get();
+            var availabilityForDay =mappedAvailabilities.get(dayOfWeek);
+            if(freeInterval.overlaps(availabilityForDay))
+            {
+                var clampedInterval = clampInterval(freeInterval, availabilityForDay);
+                availableIntervals.add(clampedInterval);
+            }
+        }
+        return availableIntervals;
+    }
+
+    public static Interval clampInterval(Interval intervalToBeClamped, Interval interval)
+    {
+        DateTime newStart = intervalToBeClamped.getStart();
+        DateTime constStart = interval.getStart();
+        if(intervalToBeClamped.getStart().isBefore(constStart))
+        {
+            newStart = constStart;
+        }
+        DateTime newEnd = intervalToBeClamped.getEnd();
+        DateTime constEnd = interval.getEnd();
+        if(newEnd.isAfter(constEnd))
+        {
+            newEnd = constEnd;
+        }
+        return new Interval(newStart, newEnd);
+    }
+
+    public static Map<Integer, Interval> mapAvailabilitiesToDaysOfWeek(List<Entity_PresetAvailability> availabilities)
+    {
+        HashMap<Integer, Interval> map = new HashMap<Integer, Interval>();
+        for (Entity_PresetAvailability availability :
+                availabilities) {
+            switch (availability.getDay()) {
+                case MONDAY ->
+                        map.putIfAbsent(DateTimeConstants.MONDAY, Converter.convertAvailabilityToInterval(availability));
+                case TUESDAY ->
+                        map.putIfAbsent(DateTimeConstants.TUESDAY, Converter.convertAvailabilityToInterval(availability));
+                case WEDNESDAY ->
+                        map.putIfAbsent(DateTimeConstants.WEDNESDAY, Converter.convertAvailabilityToInterval(availability));
+                case THURSDAY ->
+                        map.putIfAbsent(DateTimeConstants.THURSDAY, Converter.convertAvailabilityToInterval(availability));
+                case FRIDAY ->
+                        map.putIfAbsent(DateTimeConstants.FRIDAY, Converter.convertAvailabilityToInterval(availability));
+                case SATURDAY ->
+                        map.putIfAbsent(DateTimeConstants.SATURDAY, Converter.convertAvailabilityToInterval(availability));
+                case SUNDAY ->
+                        map.putIfAbsent(DateTimeConstants.SUNDAY, Converter.convertAvailabilityToInterval(availability));
+                default -> {
+                }
+            }
+        }
+        return map;
+    }
 
     public static class IntervalStartComparator implements Comparator<Interval> {
         @Override
