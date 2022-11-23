@@ -22,7 +22,6 @@ import React, { useState } from 'react';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
-// import ExcludeTable from '../ExcludeTable/ExcludeTable';
 import TimePicker from '../TimePicker/TimePicker';
 import { ExcludeForm, GeneralForm, GoogleEventForm, SearchForm } from './models';
 
