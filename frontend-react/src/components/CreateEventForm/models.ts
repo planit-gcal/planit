@@ -1,7 +1,7 @@
 export type GeneralForm = {
   name: string;
   duration: number;
-  event_between: [string, string];
+  event_between: [Date, Date];
   guests: { email: string; obligatory: boolean }[];
 };
 
