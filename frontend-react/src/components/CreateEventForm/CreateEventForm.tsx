@@ -17,7 +17,7 @@ import {
   Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
-import { add, parse } from 'date-fns';
+import {add, format, parse} from 'date-fns';
 import React, { useState } from 'react';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
@@ -31,6 +31,8 @@ type CreateEventFormProps = {
 };
 
 const { TextArea } = Input;
+
+const {useWatch} = Form;
 
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const [generalForm] = Form.useForm<GeneralForm>();
@@ -54,7 +56,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     { value: 1440, label: 'Days' },
   ];
 
-  const renderTabBar: TabsProps['renderTabBar'] = () => (
+  const RenderTabBar: TabsProps['renderTabBar'] = () => (
     <>
       <Steps size="small" items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)} />
       <Divider />
@@ -63,6 +65,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
   function toTime(time: string) {
     return parse(time, 'HH:mm', new Date());
+  }
+
+  function toDateString(date: Date) {
+    return date ? format(date, 'dd MMM yyyy'):'';
   }
 
   const weekDays = [
@@ -101,7 +107,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
           <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
-                name="start_end"
+                name="event_between"
                 label="Event Between"
                 required
                 initialValue={[
@@ -176,6 +182,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       children: (
         <Form layout="vertical" form={googleEventForm}>
           <Row gutter={16} justify="center">
+            <Space align="end" style={{ marginBottom: '8px' }}>
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {useWatch('name', generalForm)}
+              </Typography.Title>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {` `}
+                {toDateString(useWatch('event_between', generalForm)?.[0])}
+                {` `}-{` `}
+                {toDateString(useWatch('event_between', generalForm)?.[1])}
+              </Typography.Title>
+            </Space>
+          </Row>
+          <Row gutter={16} justify="center">
             <Col span={16}>
               <Form.Item
                 name="event_description"
@@ -235,6 +254,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       children: (
         <Form layout="vertical" form={searchForm}>
           <Row gutter={16} justify="center">
+            <Space align="end" style={{ marginBottom: '8px' }}>
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {useWatch('name', generalForm)}
+              </Typography.Title>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {` `}
+                {toDateString(useWatch('event_between', generalForm)?.[0])}
+                {` `}-{` `}
+                {toDateString(useWatch('event_between', generalForm)?.[1])}
+              </Typography.Title>
+            </Space>
+          </Row>
+          <Row gutter={16} justify="center">
             <Col span={8}>
               <Form.Item name="num_of_events" label={'How many events to create?'} required initialValue={1}>
                 <InputNumber style={{ width: '100%' }} min={1} max={5} />
@@ -284,6 +316,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '4',
       children: (
         <Form layout="vertical" form={excludeForm}>
+          <Row gutter={16} justify="center">
+            <Space align="end" style={{ marginBottom: '8px' }}>
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {useWatch('name', generalForm)}
+              </Typography.Title>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {` `}
+                {toDateString(useWatch('event_between', generalForm)?.[0])}
+                {` `}-{` `}
+                {toDateString(useWatch('event_between', generalForm)?.[1])}
+              </Typography.Title>
+            </Space>
+          </Row>
           <Row gutter={16} justify="center">
             <Col span={16}>
               <Row gutter={16} justify="center">
@@ -354,6 +399,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
       key: '5',
       children: (
         <Form.Item name="event_name" label="Exclude" required>
+          <Row gutter={16} justify="center">
+            <Space align="end" style={{ marginBottom: '8px' }}>
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {useWatch('name', generalForm)}
+              </Typography.Title>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {` `}
+                {toDateString(useWatch('event_between', generalForm)?.[0])}
+                {` `}-{` `}
+                {toDateString(useWatch('event_between', generalForm)?.[1])}
+              </Typography.Title>
+            </Space>
+          </Row>
           <Input />
         </Form.Item>
       ),
@@ -364,7 +422,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
   const onNextButton = () => {
     setActiveTabKey((prev) => `${+prev + 1}`);
 
-    excludeForm
+    generalForm
       .validateFields()
       .then((val) => {
         console.log(val);
@@ -392,7 +450,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
-      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={renderTabBar} style={{ flex: 1 }} />
+      <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{ flex: 1 }} />
 
       <Divider />
 
