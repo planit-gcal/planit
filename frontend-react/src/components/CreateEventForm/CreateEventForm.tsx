@@ -320,7 +320,9 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                         <Form.Item
                                             name="duration_of_event"
                                             label={'Duration of a single event'}
-                                            initialValue={true}
+                                            rules={[
+                                                { required: true, message: 'You must set this value if break enabled' },
+                                            ]}
                                         >
                                             <DatePicker.RangePicker
                                                 style={{ width: '100%' }}
