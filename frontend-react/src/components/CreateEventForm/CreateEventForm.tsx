@@ -58,8 +58,21 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
 
     const RenderTabBar: TabsProps['renderTabBar'] = () => (
         <>
-            <Steps size="small" items={stepItems} current={+activeTabKey} onChange={(e) => setActiveTabKey(`${e}`)}/>
-            <Divider/>
+            <Steps
+                size="small"
+                items={stepItems}
+                current={+activeTabKey}
+                onChange={(e) => {
+                    if (activeTabKey !== '5') {
+                        getActiveForm(`${+activeTabKey + 1}`)!
+                            .validateFields()
+                            .then((val) => {
+                                setActiveTabKey(`${e}`);
+                            });
+                    }
+                }}
+            />
+            <Divider />
         </>
     );
 
@@ -464,19 +477,18 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     };
 
     const onBackButton = () => {
-        setActiveTabKey((prev) => `${+prev - 1}`);
+        getActiveForm(`${+activeTabKey + 1}`)!
+            .validateFields()
+            .then((val) => {
+                setActiveTabKey((prev) => `${+prev - 1}`);
+            });
     };
 
     const onNextButton = () => {
         getActiveForm(`${+activeTabKey + 1}`)!
             .validateFields()
             .then((val) => {
-                console.log(val);
-
                 setActiveTabKey((prev) => `${+prev + 1}`);
-            })
-            .catch((reason) => {
-                console.log(reason);
             });
     };
 
