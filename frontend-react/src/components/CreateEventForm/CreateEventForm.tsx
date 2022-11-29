@@ -314,14 +314,23 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                             </Form.Item>
                         </Col>
                         <Col span={8}>
-                            <Form.Item name="duration_of_event" label={'Duration of a single event'}
-                                       initialValue={true}>
-                                <DatePicker.RangePicker
-                                    style={{width: '100%'}}
-                                    picker="time"
-                                    format={'HH:mm'}
-                                    placeholder={['Min duration', 'Max duration']}
-                                />
+                            <Form.Item noStyle dependencies={['break_event']}>
+                                {(x) =>
+                                    x.getFieldValue('break_event') && (
+                                        <Form.Item
+                                            name="duration_of_event"
+                                            label={'Duration of a single event'}
+                                            initialValue={true}
+                                        >
+                                            <DatePicker.RangePicker
+                                                style={{ width: '100%' }}
+                                                picker="time"
+                                                format={'HH:mm'}
+                                                placeholder={['Min duration', 'Max duration']}
+                                            />
+                                        </Form.Item>
+                                    )
+                                }
                             </Form.Item>
                         </Col>
                     </Row>
