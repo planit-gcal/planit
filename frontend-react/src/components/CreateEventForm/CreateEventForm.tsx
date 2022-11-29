@@ -89,8 +89,17 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                 <Form layout="vertical" form={generalForm}>
                     <Row gutter={16} justify="center">
                         <Col span={8}>
-                            <Form.Item name="name" label="Event Name" required initialValue={''}>
-                                <Input/>
+                            <Form.Item
+                                name="name"
+                                label="Event Name"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please input event name!',
+                                    },
+                                ]}
+                            >
+                                <Input />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
@@ -123,8 +132,8 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                     </Row>
                     <Row gutter={16} justify="center">
                         <Col span={16}>
-                            <Form.List name="guests" initialValue={[{email: '', obligatory: true}]}>
-                                {(fields, {add, remove}) => (
+                            <Form.List name="guests" initialValue={[]}>
+                                {(fields, { add, remove }) => (
                                     <>
                                         {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
                                         <div style={{height: '25vh', overflowY: 'auto'}}>
@@ -425,21 +434,34 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
         },
     ];
 
-    const onNextButton = () => {
-        setActiveTabKey((prev) => `${+prev + 1}`);
-
-        generalForm
-            .validateFields()
-            .then((val) => {
-                console.log(val);
-            })
-            .catch((reason) => {
-                console.log(reason);
-            });
+    const getActiveForm = (tabKey: string) => {
+        switch (tabKey) {
+            case '1':
+                return generalForm;
+            case '2':
+                return googleEventForm;
+            case '3':
+                return searchForm;
+            case '4':
+                return excludeForm;
+        }
     };
 
     const onBackButton = () => {
         setActiveTabKey((prev) => `${+prev - 1}`);
+    };
+
+    const onNextButton = () => {
+        getActiveForm(`${+activeTabKey + 1}`)!
+            .validateFields()
+            .then((val) => {
+                console.log(val);
+
+                setActiveTabKey((prev) => `${+prev + 1}`);
+            })
+            .catch((reason) => {
+                console.log(reason);
+            });
     };
 
     const onJumpButton = () => {
