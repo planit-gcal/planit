@@ -216,7 +216,7 @@ public final class Scheduler {
         return null;
     }
 
-    public static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) throws Exception {
+    private static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) throws Exception {
         var availableIntervals = new ArrayList<Interval>();
         var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
         for (Interval freeInterval : freeIntervals) {
@@ -230,13 +230,13 @@ public final class Scheduler {
         return availableIntervals;
     }
 
-    public static Interval clampInterval(Interval intervalToBeClamped, Interval interval) {
+    private static Interval clampInterval(Interval intervalToBeClamped, Interval interval) {
         Interval newInterval = clampIntervalStart(intervalToBeClamped, interval.getStart());
         newInterval = clampIntervalEnd(newInterval, interval.getEnd());
         return newInterval;
     }
 
-    public static Interval clampIntervalStart(Interval interval, DateTime start)
+    private static Interval clampIntervalStart(Interval interval, DateTime start)
     {
         if(interval.getStart().isBefore(start))
         {
@@ -245,7 +245,7 @@ public final class Scheduler {
         return interval;
     }
 
-    public static Interval clampIntervalEnd(Interval interval, DateTime end)
+    private static Interval clampIntervalEnd(Interval interval, DateTime end)
     {
         if(interval.getEnd().isAfter(end))
         {
@@ -254,7 +254,7 @@ public final class Scheduler {
         return interval;
     }
 
-    public static Map<Integer, Interval> mapAvailabilitiesToDaysOfWeek(List<Entity_PresetAvailability> availabilities) {
+    private static Map<Integer, Interval> mapAvailabilitiesToDaysOfWeek(List<Entity_PresetAvailability> availabilities) {
         HashMap<Integer, Interval> map = new HashMap<Integer, Interval>();
         for (Entity_PresetAvailability availability :
                 availabilities) {
@@ -280,7 +280,7 @@ public final class Scheduler {
         return map;
     }
 
-    public static class IntervalStartComparator implements Comparator<Interval> {
+    private static class IntervalStartComparator implements Comparator<Interval> {
         @Override
         public int compare(Interval x, Interval y) {
             return x.getStart().compareTo(y.getStart());
