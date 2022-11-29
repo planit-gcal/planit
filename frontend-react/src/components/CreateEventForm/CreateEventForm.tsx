@@ -479,7 +479,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     const onBackButton = () => {
         getActiveForm(`${+activeTabKey + 1}`)!
             .validateFields()
-            .then((val) => {
+            .then(() => {
                 setActiveTabKey((prev) => `${+prev - 1}`);
             });
     };
@@ -487,13 +487,17 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     const onNextButton = () => {
         getActiveForm(`${+activeTabKey + 1}`)!
             .validateFields()
-            .then((val) => {
+            .then(() => {
                 setActiveTabKey((prev) => `${+prev + 1}`);
             });
     };
 
     const onJumpButton = () => {
-        setActiveTabKey('4');
+        getActiveForm(`${+activeTabKey + 1}`)!
+            .validateFields()
+            .then(() => {
+                setActiveTabKey('4');
+            });
     };
 
     const onConfirmButton = () => {
