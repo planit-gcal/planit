@@ -17,8 +17,7 @@ import {
     Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
-import {add, format, parse} from 'date-fns';
-import React, {useState} from 'react';
+import { EventCreateRequest } from '../../api/calendar/calendar.dto';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
@@ -63,7 +62,9 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                 items={stepItems}
                 current={+activeTabKey}
                 onChange={(e) => {
-                    if (activeTabKey !== '5') {
+                    if (activeTabKey === '4') {
+                        setActiveTabKey(`${e}`);
+                    } else {
                         getActiveForm(`${+activeTabKey + 1}`)!
                             .validateFields()
                             .then((val) => {
@@ -500,8 +501,46 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
             });
     };
 
-    const onConfirmButton = () => {
-        alert('todo');
+    const onConfirmButton = async () => {
+        const general = await generalForm.validateFields();
+        const googleEvent = await googleEventForm.validateFields();
+        const search = await searchForm.validateFields();
+        const exclude = await excludeForm.validateFields();
+
+
+        const requestBody: EventCreateRequest = {
+            name: general.name,
+            summary: general.name,
+            location: googleEvent.event_location || '',
+            description: googleEvent.event_description || '',
+            // color,
+            event_preset_detail: {
+                event_preset: {
+                    name: '',
+                    break_into_smaller_events: search.break_event,
+                    min_length_of_single_event: search.break_event ? search.duration_of_event[0].getHours() * 60 + search.duration_of_event[0].getMinutes() : null,
+                    max_length_of_single_event: search.break_event ? search.duration_of_event[1].getHours() * 60 + search.duration_of_event[1].getMinutes() : null,
+                    shared_presets: [],
+                },
+                guests: general.guests.map(g => ({
+                    email: g.email,
+                    obligatory: g.obligatory,
+                })),
+                preset_availability: exclude.excludeWeekDays.map(d => ({
+                    day: d.name.toUpperCase() as any,
+                    day_off: d.exclude,
+                    start_available_time: format(d.availability[0], "HH:mm"),
+                    end_available_time: format(d.availability[1], "HH:mm"),
+                })),
+            },
+            owner_email: owner,
+            start_date: format(general.event_between[0], "yyyy-MM-dd HH:mm:ss"),
+            end_date: format(general.event_between[1], "yyyy-MM-dd HH:mm:ss"),
+            duration: general.duration.getHours() * 60 + general.duration.getMinutes()
+
+        }
+
+        onSubmit(requestBody);
     };
 
     const onSaveToPresetButton = () => {
