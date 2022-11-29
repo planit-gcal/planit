@@ -406,7 +406,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                                                             picker="time"
                                                                             format={'HH:mm'}
                                                                             placeholder={['From', 'To']}
-                                                                            disabled={excludeForm.getFieldValue(['excludeWeekDays', name, 'exclude'])}
+                                                                            allowClear={false}
                                                                         />
                                                                     </Form.Item>
                                                                 );
