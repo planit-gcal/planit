@@ -288,7 +288,12 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                             <Form.Item label={'Time between multiple events'}>
                                 <Row>
                                     <Form.Item name="time_between_events" required initialValue={[30, 60]} noStyle>
-                                        <Slider style={{width: 'calc(100% - 115px)'}} range max={60}/>
+                                        <Slider
+                                            style={{ width: 'calc(100% - 115px)' }}
+                                            range
+                                            max={60}
+                                            marks={{ 0: '0', 30: '30', 60: '60' }}
+                                        />
                                     </Form.Item>
                                     <Form.Item name="time_between_events_unit" initialValue={'Minutes'} noStyle>
                                         <Select style={{width: '95px', marginLeft: '8px'}} options={timeUnitOptions}/>
