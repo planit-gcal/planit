@@ -1,4 +1,4 @@
-import {CloseOutlined, PlusOutlined} from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import {
     Button,
     Col,
@@ -17,23 +17,25 @@ import {
     Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
+import { add, format, parse } from 'date-fns';
+import React, { useState } from 'react';
 import { EventCreateRequest } from '../../api/calendar/calendar.dto';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
-import {ExcludeForm, GeneralForm, GoogleEventForm, SearchForm} from './models';
+import { ExcludeForm, GeneralForm, GoogleEventForm, SearchForm } from './models';
 
 type CreateEventFormProps = {
     owner: string;
     onSubmit: (result: unknown) => void;
 };
 
-const {TextArea} = Input;
+const { TextArea } = Input;
 
-const {useWatch} = Form;
+const { useWatch } = Form;
 
-export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
+export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     const [generalForm] = Form.useForm<GeneralForm>();
     const [googleEventForm] = Form.useForm<GoogleEventForm>();
     const [searchForm] = Form.useForm<SearchForm>();
@@ -42,17 +44,17 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     const [activeTabKey, setActiveTabKey] = useState('0');
 
     const stepItems = [
-        {title: 'General'},
-        {title: 'Google Event Details'},
-        {title: 'Search Details'},
-        {title: 'Availability'},
-        {title: 'Confirm'},
+        { title: 'General' },
+        { title: 'Google Event Details' },
+        { title: 'Search Details' },
+        { title: 'Availability' },
+        { title: 'Confirm' },
     ];
 
     const timeUnitOptions = [
-        {value: 1, label: 'Minutes'},
-        {value: 60, label: 'Hours'},
-        {value: 1440, label: 'Days'},
+        { value: 1, label: 'Minutes' },
+        { value: 60, label: 'Hours' },
+        { value: 1440, label: 'Days' },
     ];
 
     const RenderTabBar: TabsProps['renderTabBar'] = () => (
@@ -86,13 +88,13 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     }
 
     const weekDays = [
-        {name: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')]},
-        {name: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')]},
-        {name: 'Wednesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')]},
-        {name: 'Thursday', exclude: true, availability: [toTime('08:00'), toTime('16:00')]},
-        {name: 'Friday', exclude: true, availability: [toTime('08:00'), toTime('16:00')]},
-        {name: 'Saturday', exclude: false, availability: [toTime('12:00'), toTime('20:00')]},
-        {name: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')]},
+        { name: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+        { name: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+        { name: 'Wednesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+        { name: 'Thursday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+        { name: 'Friday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
+        { name: 'Saturday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
+        { name: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
     ];
 
     const items = [
@@ -123,7 +125,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 required
                                 initialValue={parse('1:00', 'HH:mm', new Date())}
                             >
-                                <TimePicker style={{width: '100%'}} format="HH:mm" minuteStep={15}/>
+                                <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -140,7 +142,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                     }),
                                 ]}
                             >
-                                <DatePicker.RangePicker style={{width: '100%'}} format="eeee, MMMM d" minuteStep={15}/>
+                                <DatePicker.RangePicker
+                                    style={{ width: '100%' }}
+                                    format="eeee, MMMM d"
+                                    minuteStep={15}
+                                />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -150,18 +156,17 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 {(fields, { add, remove }) => (
                                     <>
                                         {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
-                                        <div style={{height: '25vh', overflowY: 'auto'}}>
-
-                                            {fields.map(({key, name, ...restField}) => (
-                                                <Row style={{width: '100%'}} key={key} gutter={16}>
+                                        <div style={{ height: '25vh', overflowY: 'auto' }}>
+                                            {fields.map(({ key, name, ...restField }) => (
+                                                <Row style={{ width: '100%' }} key={key} gutter={16}>
                                                     <Col flex={1}>
                                                         <Form.Item
                                                             {...restField}
                                                             name={[name, 'email']}
-                                                            rules={[{required: true, message: 'Missing email'}]}
+                                                            rules={[{ required: true, message: 'Missing email' }]}
                                                             label={name === 0 ? 'Guest email' : undefined}
                                                         >
-                                                            <Input/>
+                                                            <Input />
                                                         </Form.Item>
                                                     </Col>
 
@@ -172,15 +177,17 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                                             label={name === 0 ? 'Obligatory?' : undefined}
                                                             valuePropName="checked"
                                                         >
-                                                            <Switch defaultChecked style={{display: 'block'}}/>
+                                                            <Switch defaultChecked style={{ display: 'block' }} />
                                                         </Form.Item>
                                                     </Col>
 
                                                     <Col span={2}>
                                                         {/* empty HTML entity */}
-                                                        <Form.Item {...restField}
-                                                                   label={name === 0 ? <>&#8203;</> : undefined}>
-                                                            <CloseOutlined onClick={() => remove(name)}/>
+                                                        <Form.Item
+                                                            {...restField}
+                                                            label={name === 0 ? <>&#8203;</> : undefined}
+                                                        >
+                                                            <CloseOutlined onClick={() => remove(name)} />
                                                         </Form.Item>
                                                     </Col>
                                                 </Row>
@@ -188,7 +195,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                         </div>
 
                                         <Form.Item>
-                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined/>}>
+                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                                                 Add guest
                                             </Button>
                                         </Form.Item>
@@ -207,11 +214,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
             children: (
                 <Form layout="vertical" form={googleEventForm}>
                     <Row gutter={16} justify="center">
-                        <Space align="end" style={{marginBottom: '8px'}}>
-                            <Typography.Title level={3} style={{margin: 0}}>
+                        <Space align="end" style={{ marginBottom: '8px' }}>
+                            <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
                             </Typography.Title>
-                            <Typography.Title level={5} style={{margin: 0}}>
+                            <Typography.Title level={5} style={{ margin: 0 }}>
                                 {` `}
                                 {toDateString(useWatch('event_between', generalForm)?.[0])}
                                 {` `}-{` `}
@@ -230,7 +237,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                     </Space>
                                 }
                             >
-                                <TextArea rows={4} placeholder={'What is the meeting about?'}/>
+                                <TextArea rows={4} placeholder={'What is the meeting about?'} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -240,7 +247,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 name="event_color"
                                 key="event_color"
                                 shouldUpdate
-                                getValueProps={(v) => ({value: [v]})}
+                                getValueProps={(v) => ({ value: [v] })}
                                 normalize={(v) => (v ? v[0] : v)}
                                 label={
                                     <Space>
@@ -250,7 +257,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 }
                                 initialValue={'#5484ED'}
                             >
-                                <ColorSelect/>
+                                <ColorSelect />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -265,7 +272,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                     </Space>
                                 }
                             >
-                                <Input placeholder={'Where are you meeting at?'}/>
+                                <Input placeholder={'Where are you meeting at?'} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -279,11 +286,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
             children: (
                 <Form layout="vertical" form={searchForm}>
                     <Row gutter={16} justify="center">
-                        <Space align="end" style={{marginBottom: '8px'}}>
-                            <Typography.Title level={3} style={{margin: 0}}>
+                        <Space align="end" style={{ marginBottom: '8px' }}>
+                            <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
                             </Typography.Title>
-                            <Typography.Title level={5} style={{margin: 0}}>
+                            <Typography.Title level={5} style={{ margin: 0 }}>
                                 {` `}
                                 {toDateString(useWatch('event_between', generalForm)?.[0])}
                                 {` `}-{` `}
@@ -293,9 +300,13 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                     </Row>
                     <Row gutter={16} justify="center">
                         <Col span={8}>
-                            <Form.Item name="num_of_events" label={'How many events to create?'} required
-                                       initialValue={1}>
-                                <InputNumber style={{width: '100%'}} min={1} max={5}/>
+                            <Form.Item
+                                name="num_of_events"
+                                label={'How many events to create?'}
+                                required
+                                initialValue={1}
+                            >
+                                <InputNumber style={{ width: '100%' }} min={1} max={5} />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
@@ -310,7 +321,10 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                         />
                                     </Form.Item>
                                     <Form.Item name="time_between_events_unit" initialValue={'Minutes'} noStyle>
-                                        <Select style={{width: '95px', marginLeft: '8px'}} options={timeUnitOptions}/>
+                                        <Select
+                                            style={{ width: '95px', marginLeft: '8px' }}
+                                            options={timeUnitOptions}
+                                        />
                                     </Form.Item>
                                 </Row>
                             </Form.Item>
@@ -324,7 +338,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 initialValue={true}
                                 valuePropName="checked"
                             >
-                                <Switch defaultChecked style={{display: 'block'}}/>
+                                <Switch defaultChecked style={{ display: 'block' }} />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
@@ -360,11 +374,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
             children: (
                 <Form layout="vertical" form={excludeForm}>
                     <Row gutter={16} justify="center">
-                        <Space align="end" style={{marginBottom: '8px'}}>
-                            <Typography.Title level={3} style={{margin: 0}}>
+                        <Space align="end" style={{ marginBottom: '8px' }}>
+                            <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
                             </Typography.Title>
-                            <Typography.Title level={5} style={{margin: 0}}>
+                            <Typography.Title level={5} style={{ margin: 0 }}>
                                 {` `}
                                 {toDateString(useWatch('event_between', generalForm)?.[0])}
                                 {` `}-{` `}
@@ -386,7 +400,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                 </Col>
                             </Row>
                             <Form.List name="excludeWeekDays" initialValue={weekDays}>
-                                {(fields, {add, remove}) => {
+                                {(fields, { add, remove }) => {
                                     return (
                                         <div>
                                             {fields.map((field, name) => (
@@ -395,17 +409,28 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                                         <Input hidden></Input>
                                                     </Form.Item>
                                                     <Col span={6}>
-                                                        <Form.Item noStyle shouldUpdate style={{marginBottom: '8px'}}>
+                                                        <Form.Item noStyle shouldUpdate style={{ marginBottom: '8px' }}>
                                                             {() => {
-                                                                return <div>{excludeForm.getFieldValue(['excludeWeekDays', name, 'name'])}</div>;
+                                                                return (
+                                                                    <div>
+                                                                        {excludeForm.getFieldValue([
+                                                                            'excludeWeekDays',
+                                                                            name,
+                                                                            'name',
+                                                                        ])}
+                                                                    </div>
+                                                                );
                                                             }}
                                                         </Form.Item>
                                                     </Col>
 
                                                     <Col span={6}>
-                                                        <Form.Item name={[name, 'exclude']} valuePropName="checked"
-                                                                   style={{marginBottom: '8px'}}>
-                                                            <Switch/>
+                                                        <Form.Item
+                                                            name={[name, 'exclude']}
+                                                            valuePropName="checked"
+                                                            style={{ marginBottom: '8px' }}
+                                                        >
+                                                            <Switch />
                                                         </Form.Item>
                                                     </Col>
 
@@ -413,14 +438,21 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                                                         <Form.Item noStyle shouldUpdate>
                                                             {() => {
                                                                 return (
-                                                                    <Form.Item name={[name, 'availability']}
-                                                                               style={{marginBottom: '8px'}}>
+                                                                    <Form.Item
+                                                                        name={[name, 'availability']}
+                                                                        style={{ marginBottom: '8px' }}
+                                                                    >
                                                                         <DatePicker.RangePicker
-                                                                            style={{width: '100%'}}
+                                                                            style={{ width: '100%' }}
                                                                             picker="time"
                                                                             format={'HH:mm'}
                                                                             placeholder={['From', 'To']}
                                                                             allowClear={false}
+                                                                            disabled={excludeForm.getFieldValue([
+                                                                                'excludeWeekDays',
+                                                                                name,
+                                                                                'exclude',
+                                                                            ])}
                                                                         />
                                                                     </Form.Item>
                                                                 );
@@ -445,11 +477,11 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
             children: (
                 <Form.Item name="event_name" label="Exclude" required>
                     <Row gutter={16} justify="center">
-                        <Space align="end" style={{marginBottom: '8px'}}>
-                            <Typography.Title level={3} style={{margin: 0}}>
+                        <Space align="end" style={{ marginBottom: '8px' }}>
+                            <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
                             </Typography.Title>
-                            <Typography.Title level={5} style={{margin: 0}}>
+                            <Typography.Title level={5} style={{ margin: 0 }}>
                                 {` `}
                                 {toDateString(useWatch('event_between', generalForm)?.[0])}
                                 {` `}-{` `}
@@ -457,7 +489,7 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                             </Typography.Title>
                         </Space>
                     </Row>
-                    <Input/>
+                    <Input />
                 </Form.Item>
             ),
             forceRender: true,
@@ -548,19 +580,19 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
     };
 
     return (
-        <div style={{width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column'}}>
-            <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{flex: 1}}/>
+        <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
+            <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{ flex: 1 }} />
 
-            <Divider/>
+            <Divider />
 
             <Space
                 direction="horizontal"
-                style={{width: '100%', justifyContent: 'end', display: activeTabKey === '0' ? undefined : 'none'}}
+                style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '0' ? undefined : 'none' }}
             >
-                <Button onClick={onJumpButton} style={{minWidth: '85px'}}>
+                <Button onClick={onJumpButton} style={{ minWidth: '85px' }}>
                     Jump to Confirm
                 </Button>
-                <Button onClick={onNextButton} type="primary" style={{minWidth: '85px'}}>
+                <Button onClick={onNextButton} type="primary" style={{ minWidth: '85px' }}>
                     Next
                 </Button>
             </Space>
@@ -573,25 +605,25 @@ export const CreateEventForm = ({onSubmit, owner}: CreateEventFormProps) => {
                     display: ['1', '2', '3'].includes(activeTabKey) ? undefined : 'none',
                 }}
             >
-                <Button onClick={onBackButton} style={{minWidth: '85px'}}>
+                <Button onClick={onBackButton} style={{ minWidth: '85px' }}>
                     Back
                 </Button>
-                <Button onClick={onNextButton} type="primary" style={{minWidth: '85px'}}>
+                <Button onClick={onNextButton} type="primary" style={{ minWidth: '85px' }}>
                     Next
                 </Button>
             </Space>
 
             <Space
                 direction="horizontal"
-                style={{width: '100%', justifyContent: 'end', display: activeTabKey === '4' ? undefined : 'none'}}
+                style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '4' ? undefined : 'none' }}
             >
                 <Button onClick={onSaveToPresetButton} type="dashed">
                     Save to preset
                 </Button>
-                <Button onClick={onBackButton} style={{minWidth: '85px'}}>
+                <Button onClick={onBackButton} style={{ minWidth: '85px' }}>
                     Back
                 </Button>
-                <Button onClick={onConfirmButton} type="primary" style={{minWidth: '85px'}}>
+                <Button onClick={onConfirmButton} type="primary" style={{ minWidth: '85px' }}>
                     Confirm
                 </Button>
             </Space>
