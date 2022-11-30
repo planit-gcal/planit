@@ -9,7 +9,7 @@ import { parseJwt, loadScript, clearScript } from '../../utils/oauth.utils';
 const src = 'https://accounts.google.com/gsi/client';
 
 const GoogleAuth = () => {
-  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails, isLoggedIn } = useContext(PlanitUserContext);
   const navigate = useNavigate();
 
   const googleButton = useRef<HTMLDivElement>(null);
@@ -26,6 +26,10 @@ const GoogleAuth = () => {
     },
     [navigate, setUserDetails]
   );
+
+  useEffect(() => {
+    isLoggedIn && navigate('/create-events');
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     loadScript(src)
