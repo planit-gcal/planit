@@ -144,46 +144,48 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                     </Row>
                     <Row gutter={16} justify="center">
                         <Col span={16}>
-                            <Form.List name="guests" initialValue={[]}>
+                            <Form.List name="guests" initialValue={[{email: '', obligatory: true}]}>
                                 {(fields, { add, remove }) => (
-                                    <>
+                                    <div>
                                         {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
-                                        <div style={{ height: '25vh', overflowY: 'auto' }}>
-                                            {fields.map(({ key, name, ...restField }) => (
-                                                <Row style={{ width: '100%' }} key={key} gutter={16}>
-                                                    <Col flex={1}>
-                                                        <Form.Item
-                                                            {...restField}
-                                                            name={[name, 'email']}
-                                                            rules={[{ required: true, message: 'Missing email' }]}
-                                                            label={name === 0 ? 'Guest email' : undefined}
-                                                        >
-                                                            <Input />
-                                                        </Form.Item>
-                                                    </Col>
+                                        <div style={{flex: 1, overflowY: 'hidden', height: '160px' }}>
+                                            <div style={{ height: '100%', overflowY: 'scroll' }}>
+                                                {fields.map(({ key, name, ...restField }) => (
+                                                    <Row style={{ width: '100%' }} key={key} gutter={16}>
+                                                        <Col flex={1}>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                name={[name, 'email']}
+                                                                rules={[{ required: true, message: 'Missing email' }]}
+                                                                label={name === 0 ? 'Guest email' : undefined}
+                                                            >
+                                                                <Input />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={6}>
-                                                        <Form.Item
-                                                            {...restField}
-                                                            name={[name, 'obligatory']}
-                                                            label={name === 0 ? 'Obligatory?' : undefined}
-                                                            valuePropName="checked"
-                                                        >
-                                                            <Switch defaultChecked style={{ display: 'block' }} />
-                                                        </Form.Item>
-                                                    </Col>
+                                                        <Col span={6}>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                name={[name, 'obligatory']}
+                                                                label={name === 0 ? 'Obligatory?' : undefined}
+                                                                valuePropName="checked"
+                                                            >
+                                                                <Switch defaultChecked style={{ display: 'block' }} />
+                                                            </Form.Item>
+                                                        </Col>
 
-                                                    <Col span={2}>
-                                                        {/* empty HTML entity */}
-                                                        <Form.Item
-                                                            {...restField}
-                                                            label={name === 0 ? <>&#8203;</> : undefined}
-                                                        >
-                                                            <CloseOutlined onClick={() => remove(name)} />
-                                                        </Form.Item>
-                                                    </Col>
-                                                </Row>
-                                            ))}
+                                                        <Col span={2}>
+                                                            {/* empty HTML entity */}
+                                                            <Form.Item
+                                                                {...restField}
+                                                                label={name === 0 ? <>&#8203;</> : undefined}
+                                                            >
+                                                                <CloseOutlined onClick={() => remove(name)} />
+                                                            </Form.Item>
+                                                        </Col>
+                                                    </Row>
+                                                ))}
+                                            </div>
                                         </div>
 
                                         <Form.Item>
@@ -191,7 +193,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                                 Add guest
                                             </Button>
                                         </Form.Item>
-                                    </>
+                                    </div>
                                 )}
                             </Form.List>
                         </Col>
