@@ -11,14 +11,6 @@ export type GoogleEventForm = {
   event_color: string;
 };
 
-export type SearchForm = {
-  num_of_events: number;
-  time_between_events: [number, number];
-  break_event: boolean;
-  duration_of_event: [Date, Date];
-  duration_of_event_unit: number;
-};
-
 export type ExcludeForm = {
   excludeWeekDays: { name: string; exclude: boolean; availability: [Date, Date] }[];
 };

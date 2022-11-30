@@ -24,7 +24,7 @@ import { EventCreateRequest } from '../../api/calendar/calendar.dto';
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
 import TimePicker from '../TimePicker/TimePicker';
-import { ExcludeForm, GeneralForm, GoogleEventForm, SearchForm } from './models';
+import { ExcludeForm, GeneralForm, GoogleEventForm } from './models';
 
 type CreateEventFormProps = {
     owner: string;
@@ -38,7 +38,6 @@ const { useWatch } = Form;
 export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     const [generalForm] = Form.useForm<GeneralForm>();
     const [googleEventForm] = Form.useForm<GoogleEventForm>();
-    const [searchForm] = Form.useForm<SearchForm>();
     const [excludeForm] = Form.useForm<ExcludeForm>();
 
     const [activeTabKey, setActiveTabKey] = useState('0');
@@ -46,15 +45,8 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
     const stepItems = [
         { title: 'General' },
         { title: 'Google Event Details' },
-        { title: 'Search Details' },
         { title: 'Availability' },
         { title: 'Confirm' },
-    ];
-
-    const timeUnitOptions = [
-        { value: 1, label: 'Minutes' },
-        { value: 60, label: 'Hours' },
-        { value: 1440, label: 'Days' },
     ];
 
     const RenderTabBar: TabsProps['renderTabBar'] = () => (
@@ -64,7 +56,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 items={stepItems}
                 current={+activeTabKey}
                 onChange={(e) => {
-                    if (activeTabKey === '4') {
+                    if (activeTabKey === '3') {
                         setActiveTabKey(`${e}`);
                     } else {
                         getActiveForm(`${+activeTabKey + 1}`)!
@@ -284,94 +276,6 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             label: '',
             key: '3',
             children: (
-                <Form layout="vertical" form={searchForm}>
-                    <Row gutter={16} justify="center">
-                        <Space align="end" style={{ marginBottom: '8px' }}>
-                            <Typography.Title level={3} style={{ margin: 0 }}>
-                                {useWatch('name', generalForm)}
-                            </Typography.Title>
-                            <Typography.Title level={5} style={{ margin: 0 }}>
-                                {` `}
-                                {toDateString(useWatch('event_between', generalForm)?.[0])}
-                                {` `}-{` `}
-                                {toDateString(useWatch('event_between', generalForm)?.[1])}
-                            </Typography.Title>
-                        </Space>
-                    </Row>
-                    <Row gutter={16} justify="center">
-                        <Col span={8}>
-                            <Form.Item
-                                name="num_of_events"
-                                label={'How many events to create?'}
-                                required
-                                initialValue={1}
-                            >
-                                <InputNumber style={{ width: '100%' }} min={1} max={5} />
-                            </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                            <Form.Item label={'Time between multiple events'}>
-                                <Row>
-                                    <Form.Item name="time_between_events" required initialValue={[30, 60]} noStyle>
-                                        <Slider
-                                            style={{ width: 'calc(100% - 115px)' }}
-                                            range
-                                            max={60}
-                                            marks={{ 0: '0', 30: '30', 60: '60' }}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item name="time_between_events_unit" initialValue={'Minutes'} noStyle>
-                                        <Select
-                                            style={{ width: '95px', marginLeft: '8px' }}
-                                            options={timeUnitOptions}
-                                        />
-                                    </Form.Item>
-                                </Row>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16} justify="center">
-                        <Col span={8}>
-                            <Form.Item
-                                name="break_event"
-                                label={"Break events if can't find?"}
-                                initialValue={true}
-                                valuePropName="checked"
-                            >
-                                <Switch defaultChecked style={{ display: 'block' }} />
-                            </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                            <Form.Item noStyle dependencies={['break_event']}>
-                                {(x) =>
-                                    x.getFieldValue('break_event') && (
-                                        <Form.Item
-                                            name="duration_of_event"
-                                            label={'Duration of a single event'}
-                                            rules={[
-                                                { required: true, message: 'You must set this value if break enabled' },
-                                            ]}
-                                        >
-                                            <DatePicker.RangePicker
-                                                style={{ width: '100%' }}
-                                                picker="time"
-                                                format={'HH:mm'}
-                                                placeholder={['Min duration', 'Max duration']}
-                                            />
-                                        </Form.Item>
-                                    )
-                                }
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
-            ),
-            forceRender: true,
-        },
-        {
-            label: '',
-            key: '4',
-            children: (
                 <Form layout="vertical" form={excludeForm}>
                     <Row gutter={16} justify="center">
                         <Space align="end" style={{ marginBottom: '8px' }}>
@@ -473,7 +377,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         },
         {
             label: '',
-            key: '5',
+            key: '4',
             children: (
                 <Form.Item name="event_name" label="Exclude" required>
                     <Row gutter={16} justify="center">
@@ -503,13 +407,16 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             case '2':
                 return googleEventForm;
             case '3':
-                return searchForm;
-            case '4':
                 return excludeForm;
         }
     };
 
     const onBackButton = () => {
+        if(activeTabKey === '3') {
+            setActiveTabKey((prev) => `${+prev - 1}`);
+            return;
+        }
+        
         getActiveForm(`${+activeTabKey + 1}`)!
             .validateFields()
             .then(() => {
@@ -529,14 +436,13 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         getActiveForm(`${+activeTabKey + 1}`)!
             .validateFields()
             .then(() => {
-                setActiveTabKey('4');
+                setActiveTabKey('3');
             });
     };
 
     const onConfirmButton = async () => {
         const general = await generalForm.validateFields();
         const googleEvent = await googleEventForm.validateFields();
-        const search = await searchForm.validateFields();
         const exclude = await excludeForm.validateFields();
 
 
@@ -545,13 +451,12 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             summary: general.name,
             location: googleEvent.event_location || '',
             description: googleEvent.event_description || '',
-            // color,
             event_preset_detail: {
-                event_preset: {
+                event_preset: { // dummy data because BE doesn't support these fields
                     name: '',
-                    break_into_smaller_events: search.break_event,
-                    min_length_of_single_event: search.break_event ? search.duration_of_event[0].getHours() * 60 + search.duration_of_event[0].getMinutes() : null,
-                    max_length_of_single_event: search.break_event ? search.duration_of_event[1].getHours() * 60 + search.duration_of_event[1].getMinutes() : null,
+                    break_into_smaller_events: false,
+                    min_length_of_single_event: null,
+                    max_length_of_single_event: null,
                     shared_presets: [],
                 },
                 guests: general.guests.map(g => ({
@@ -602,7 +507,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                 style={{
                     width: '100%',
                     justifyContent: 'end',
-                    display: ['1', '2', '3'].includes(activeTabKey) ? undefined : 'none',
+                    display: ['1', '2'].includes(activeTabKey) ? undefined : 'none',
                 }}
             >
                 <Button onClick={onBackButton} style={{ minWidth: '85px' }}>
@@ -615,7 +520,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
             <Space
                 direction="horizontal"
-                style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '4' ? undefined : 'none' }}
+                style={{ width: '100%', justifyContent: 'end', display: activeTabKey === '3' ? undefined : 'none' }}
             >
                 <Button onClick={onSaveToPresetButton} type="dashed">
                     Save to preset
