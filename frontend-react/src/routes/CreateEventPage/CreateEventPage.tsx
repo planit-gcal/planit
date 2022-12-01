@@ -9,7 +9,7 @@ export const CreateEventPage = () => {
   const { userDetails } = useContext(PlanitUserContext);
 
   const onEventSubmit = async (result: unknown) => {
-    console.log('succ: ', result);
+    console.log(result);
 
     await createEvent(result as EventCreateRequest);
   };
