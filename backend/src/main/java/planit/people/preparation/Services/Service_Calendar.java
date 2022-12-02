@@ -16,7 +16,9 @@ import planit.people.preparation.Utils.EmailHelper;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class Service_Calendar {
@@ -39,7 +41,7 @@ public class Service_Calendar {
         this.fmConfiguration = fmConfiguration;
     }
 
-    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException {
+    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException, ExecutionException, InterruptedException, ParseException {
         Map<Long, Set<String>> userGoogleAccountMappedToPlanItUserId = getAllRefreshTokensPerPlanItUser(new ArrayList<>() {
             {
                 add(newEventDetail.owner_email());
@@ -48,6 +50,7 @@ public class Service_Calendar {
                 }
             }
         });
+
         String ownerRefreshToken = idaoGoogleAccount.getGoogleAccountFromEmail(newEventDetail.owner_email()).getRefresh_token();
         GoogleHelper google_helper = new GoogleHelper(ownerRefreshToken, true);
         System.out.println("DTO_NewEventDetail: " + newEventDetail);
