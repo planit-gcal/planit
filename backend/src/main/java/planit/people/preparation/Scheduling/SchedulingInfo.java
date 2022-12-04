@@ -8,5 +8,5 @@ import java.util.List;
 public class SchedulingInfo {
 
     public boolean isRequired;
-    public ArrayList<Interval> availableIntervals;
+    public List<Interval> availableIntervals;
 }

@@ -25,9 +25,10 @@ public final class Scheduler {
      * @see org.joda.time.Duration
      * @see org.joda.time.DateTime
      */
-    public static Interval getOneTimeSlotBetweenDatesOfLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+    public static List<Interval> getAvailableTimeSlots(List<Interval> busyTime, Duration duration, DateTime start, DateTime end, List<Entity_PresetAvailability> availabilities) {
         List<Interval> available = getAllAvailable(busyTime, start, end);
-        return getFirstIntervalMatchingDuration(available, duration);
+        List<Interval> availableOfDuration = filterIntervalsToMatchDuration(available, duration);
+        return getAvailableIntervalsBasedOnPresetAvailability(availableOfDuration, availabilities);
     }
 
     /**
@@ -44,11 +45,17 @@ public final class Scheduler {
      * @see org.joda.time.Duration
      * @see org.joda.time.DateTime
      */
-    public static List<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
-        List<Interval> available = getAllAvailable(busyTime, start, end);
-        return getIntervalsOfTotalDuration(available, duration);
+//    public static List<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
+//        List<Interval> available = getAllAvailable(busyTime, start, end);
+//        return getIntervalsOfTotalDuration(available, duration);
+//
+//    }
 
-    }
+//    public static List<Interval> getAllAvailableWithAvailability(List<Interval> busyTime, DateTime start, DateTime end, List<Entity_PresetAvailability> availabilities)
+//    {
+//        var available = getAllAvailable(busyTime, start, end);
+//        return getAvailableIntervalsBasedOnPresetAvailability(available, availabilities);
+//    }
 
     /**
      * Returns all available time slots between start and end date. Does not filter them.
@@ -206,17 +213,18 @@ public final class Scheduler {
      * @param duration  The duration of event.
      * @return An interval from list of exact duration or null.
      */
-    private static Interval getFirstIntervalMatchingDuration(List<Interval> available, Duration duration) {
+    private static List<Interval> filterIntervalsToMatchDuration(List<Interval> available, Duration duration) {
+        var filtered = new ArrayList<Interval>();
         for (Interval interval : available) {
             Duration intervalDuration = interval.toDuration();
             if (intervalDuration.compareTo(duration) >= 0) {
-                return new Interval(interval.getStart(), duration);
+                filtered.add(new Interval(interval.getStart(), duration));
             }
         }
-        return null;
+        return filtered;
     }
 
-    private static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) throws Exception {
+    private static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) {
         var availableIntervals = new ArrayList<Interval>();
         var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
         for (Interval freeInterval : freeIntervals) {

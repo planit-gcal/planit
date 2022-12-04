@@ -15,8 +15,8 @@ public class FreeTimeFinder {
         {
             return null;
         }
-        ArrayList<ArrayList<Interval>> requiredUsers = new ArrayList<>();
-        ArrayList<Interval> notRequiredUsers = new ArrayList<>();
+        List<List<Interval>> requiredUsers = new ArrayList<>();
+        List<Interval> notRequiredUsers = new ArrayList<>();
         for (SchedulingInfo schedulingInfo : schedulingInfoList) {
             if (schedulingInfo.isRequired) {
                 requiredUsers.add(schedulingInfo.availableIntervals);
@@ -33,21 +33,21 @@ public class FreeTimeFinder {
         return new Date(finalDate.getMillis());
     }
 
-    private static List<Interval> startMergeRequiredUsers(Duration duration, ArrayList<ArrayList<Interval>> requiredUsers) {
+    private static List<Interval> startMergeRequiredUsers(Duration duration, List<List<Interval>> requiredUsers) {
         List<Interval> mergedRequired = new ArrayList<>();
         if(!requiredUsers.isEmpty())
         {
-            ArrayList<Interval> firstMerged = requiredUsers.remove(0);
+            List<Interval> firstMerged = requiredUsers.remove(0);
             mergedRequired = mergeRequiredUsers(requiredUsers, duration, firstMerged);
         }
         return mergedRequired;
     }
 
-    private static List<Interval> mergeRequiredUsers(ArrayList<ArrayList<Interval>> ListOfUserIntervals, Duration duration, List<Interval> mergedIntervals) {
+    private static List<Interval> mergeRequiredUsers(List<List<Interval>> ListOfUserIntervals, Duration duration, List<Interval> mergedIntervals) {
         if (ListOfUserIntervals.isEmpty() || mergedIntervals.isEmpty()) {
             return mergedIntervals;
         }
-        ArrayList<Interval> userIntervals = ListOfUserIntervals.remove(0);
+        List<Interval> userIntervals = ListOfUserIntervals.remove(0);
         return mergeRequiredUsers(ListOfUserIntervals, duration, matchMergedAndUserIntervals(mergedIntervals, userIntervals, duration));
     }
 
