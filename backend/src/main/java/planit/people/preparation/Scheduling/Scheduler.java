@@ -1,11 +1,10 @@
 package planit.people.preparation.Scheduling;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
+import org.joda.time.*;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -216,10 +215,7 @@ public final class Scheduler {
     private static List<Interval> filterIntervalsToMatchDuration(List<Interval> available, Duration duration) {
         var filtered = new ArrayList<Interval>();
         for (Interval interval : available) {
-            Duration intervalDuration = interval.toDuration();
-            if (intervalDuration.compareTo(duration) >= 0) {
-                filtered.add(new Interval(interval.getStart(), duration));
-            }
+            filtered.addAll(splitInterval(interval, duration));
         }
         return filtered;
     }
@@ -230,13 +226,19 @@ public final class Scheduler {
         for (Interval freeInterval : freeIntervals) {
             var dayOfWeek = freeInterval.getStart().dayOfWeek().get();
             var availabilityForDay = mappedAvailabilities.get(dayOfWeek);
-            if (freeInterval.overlaps(availabilityForDay)) {
-                var clampedInterval = clampInterval(freeInterval, availabilityForDay);
-                availableIntervals.add(clampedInterval);
+            if (doesTimeOverlap(availabilityForDay, freeInterval)) {
+                availableIntervals.add(freeInterval);
             }
         }
         return availableIntervals;
     }
+
+    private static Boolean doesTimeOverlap(Interval availabilityInterval, Interval dayInterval) {
+        var compareTimeAfter = DateTimeComparator.getTimeOnlyInstance().compare(availabilityInterval.getStart(), dayInterval.getStart());
+        var compareTimeBefore = DateTimeComparator.getTimeOnlyInstance().compare(availabilityInterval.getEnd(), dayInterval.getEnd());
+        return compareTimeAfter <= 0 && compareTimeBefore >= 0;
+    }
+
 
     private static Interval clampInterval(Interval intervalToBeClamped, Interval interval) {
         Interval newInterval = clampIntervalStart(intervalToBeClamped, interval.getStart());
@@ -244,19 +246,16 @@ public final class Scheduler {
         return newInterval;
     }
 
-    private static Interval clampIntervalStart(Interval interval, DateTime start)
-    {
-        if(interval.getStart().isBefore(start))
-        {
+    private static Interval clampIntervalStart(Interval interval, DateTime start) {
+        if (interval.getStart().isBefore(start)) {
             return new Interval(start, interval.getEnd());
         }
         return interval;
     }
 
-    private static Interval clampIntervalEnd(Interval interval, DateTime end)
-    {
-        if(interval.getEnd().isAfter(end))
-        {
+    private static Interval clampIntervalEnd(Interval interval, DateTime end) {
+        if (interval.getEnd().isAfter(end)) {
+            System.out.println("interval: " + interval + "\nend: " + end);
             return new Interval(interval.getStart(), end);
         }
         return interval;
@@ -293,5 +292,21 @@ public final class Scheduler {
         public int compare(Interval x, Interval y) {
             return x.getStart().compareTo(y.getStart());
         }
+    }
+
+    private static List<Interval> splitInterval(Interval interval, Duration duration) {
+        DateTime startTime = interval.getStart();
+        DateTime endTime = interval.getEnd();
+        List<Interval> result = new ArrayList<>();
+        while (true) {
+            if (interval.toDuration().compareTo(duration) >= 0) {
+                result.add(new Interval(startTime, duration));
+                startTime = startTime.plus(duration.toDuration());
+                interval = new Interval(startTime, endTime);
+            } else {
+                break;
+            }
+        }
+        return result;
     }
 }
