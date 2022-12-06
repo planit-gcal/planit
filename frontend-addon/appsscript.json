@@ -10,20 +10,24 @@
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
-  "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/"],
+  "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/", "https://planit-custom-domain2.loca.lt/", "https://witty-bear-80.loca.lt/"],
   "addOns": {
     "common": {
-      "name": "Cats",
-      "logoUrl": "https://www.gstatic.com/images/icons/material/system/1x/pets_black_48dp.png",
+      "name": "PlanIt - create event",
+      "logoUrl": "https://cdn.vectorstock.com/i/1000x1000/57/98/group-calendar-glyph-icon-vector-28415798.webp",
       "useLocaleFromApp": true,
+      "layoutProperties": {
+        "primaryColor": "#A0EEC0",
+        "secondaryColor": "#86CD82"
+      },
       "homepageTrigger": {
         "runFunction": "onHomepage",
         "enabled": true
       },
       "universalActions": [
         {
-          "label": "Learn more about Cataas",
-          "openLink": "https://cataas.com"
+          "label": "For more features visit website",
+          "openLink": "https://planit-custom-domain.loca.lt/"
         }
       ]
     },
