@@ -17,3 +17,6 @@ export const createNewAssignedUser = (googleAuthCode: string, planitUserId: numb
 
 export const getUserEmails = (planitUserId: number) =>
   AxiosInstance.get<GetUserEmailsResponse>(`/plan-it/users/${planitUserId}/emails`).then((response) => response.data);
+
+export const removeAccount = (planitUserId: number) =>
+  AxiosInstance.delete<boolean>(`/plan-it/users/${planitUserId}`).then((response) => response.data);
