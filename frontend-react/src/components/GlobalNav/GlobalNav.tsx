@@ -86,6 +86,7 @@ const GlobalNav = () => {
   const items = [
     { key: '1', label: <Link to="create-events">Create events</Link> },
     { key: '2', label: <Link to="manage-presets">Manage presets</Link> },
+    { key: '3', label: <Link to="manage-account">Manage account</Link> },
   ];
 
   return (

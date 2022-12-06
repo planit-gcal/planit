@@ -4,6 +4,7 @@ import './App.css';
 import MainLayout from './MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 import { CreateEventPage } from './routes/CreateEventPage/CreateEventPage';
+import { ManageAccountPage } from './routes/ManageAccountPage/ManageAccountPage';
 import { ManagePresetsPage } from './routes/ManagePresetsPage/ManagePresetsPage';
 import SignInPage from './routes/SignInPage/SignInPage';
 import { SignUpPage } from './routes/SignInPage/SignUpPage';
@@ -27,6 +28,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ManagePresetsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="manage-account"
+          element={
+            <ProtectedRoute>
+              <ManageAccountPage />
             </ProtectedRoute>
           }
         />
