@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, notification } from 'antd';
+import { Button, notification, Space, Typography } from 'antd';
 import { useCallback, useContext } from 'react';
 
 import { removeAccount } from '../../api/users/users.api';
@@ -23,10 +23,22 @@ export const ManageAccountPage = () => {
   }, [setUserDetails, userDetails]);
 
   return (
-    <div>
-      <Button type="primary" danger onClick={() => onRemoveAccount()} icon={<DeleteOutlined />}>
-        Remove account
-      </Button>
-    </div>
+    <Space direction="vertical" align="center" style={{ width: '100%' }}>
+      <Typography.Title level={2}>Manage your account</Typography.Title>
+      <Typography.Text>
+        If you wish to remove your PlanIt account along with saved Google Accounts, you can do it here.
+      </Typography.Text>
+      <div>
+        <Button
+          type="primary"
+          danger
+          onClick={() => onRemoveAccount()}
+          style={{ marginTop: '16px' }}
+          icon={<DeleteOutlined />}
+        >
+          Remove account
+        </Button>
+      </div>
+    </Space>
   );
 };
