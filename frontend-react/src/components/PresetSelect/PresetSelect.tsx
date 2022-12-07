@@ -2,9 +2,18 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Row, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { useContext } from 'react';
+import styled from 'styled-components';
 
 import { EventPresetDetail } from '../../api/calendar/calendar.dto';
 import { PresetsContext } from '../../contexts/PresetsContext';
+
+const CustomSelect: typeof Select = styled(Select)`
+  width: 180px;
+
+  .ant-select-selection-item button {
+    display: none;
+  }
+`;
 
 type PresetSelectProps = {
   onApplyPreset: (preset: EventPresetDetail) => void;
@@ -24,9 +33,10 @@ export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
 
   const options: DefaultOptionType[] = presets.map((p) => ({
     label: (
-      <Row justify={'space-between'}>
+      <Row justify="space-between" align="middle">
         {p.event_preset.name}{' '}
         <Button
+          size="small"
           type="text"
           onClick={(e) => onDeleteButtonClick(e, p.event_preset.id_event_preset!)}
           icon={<DeleteOutlined />}
@@ -40,7 +50,5 @@ export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
     onApplyPreset(getPresetById(presetId));
   };
 
-  return (
-    <Select style={{ width: '180px' }} size="small" placeholder="Select preset" options={options} onSelect={onSelect} />
-  );
+  return <CustomSelect placeholder="Select preset" options={options} onSelect={onSelect} />;
 };
