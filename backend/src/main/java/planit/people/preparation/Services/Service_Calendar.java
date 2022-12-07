@@ -40,6 +40,14 @@ public class Service_Calendar {
         this.fmConfiguration = fmConfiguration;
     }
 
+    /**
+     * Call on GoogleHelper class to create a new google event. 
+     * 
+     * @param newEventDetail Event details
+     * @return CalendarResponse which contains the start and end date of the created event.
+     * @see Service_Calendar#getAllRefreshTokensPerPlanItUser
+     * @see GoogleHelper#createEvent
+     */
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException, ExecutionException, InterruptedException {
         String ownerRefreshToken = idaoGoogleAccount.getGoogleAccountFromEmail(newEventDetail.owner_email()).getRefresh_token();
         GoogleHelper google_helper = new GoogleHelper(ownerRefreshToken, true);
@@ -279,6 +287,18 @@ public class Service_Calendar {
 
     }
 
+    /**
+     * Get all refresh token for all registered guests in an event. The method perform the following steps: 
+     * 1 - get all google accounts from DB by the guests email 
+     * 2 - extract all PlanIt User Id into a set from the retrieved Google accounts in step 1. 
+     * 3 - get all google accounts from DB by the extracted PlanIt User Ids. 
+     * 4 - split the retrieved google accounts in step 3 into 2 Maps, one contains the the optional guests and their refresh token and the second is a similar map for required guests. 
+     * 5 - clean the optional guests map.  
+     * 
+     * @param guests a list containing all invited guests in an event
+     * @return Map<String, Map<Long, Set<String>>> a map containing the obligation to attend for all registered guests and the refresh token for all of their google accounts. The map structure is the following: Map<Obligation to attend, Map<PlanIt User Id, Set<Refresh Token>>> 
+     * @see Service_Calendar#cleanOptionalUsers(Map<Long, Set<String>>, Set<Long>)
+     */
     private Map<String, Map<Long, Set<String>>> getAllRefreshTokensPerPlanItUser(List<Entity_Guest> guests) {
         Map<Long, Set<String>> optionalUsers = new HashMap<>();
         Map<Long, Set<String>> requiredUser = new HashMap<>();
@@ -312,6 +332,14 @@ public class Service_Calendar {
         };
     }
 
+    /**
+     * In order to have a better algorithm performance, remove all PlanIt users who are invited as both Optional and Required guest from the list of Optional guests
+     * 
+     * @param optionalUsers a map of registered optional guests. Map<PlanIt User Id, Set<Refresh Tokens>>
+     * @param requiredUserIds a set of all registered required guests' ids. Set<PlanIt User Id>
+     * @return Map<Long, Set<String>> a filtered map of registered optional guests. Map<PlanIt User Id, Set<Refresh Tokens>>
+     * 
+     */
     public Map<Long, Set<String>> cleanOptionalUsers(Map<Long, Set<String>> optionalUsers, Set<Long> requiredUserIds) {
         for (Long userId : requiredUserIds) {
             optionalUsers.remove(userId);
