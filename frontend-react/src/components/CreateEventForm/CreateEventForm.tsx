@@ -79,6 +79,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         return date ? format(date, 'dd MMM yyyy') : '';
     }
 
+    function toTimeString(date:Date){
+        return date ? format(date, 'HH:mm') : '';
+    }
+
     const weekDays = [
         { name: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
         { name: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
@@ -417,15 +421,28 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                     </Row>
                                     <Row>
                                             <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
+                                    </Row>
+                                    <Row>
                                             <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
                                     </Row>
                                     <Row>
                                             <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
+                                    </Row>
+                                    <Row>
                                             <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
                                     </Row>
                                 </Col>
                                 <Col span={8}>
-
+                                    <Typography.Title level={5}>Availability:</Typography.Title>
+                                    {useWatch('excludeWeekDays',excludeForm)?.map(({ name, exclude, availability }) => (
+                                        <Row key={name}>
+                                            {exclude ? (
+                                                <Typography.Text delete>{name}</Typography.Text>
+                                            ):(
+                                                <Typography.Text >{name} {toTimeString(availability[0])} - {toTimeString(availability[1])}</Typography.Text>
+                                            )}
+                                        </Row>
+                                        ))}
                                 </Col>
                     </Row>
                 </div>
