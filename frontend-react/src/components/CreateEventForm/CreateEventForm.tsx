@@ -396,22 +396,37 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                         </Space>
                     </Row>
                     <Row gutter={16} justify="center">
-                        <Col span={16}>
-                            <Col span={8}>
-                                <Typography.Title level={5}>Event guests:</Typography.Title>
-                                {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
-                                    <div key={email}>
-                                        <Typography.Text strong={obligatory}>{email}</Typography.Text>
-                                    </div>
-                                ))}
-                            </Col>
-                            <Col span={8}>
+                                <Col span={8}>
+                                    <Typography.Title level={5}>Event guests:</Typography.Title>
+                                    {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
+                                        <div key={email}>
+                                            <Typography.Text strong={obligatory}>{email}</Typography.Text>
+                                        </div>
+                                    ))}
+                                </Col>
+                                <Col span={8}>
+                                    <Row>
+                                        <Space align="end" style={{ marginBottom: '8px' }}>
+                                            <Typography.Title level={5} style={{ margin: 0 }}>Color:</Typography.Title>
+                                            <div style={{ margin: 0 }}>
+                                                <svg height="12" width="12">
+                                                    <circle cx="6" cy="6" r="6" fill={useWatch('event_color', googleEventForm)} />
+                                                </svg>
+                                            </div>
+                                        </Space>
+                                    </Row>
+                                    <Row>
+                                            <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
+                                            <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                            <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
+                                            <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                </Col>
+                                <Col span={8}>
 
-                            </Col>
-                            <Col span={8}>
-
-                            </Col>
-                        </Col>
+                                </Col>
                     </Row>
                 </div>
             ),
