@@ -2,6 +2,7 @@ export const Days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SA
 
 export type Day = typeof Days[number];
 type EventPreset = {
+  id_event_preset?: number;
   name: string;
   break_into_smaller_events: boolean;
   min_length_of_single_event: number | null; // in minutes
@@ -16,16 +17,18 @@ type PresetAvailability = {
   day_off: boolean;
 };
 
+export type EventPresetDetail = {
+  event_preset: EventPreset;
+  guests: Guest[];
+  preset_availability: PresetAvailability[];
+};
+
 export type EventCreateRequest = {
   name: string;
   summary: string;
   location: string;
   description: string;
-  event_preset_detail: {
-    event_preset: EventPreset;
-    guests: Guest[];
-    preset_availability: PresetAvailability[];
-  };
+  event_preset_detail: EventPresetDetail;
   owner_email: string;
   start_date: string; // '2022-01-10 12:00:00'
   end_date: string; // '2022-02-10 12:00:00'
