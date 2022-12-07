@@ -57,11 +57,7 @@ export const PresetsContextProvider = ({ children }: PresetsContextProviderProps
 
       if (event.event_preset_detail.event_preset.id_event_preset) {
         try {
-          await updateUserPreset(
-            userDetails.planitUserId,
-            event.event_preset_detail,
-            event.event_preset_detail.event_preset.id_event_preset
-          );
+          await updateUserPreset(userDetails.planitUserId, event.event_preset_detail);
           await fetchPresets();
 
           notification.success({ message: 'Preset has been updated!', placement: 'bottom' });

@@ -15,9 +15,9 @@ export const createUserPreset = (planitUserId: number, preset: EventPresetDetail
     preset
   ).then((response) => response.data);
 
-export const updateUserPreset = (planitUserId: number, preset: EventPresetDetail, presetId: number) =>
+export const updateUserPreset = (planitUserId: number, preset: EventPresetDetail) =>
   AxiosInstance.patch<CreatePresetRequest, AxiosResponse<CreatePresetResponse>>(
-    `/plan-it/calendar/users/${planitUserId}/presets/${presetId}`,
+    `/plan-it/calendar/users/${planitUserId}/presets`,
     preset
   ).then((response) => response.data);
 
