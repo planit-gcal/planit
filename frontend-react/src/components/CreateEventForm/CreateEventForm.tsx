@@ -21,6 +21,7 @@ import { convertFormToRequest, getPartialFormFromPreset } from '../../utils/even
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
+import { PresetCreateModal } from '../PresetCreateModal/PresetCreateModal';
 import { PresetSelect } from '../PresetSelect/PresetSelect';
 import TimePicker from '../TimePicker/TimePicker';
 import { ExcludeForm, GeneralForm, GoogleEventForm } from './models';
@@ -41,6 +42,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
     const [excludeForm] = Form.useForm<ExcludeForm>();
 
     const [activeTabKey, setActiveTabKey] = useState('0');
+    const [isPresetCreateModalOpen, setIsPresetCreateModalOpen] = useState(false);
 
     const stepItems = [
         { title: 'General' },
@@ -91,8 +93,6 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
 
     const onApplyPreset = (preset: EventPresetDetail) => {
         const converted = getPartialFormFromPreset(preset);
-        console.log(converted);
-        
 
         generalForm.setFieldsValue(converted.generalForm)
         excludeForm.setFieldsValue(converted.excludeForm)
@@ -465,15 +465,19 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
     };
 
     const onSaveToPresetButton = async () => {
-        const general = await generalForm.validateFields();
-        const googleEvent = await googleEventForm.validateFields();
-        const exclude = await excludeForm.validateFields();
-
-        onSaveToPreset(convertFormToRequest(owner, general, googleEvent, exclude));
+        setIsPresetCreateModalOpen(true);
     };
 
     return (
         <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
+            <PresetCreateModal forms={{generalForm, googleEventForm, excludeForm}} owner={owner} open={isPresetCreateModalOpen} onCancel={ () => setIsPresetCreateModalOpen(false)} onCreatePreset={
+                (request) => {
+                    setIsPresetCreateModalOpen(false);
+                    onSaveToPreset(request);
+                }
+
+            } />
+            
             <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{ flex: 1 }} />
 
             <Divider />

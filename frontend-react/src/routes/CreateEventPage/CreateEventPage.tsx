@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import { useContext } from 'react';
 
 import { createEvent } from '../../api/calendar/calendar.api';
@@ -18,7 +19,13 @@ export const CreateEventPage = () => {
       return;
     }
 
-    await createUserPreset(userDetails.planitUserId, result.event_preset_detail);
+    try {
+      await createUserPreset(userDetails.planitUserId, result.event_preset_detail);
+
+      notification.success({ message: 'Preset has been saved!', placement: 'bottom' });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
