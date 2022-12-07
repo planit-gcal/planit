@@ -399,9 +399,18 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                             </Typography.Title>
                         </Space>
                     </Row>
+                    <Row>
+                        <Typography.Text type="secondary" style={{fontSize:'12px'}}>
+                            {`We're about to create an event in your and your guests' calendars. Please review your preferences before confirming.`}
+                        </Typography.Text>
+                    </Row>
                     <Row gutter={16} justify="center">
                                 <Col span={8}>
-                                    <Typography.Title level={5}>Event guests:</Typography.Title>
+                                    <Typography.Title level={5} style={{marginBottom:0}}>Event guests:</Typography.Title>
+                                    <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px'}}>
+                                        Obligatory guests are {` `}
+                                        <Typography.Text type="secondary" strong style={{fontSize:'12px'}}>bold</Typography.Text>
+                                    </Typography.Text>
                                     {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
                                         <div key={email}>
                                             <Typography.Text strong={obligatory}>{email}</Typography.Text>
