@@ -211,6 +211,7 @@ public final class Scheduler {
      * @param available List of "free" intervals too chose from.
      * @param duration  The duration of event.
      * @return An interval from list of exact duration or null.
+     * @see Schedular#splitInterval(Interval, Duration)
      */
     private static List<Interval> filterIntervalsToMatchDuration(List<Interval> available, Duration duration) {
         var filtered = new ArrayList<Interval>();
@@ -233,32 +234,17 @@ public final class Scheduler {
         return availableIntervals;
     }
 
+    /**
+     * Check if the time portion of the free interval overlaps with the preset availability interval. 
+     * 
+     * @param availabilityInterval event availability preset interval 
+     * @param dayInterval free interval 
+     * @return true iff the start time of the free interval is the same or after the start time of the preset availability interval AND the end time of the free interval is the same or before the end time of the preset availability interval 
+     */
     private static Boolean doesTimeOverlap(Interval availabilityInterval, Interval dayInterval) {
         var compareTimeAfter = DateTimeComparator.getTimeOnlyInstance().compare(availabilityInterval.getStart(), dayInterval.getStart());
         var compareTimeBefore = DateTimeComparator.getTimeOnlyInstance().compare(availabilityInterval.getEnd(), dayInterval.getEnd());
         return compareTimeAfter <= 0 && compareTimeBefore >= 0;
-    }
-
-
-    private static Interval clampInterval(Interval intervalToBeClamped, Interval interval) {
-        Interval newInterval = clampIntervalStart(intervalToBeClamped, interval.getStart());
-        newInterval = clampIntervalEnd(newInterval, interval.getEnd());
-        return newInterval;
-    }
-
-    private static Interval clampIntervalStart(Interval interval, DateTime start) {
-        if (interval.getStart().isBefore(start)) {
-            return new Interval(start, interval.getEnd());
-        }
-        return interval;
-    }
-
-    private static Interval clampIntervalEnd(Interval interval, DateTime end) {
-        if (interval.getEnd().isAfter(end)) {
-            System.out.println("interval: " + interval + "\nend: " + end);
-            return new Interval(interval.getStart(), end);
-        }
-        return interval;
     }
 
     private static Map<Integer, Interval> mapAvailabilitiesToDaysOfWeek(List<Entity_PresetAvailability> availabilities) {
@@ -294,6 +280,13 @@ public final class Scheduler {
         }
     }
 
+    /**
+     * Slice an interval into a list of intervals splitted by the duration
+     * 
+     * @param interval the interval to be sliced
+     * @param duration the duration to be used to determine the size of each slice. 
+     * @return List<Interval> a list of sliced intervals. 
+     */
     private static List<Interval> splitInterval(Interval interval, Duration duration) {
         DateTime startTime = interval.getStart();
         DateTime endTime = interval.getEnd();
