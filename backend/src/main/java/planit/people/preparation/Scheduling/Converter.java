@@ -1,6 +1,7 @@
 package planit.people.preparation.Scheduling;
 
 import com.google.api.services.calendar.model.TimePeriod;
+import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.springframework.web.util.UriUtils;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
@@ -46,6 +47,10 @@ public class Converter {
     }
 
     public static Interval convertAvailabilityToInterval(Entity_PresetAvailability availability) {
+        if(availability.getStart_available_time() == null)
+        {
+            return new Interval(new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 1, 0, 0));
+        }
         return new Interval(availability.getStart_available_time().getTime(), availability.getEnd_available_time().getTime());
     }
 
