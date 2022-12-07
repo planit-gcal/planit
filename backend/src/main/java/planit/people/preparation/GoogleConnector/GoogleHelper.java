@@ -11,7 +11,7 @@ import planit.people.preparation.DTOs.DTO_NewEventDetail;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
 import planit.people.preparation.Responses.CalendarResponse;
 import planit.people.preparation.Scheduling.Converter;
-import planit.people.preparation.Scheduling.FreeTimeFinder;
+import planit.people.preparation.Scheduling.BestDateFinder;
 import planit.people.preparation.Scheduling.Scheduler;
 import planit.people.preparation.Scheduling.SchedulingInfo;
 
@@ -70,14 +70,14 @@ public class GoogleHelper {
      * @see GoogleHelper#getFreeBusyIntervalForAll(Date, Date, Map<String, Map<Long, Set<String>>>)
      * @see GoogleHelper#getFreeIntervalForAll(Map<String, Map<Long, List<Interval>>>, Date, Date, Duration, List<Entity_PresetAvailability>)
      * @see Converter#convertIntervalMapToListOfSchedulingInfo(Map<String, Map<Long, List<Interval>>>)
-     * @see FreeTimeFinder#getBestStartDate(List<SchedulingInfo>, Duration)
+     * @see BestDateFinder#getBestStartDate(List<SchedulingInfo>, Duration)
      */
     public DateTime getStartDate(DTO_NewEventDetail newEventDetail, Map<String, Map<Long, Set<String>>> refreshTokenForAllGuests) throws ExecutionException, InterruptedException {
         Duration durationInMinutes = Duration.standardMinutes(newEventDetail.duration());
         Map<String, Map<Long, List<Interval>>> freeBusyIntervalsForAllUsers = getFreeBusyIntervalForAll(newEventDetail.start_date(), newEventDetail.end_date(), refreshTokenForAllGuests);
         Map<String, Map<Long, List<Interval>>> freeIntervalsForAllUsers = getFreeIntervalForAll(freeBusyIntervalsForAllUsers, newEventDetail.start_date(), newEventDetail.end_date(), durationInMinutes, newEventDetail.event_preset_detail().preset_availability());
         List<SchedulingInfo> schedulingInfos = Converter.convertIntervalMapToListOfSchedulingInfo(freeIntervalsForAllUsers);
-        Date startTime = FreeTimeFinder.getBestStartDate(schedulingInfos, durationInMinutes);
+        Date startTime = BestDateFinder.getBestStartDate(schedulingInfos, durationInMinutes);
         assert startTime != null;
         return new DateTime(startTime);
     }

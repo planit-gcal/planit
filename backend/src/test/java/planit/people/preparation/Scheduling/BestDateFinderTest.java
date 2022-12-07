@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-class FreeTimeFinderTest {
+class BestDateFinderTest {
 
     DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/YYYY");
     String yearMonth = "/01/2000";
@@ -99,7 +99,7 @@ class FreeTimeFinderTest {
 
     @Test
     void getRequiredAvailableIntervals() {
-        var actual = FreeTimeFinder.getBestStartDate(Arrays.asList(requiredUser1, requiredUser2, requiredUser3, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), duration);
+        var actual = BestDateFinder.getBestStartDate(Arrays.asList(requiredUser1, requiredUser2, requiredUser3, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), duration);
         var expected = formatter.parseDateTime("16" + yearMonth);
         assert actual != null;
         Assertions.assertEquals(expected.toDate().toString(), actual.toString());
@@ -107,7 +107,7 @@ class FreeTimeFinderTest {
 
     @Test
     void onlyOneRequiredTestWithNonMatchingNonRequired() {
-        var actual = FreeTimeFinder.getBestStartDate(Arrays.asList(requiredUser3, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
+        var actual = BestDateFinder.getBestStartDate(Arrays.asList(requiredUser3, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
         var expected = requiredUser3.availableIntervals.get(0).getStart().toDate();
         assert actual != null;
         Assertions.assertEquals(expected.toString(), actual.toString());
@@ -123,13 +123,13 @@ class FreeTimeFinderTest {
                 add(newInterval(13, 14));
             }
         };
-        var actual = FreeTimeFinder.getBestStartDate(Arrays.asList(requiredUser3, pickyUser, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
+        var actual = BestDateFinder.getBestStartDate(Arrays.asList(requiredUser3, pickyUser, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
         Assertions.assertNull(actual);
     }
 
     @Test
     void emptyNonRequiredUsersTest() {
-        var actual = FreeTimeFinder.getBestStartDate(Collections.singletonList(requiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
+        var actual = BestDateFinder.getBestStartDate(Collections.singletonList(requiredUser3), requiredUser3.availableIntervals.get(0).toDuration());
         var expected = requiredUser3.availableIntervals.get(0).getStart().toDate();
         assert actual != null;
         Assertions.assertEquals(expected.toString(), actual.toString());
@@ -137,13 +137,13 @@ class FreeTimeFinderTest {
 
     @Test
     void emptyRequiredUsersTest() {
-        var found = FreeTimeFinder.getBestStartDate(Arrays.asList(nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), duration);
+        var found = BestDateFinder.getBestStartDate(Arrays.asList(nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), duration);
         Assertions.assertNull(found);
     }
 
     @Test
     void nullDurationTest() {
-        var found = FreeTimeFinder.getBestStartDate(Arrays.asList(requiredUser1, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), null);
+        var found = BestDateFinder.getBestStartDate(Arrays.asList(requiredUser1, nonRequiredUser1, nonRequiredUser2, nonRequiredUser3), null);
         Assertions.assertNull(found);
     }
 
