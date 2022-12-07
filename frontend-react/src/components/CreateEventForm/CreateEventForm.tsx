@@ -164,7 +164,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                                     {(fields, { add, remove }) => (
                                         <div>
                                             {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
-                                            <div style={{flex: 1, overflowY: 'hidden', height: '160px' }}>
+                                            <div style={{flex: 1, overflowY: 'hidden' }}>
                                                 <div style={{ height: '100%', overflowY: 'scroll' }}>
                                                     {fields.map(({ key, name, ...restField }) => (
                                                         <Row style={{ width: '100%' }} key={key} gutter={16}>
@@ -205,7 +205,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                                             </div>
 
                                             <Form.Item>
-                                                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                                <Button type="dashed" size='small' onClick={() => add()} block icon={<PlusOutlined />}>
                                                     Add guest
                                                 </Button>
                                             </Form.Item>
