@@ -104,8 +104,11 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
             key: '1',
             children: (
                 <>
-                    <Row>
-                        <PresetSelect onApplyPreset={onApplyPreset} />
+                    <Row gutter={16} justify="center">
+                        <Col span={16}>
+                            <PresetSelect onApplyPreset={onApplyPreset} />
+                            <Divider />
+                        </Col>
                     </Row>
                     <Form layout="vertical" form={generalForm}>
                         <Row gutter={16} justify="center">
@@ -470,13 +473,16 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
 
     return (
         <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
-            <PresetCreateModal forms={{generalForm, googleEventForm, excludeForm}} owner={owner} open={isPresetCreateModalOpen} onCancel={ () => setIsPresetCreateModalOpen(false)} onCreatePreset={
-                (request) => {
-                    setIsPresetCreateModalOpen(false);
-                    onSaveToPreset(request);
-                }
-
-            } />
+            <PresetCreateModal
+                forms={{ generalForm, googleEventForm, excludeForm }}
+                owner={owner}
+                open={isPresetCreateModalOpen}
+                onCancel={() => setIsPresetCreateModalOpen(false)}
+                onCreatePreset={(request) => {
+                setIsPresetCreateModalOpen(false);
+                onSaveToPreset(request);
+                }}
+            />
             
             <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{ flex: 1 }} />
 

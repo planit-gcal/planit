@@ -1,9 +1,10 @@
-import { Select } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
+import { Button, notification, Row, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { useContext, useEffect, useState } from 'react';
 
 import { EventPresetDetail } from '../../api/calendar/calendar.dto';
-import { getPresets } from '../../api/presets/presets.api';
+import { deleteUserPreset, getPresets } from '../../api/presets/presets.api';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 
 type PresetSelectProps = {
@@ -11,7 +12,7 @@ type PresetSelectProps = {
 };
 
 export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
-  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const { userDetails } = useContext(PlanitUserContext);
   const [presets, setPresets] = useState<EventPresetDetail[]>([]);
 
   useEffect(() => {
@@ -27,14 +28,47 @@ export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
     fetchPresets();
   }, []);
 
+  const getPresetById = (id: number) => presets.find((p) => p.event_preset.id_event_preset === id)!;
+
+  const onDeleteButtonClick = async (e: React.MouseEvent<Element, MouseEvent>, presetId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!userDetails?.planitUserId) {
+      return;
+    }
+
+    try {
+      await deleteUserPreset(userDetails.planitUserId, presetId);
+
+      notification.success({ message: 'Preset has been removed!', placement: 'bottom' });
+
+      const fetchedPresets = await getPresets(userDetails.planitUserId);
+      setPresets(fetchedPresets);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const options: DefaultOptionType[] = presets.map((p) => ({
-    label: p.event_preset.name,
+    label: (
+      <Row justify={'space-between'}>
+        {p.event_preset.name}{' '}
+        <Button
+          type="text"
+          onClick={(e) => onDeleteButtonClick(e, p.event_preset.id_event_preset!)}
+          icon={<DeleteOutlined />}
+        />
+      </Row>
+    ),
     value: p.event_preset.id_event_preset,
   }));
 
   const onSelect = (presetId: number) => {
-    onApplyPreset(presets.find((p) => p.event_preset.id_event_preset === presetId)!);
+    onApplyPreset(getPresetById(presetId));
   };
 
-  return <Select placeholder="Select preset" options={options} onSelect={onSelect} />;
+  return (
+    <Select style={{ width: '180px' }} size="small" placeholder="Select preset" options={options} onSelect={onSelect} />
+  );
 };
