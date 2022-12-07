@@ -1,32 +1,17 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { Button, notification, Row, Select } from 'antd';
+import { Button, Row, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 
 import { EventPresetDetail } from '../../api/calendar/calendar.dto';
-import { deleteUserPreset, getPresets } from '../../api/presets/presets.api';
-import { PlanitUserContext } from '../../contexts/PlanitUserContext';
+import { PresetsContext } from '../../contexts/PresetsContext';
 
 type PresetSelectProps = {
   onApplyPreset: (preset: EventPresetDetail) => void;
 };
 
 export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
-  const { userDetails } = useContext(PlanitUserContext);
-  const [presets, setPresets] = useState<EventPresetDetail[]>([]);
-
-  useEffect(() => {
-    const fetchPresets = async () => {
-      if (!userDetails?.planitUserId) {
-        return;
-      }
-
-      const fetchedPresets = await getPresets(userDetails.planitUserId);
-      setPresets(fetchedPresets);
-    };
-
-    fetchPresets();
-  }, []);
+  const { presets, deletePreset } = useContext(PresetsContext);
 
   const getPresetById = (id: number) => presets.find((p) => p.event_preset.id_event_preset === id)!;
 
@@ -34,20 +19,7 @@ export const PresetSelect = ({ onApplyPreset }: PresetSelectProps) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!userDetails?.planitUserId) {
-      return;
-    }
-
-    try {
-      await deleteUserPreset(userDetails.planitUserId, presetId);
-
-      notification.success({ message: 'Preset has been removed!', placement: 'bottom' });
-
-      const fetchedPresets = await getPresets(userDetails.planitUserId);
-      setPresets(fetchedPresets);
-    } catch (e) {
-      console.error(e);
-    }
+    deletePreset(presetId);
   };
 
   const options: DefaultOptionType[] = presets.map((p) => ({

@@ -479,8 +479,8 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                 open={isPresetCreateModalOpen}
                 onCancel={() => setIsPresetCreateModalOpen(false)}
                 onCreatePreset={(request) => {
-                setIsPresetCreateModalOpen(false);
-                onSaveToPreset(request);
+                    setIsPresetCreateModalOpen(false);
+                    onSaveToPreset(request);
                 }}
             />
             
