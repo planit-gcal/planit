@@ -3,8 +3,6 @@ package planit.people.preparation.Scheduling;
 import org.joda.time.*;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -13,13 +11,15 @@ import java.util.*;
 public final class Scheduler {
 
     /**
-     * Finds available time slot (interval) between the given dates of given duration. If not found, returns null.
-     *
+     * Wraps {@link #getAllAvailable(List, DateTime, DateTime)}.
+     * Additionally, filters the free intervals based on:
+     * 1. Preset availability (if free time is during non-available time it is disregarded)
+     * 2. Duration (if free interval is shorter than duration it is disregarded)
      * @param busyTime Time intervals during which the time is marked as busy.
      * @param duration Actual duration of time the event should take.
      * @param start    The soonest date the event should be scheduled at.
-     * @param end      The latest date the event should be scheduled at.
-     * @return First found interval matching all parameters or null.
+     * @param end      The date that scheduled event should not end after.
+     * @return <b>Sorted list</b> of all intervals matching the parameters or empty.
      * @see org.joda.time.Interval
      * @see org.joda.time.Duration
      * @see org.joda.time.DateTime
@@ -31,38 +31,14 @@ public final class Scheduler {
     }
 
     /**
-     * Finds available time slots (intervals) between the given dates of given duration. If not found, returns empty.
-     * This method will find multiple time slots with total length of duration.
-     * This might not be so useful for now.
-     *
-     * @param busyTime Time intervals during which the time is marked as busy.
-     * @param duration Actual duration of time the event should take.
-     * @param start    The soonest date the event should be scheduled at.
-     * @param end      The latest date the event should be scheduled at.
-     * @return List of first intervals matching all parameters. Can be empty if none found.
-     * @see org.joda.time.Interval
-     * @see org.joda.time.Duration
-     * @see org.joda.time.DateTime
-     */
-//    public static List<Interval> getAvailableTimeSlotsBetweenDatesOfTotalLength(List<Interval> busyTime, Duration duration, DateTime start, DateTime end) {
-//        List<Interval> available = getAllAvailable(busyTime, start, end);
-//        return getIntervalsOfTotalDuration(available, duration);
-//
-//    }
-
-//    public static List<Interval> getAllAvailableWithAvailability(List<Interval> busyTime, DateTime start, DateTime end, List<Entity_PresetAvailability> availabilities)
-//    {
-//        var available = getAllAvailable(busyTime, start, end);
-//        return getAvailableIntervalsBasedOnPresetAvailability(available, availabilities);
-//    }
-
-    /**
-     * Returns all available time slots between start and end date. Does not filter them.
-     *
+     * Converts provided "busy" intervals to free intervals and <b>sorts them</b>.
+     * Filters the free intervals based on the start and the end date (time beyond start and end date is disregarded).
+     * Merges all overlapping intervals.
+     * Sorts all intervals.
      * @param busyTime Time intervals during which the time is marked as busy.
      * @param start    The soonest date the event should be scheduled at.
      * @param end      The latest date the event should be scheduled at.
-     * @return List of all intervals matching the parameters or empty.
+     * @return <b>Sorted list</b> of all intervals matching the parameters or empty.
      */
     public static List<Interval> getAllAvailable(List<Interval> busyTime, DateTime start, DateTime end) {
         List<Interval> filtered = filterIntervals(busyTime, start, end);
