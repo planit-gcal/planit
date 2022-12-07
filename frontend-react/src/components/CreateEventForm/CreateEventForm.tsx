@@ -189,7 +189,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                         </div>
 
                                         <Form.Item>
-                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                            <Button type="dashed" onClick={() => add({email:'', obligatory:false})} block icon={<PlusOutlined />}>
                                                 Add guest
                                             </Button>
                                         </Form.Item>
@@ -381,7 +381,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             label: '',
             key: '4',
             children: (
-                <Form.Item name="event_name" label="Exclude" required>
+                <div>
                     <Row gutter={16} justify="center">
                         <Space align="end" style={{ marginBottom: '8px' }}>
                             <Typography.Title level={3} style={{ margin: 0 }}>
@@ -395,8 +395,25 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                             </Typography.Title>
                         </Space>
                     </Row>
-                    <Input />
-                </Form.Item>
+                    <Row gutter={16} justify="center">
+                        <Col span={16}>
+                            <Col span={8}>
+                                <Typography.Title level={5}>Event guests:</Typography.Title>
+                                {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
+                                    <div key={email}>
+                                        <Typography.Text strong={obligatory}>{email}</Typography.Text>
+                                    </div>
+                                ))}
+                            </Col>
+                            <Col span={8}>
+
+                            </Col>
+                            <Col span={8}>
+
+                            </Col>
+                        </Col>
+                    </Row>
+                </div>
             ),
             forceRender: true,
         },
