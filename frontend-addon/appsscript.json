@@ -11,8 +11,8 @@
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "urlFetchWhitelist": [
-    "https://d00c-89-64-6-212.ngrok.io",
-    "https://planit-custom-domain2.loca.lt/",
+    "https://3bb6-89-64-6-212.ngrok.io",
+    "https://planit-custom-domain2.loca.lt",
     "https://witty-bear-80.loca.lt/"
   ],
   "addOns": {
@@ -31,7 +31,7 @@
       "universalActions": [
         {
           "label": "For more features visit website",
-          "openLink": "https://d00c-89-64-6-212.ngrok.io"
+          "openLink": "https://3bb6-89-64-6-212.ngrok.io"
         }
       ]
     },
