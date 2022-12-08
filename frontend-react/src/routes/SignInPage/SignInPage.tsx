@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getPlanItUserIdFromEmail } from '../../api/oauth/oauth.api';
 import { googleOAuthClientId } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
+import { useUrlQuery } from '../../hooks/useUrlQuery';
 import { parseJwt, loadScript, clearScript } from '../../utils/oauth.utils';
 
 const src = 'https://accounts.google.com/gsi/client';
@@ -12,6 +13,7 @@ const src = 'https://accounts.google.com/gsi/client';
 const GoogleAuth = () => {
   const { userDetails, setUserDetails, isLoggedIn } = useContext(PlanitUserContext);
   const navigate = useNavigate();
+  const query = useUrlQuery();
 
   const googleButton = useRef<HTMLDivElement>(null);
 
@@ -24,17 +26,17 @@ const GoogleAuth = () => {
 
         setUserDetails({ planitUserId, ownerEmail: email });
 
-        navigate(!!planitUserId ? '/create-events' : '/sign-up');
+        navigate({ pathname: !!planitUserId ? '/create-events' : '/sign-up', search: `?${query.toString()}` });
       } catch (e) {
-        navigate('/sign-up');
+        navigate({ pathname: '/sign-up', search: `?${query.toString()}` });
       }
     },
-    [navigate, setUserDetails]
+    [navigate, query, setUserDetails]
   );
 
   useEffect(() => {
-    isLoggedIn && navigate('/create-events');
-  }, [isLoggedIn, navigate]);
+    isLoggedIn && navigate({ pathname: '/create-events', search: `?${query.toString()}` });
+  }, [isLoggedIn, navigate, query]);
 
   useEffect(() => {
     loadScript(src)
