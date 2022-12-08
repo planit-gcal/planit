@@ -50,7 +50,7 @@ const defaultPreset: PresetDetails = {
   ],
 };
 
-const MAINURL = "https://8d63-89-64-6-212.ngrok.io";
+const MAINURL = "https://d00c-89-64-6-212.ngrok.io";
 // const MAINURL = "https://witty-bear-80.loca.lt"
 // const MAINURL = "http://localhost:8080"
 const weekInMs = 6.048e8;

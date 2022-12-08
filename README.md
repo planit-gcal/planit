@@ -63,7 +63,7 @@ Checking the results of `console.log` requires entering the the "Executions" sec
 In case of caching problems:
 `docker-compose build --no-cache frontend-service && docker-compose up`
 
-In the end, it's available at `https://8d63-89-64-6-212.ngrok.io`.
+In the end, it's available at `https://d00c-89-64-6-212.ngrok.io`.
 
 # Architecture overview
 
