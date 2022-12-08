@@ -5,6 +5,9 @@ import org.joda.time.*;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Class used for finding time intervals fitting provided parameters
@@ -27,8 +30,9 @@ public final class Scheduler {
      */
     public static List<Interval> getAvailableTimeSlots(List<Interval> busyTime, Duration duration, DateTime start, DateTime end, List<Entity_PresetAvailability> availabilities) {
         List<Interval> available = getAllAvailable(busyTime, start, end);
-        List<Interval> availableOfDuration = filterIntervalsToMatchDuration(available, duration);
-        return getAvailableIntervalsBasedOnPresetAvailability(availableOfDuration, availabilities);
+        List<Interval> splitByDay = splitIntervalsByDay(available);
+        List<Interval> intervalsOfDuration = filterIntervalsToMatchDuration(splitByDay, duration);
+        return getAvailableIntervalsBasedOnPresetAvailability(intervalsOfDuration, availabilities);
     }
 
     /**
@@ -42,10 +46,12 @@ public final class Scheduler {
      * @return <b>Sorted list</b> of all intervals matching the parameters or empty.
      */
     public static List<Interval> getAllAvailable(List<Interval> busyTime, DateTime start, DateTime end) {
-        List<Interval> filtered = filterIntervals(busyTime, start, end);
-        filtered.sort(new IntervalStartComparator());
+        List<Interval> filtered = filterIntervals(busyTime, start, end)
+                .sorted(new IntervalStartComparator())
+                .collect(Collectors.toList());
         List<Interval> merged = mergeSortedIntervals(filtered);
-        return getFreeIntervalsFromMergedIntervals(merged, start, end);
+        List<Interval> free = getFreeIntervalsFromMergedIntervals(merged).collect(Collectors.toList());
+        return addBeginningAndEndFreeTimeIfPossible(free, start, end);
     }
 
     /**
@@ -82,35 +88,32 @@ public final class Scheduler {
      * "Inverts" a list of intervals provided to get "free" time.
      *
      * @param mergedIntervals List of <strong>non-overlapping and sorted</strong> intervals being "busy".
-     * @param start           The soonest date the event should be scheduled at. <strong>When inverting, interval starting from this date will be created if possible.</strong>
-     * @param end             The latest date the event should be scheduled at. <strong>When inverting, interval ending at this date will be created if possible.</strong>
      * @return Inverted list of intervals provided. Might additionally add intervals starting at start or ending at end. Might return empty.
      */
-    private static List<Interval> getFreeIntervalsFromMergedIntervals(List<Interval> mergedIntervals, DateTime start, DateTime end) {
-        List<Interval> freeIntervals = new ArrayList<>();
+    private static Stream<Interval> getFreeIntervalsFromMergedIntervals(List<Interval> mergedIntervals) {
+        return IntStream.range(0, mergedIntervals.size() - 1)
+                .mapToObj(i -> mergedIntervals.get(i).gap(mergedIntervals.get(i + 1)));
+    }
 
-        Interval lastFree = new Interval(start, end);
-        if (mergedIntervals.size() > 0) {
-            Interval firstBusy = mergedIntervals.get(0);
-            if (firstBusy.isAfter(start)) {
-                Interval firstFree = new Interval(start, firstBusy.getStart());
-                freeIntervals.add(0, firstFree);
-            }
-            Interval lastBusy = mergedIntervals.get(mergedIntervals.size() - 1);
-            if (lastBusy.isBefore(end)) {
-                lastFree = new Interval(lastBusy.getEnd(), end);
-            }
+    private static List<Interval> addBeginningAndEndFreeTimeIfPossible(List<Interval> mergedIntervals, DateTime start, DateTime end) {
+        if(mergedIntervals.isEmpty())
+        {
+            return mergedIntervals;
+        }
+        if(mergedIntervals.get(0).getStart().isAfter(start))
+        {
+            mergedIntervals.add(0,
+                    new Interval(start, mergedIntervals.get(0).getStart())
+            );
         }
 
-        for (int i = 0; i < mergedIntervals.size() - 1; i++) {
-            DateTime freeStart = mergedIntervals.get(i).getEnd();
-            DateTime freeEnd = mergedIntervals.get(i + 1).getStart();
-            freeIntervals.add(new Interval(freeStart, freeEnd));
+        if(mergedIntervals.get(mergedIntervals.size() - 1).getEnd().isBefore(end))
+        {
+            mergedIntervals.add(mergedIntervals.size() - 1,
+                    new Interval(mergedIntervals.get(mergedIntervals.size() - 1).getEnd(), end)
+            );
         }
-
-        freeIntervals.add(lastFree);
-
-        return freeIntervals;
+        return mergedIntervals;
     }
 
     /**
@@ -150,14 +153,9 @@ public final class Scheduler {
      * @param end       The date after which no event can end.
      * @return List of intervals starting on or after start and ending before or at end. Might return empty.
      */
-    private static List<Interval> filterIntervals(List<Interval> intervals, DateTime start, DateTime end) {
-        List<Interval> clampedIntervals = new ArrayList<>();
-        for (Interval current : intervals) {
-            if (!current.isBefore(start) && !current.isAfter(end)) {
-                clampedIntervals.add(current);
-            }
-        }
-        return clampedIntervals;
+    private static Stream<Interval> filterIntervals(List<Interval> intervals, DateTime start, DateTime end) {
+        return intervals.stream()
+                .filter(current -> !current.isBefore(start) && !current.isAfter(end));
     }
 
 
@@ -175,7 +173,7 @@ public final class Scheduler {
         if (second.contains(first)) {
             return second;
         }
-        if (first.isBefore(second)) {
+        if (first.getStart().isBefore(second.getStart())) {
             return new Interval(first.getStart(), second.getEnd());
         } else {
             return new Interval(second.getStart(), first.getEnd());
@@ -196,9 +194,8 @@ public final class Scheduler {
 
     private static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) {
         var availableIntervals = new ArrayList<Interval>();
-        var freeIntervalsSplitByDay = splitIntervalsByDay(freeIntervals);
         var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
-        for (Interval freeInterval : freeIntervalsSplitByDay) {
+        for (Interval freeInterval : freeIntervals) {
             var dayOfWeek = freeInterval.getStart().dayOfWeek().get();
             var availabilityForDay = mappedAvailabilities.getOrDefault(dayOfWeek, null);
             // If is day off
