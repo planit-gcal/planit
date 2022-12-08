@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { googleOAuthClientId } from './config';
 import { PlanitUserProvider } from './contexts/PlanitUserContext';
+import { PresetsContextProvider } from './contexts/PresetsContext';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
@@ -13,7 +14,9 @@ ReactDOM.render(
   <BrowserRouter>
     <GoogleOAuthProvider clientId={googleOAuthClientId}>
       <PlanitUserProvider>
-        <App />
+        <PresetsContextProvider>
+          <App />
+        </PresetsContextProvider>
       </PlanitUserProvider>
     </GoogleOAuthProvider>
   </BrowserRouter>,
