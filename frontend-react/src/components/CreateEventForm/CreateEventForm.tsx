@@ -44,7 +44,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
 
     const stepItems = [
         { title: 'General' },
-        { title: 'Google Event Details' },
+        { title: 'Details' },
         { title: 'Availability' },
         { title: 'Confirm' },
     ];
@@ -386,7 +386,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             key: '4',
             children: (
                 <div>
-                    <Row gutter={16} justify="center">
+                    <Row justify="center">
                         <Space align="end" style={{ marginBottom: '8px' }}>
                             <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
@@ -399,15 +399,17 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                             </Typography.Title>
                         </Space>
                     </Row>
-                    <Row>
+                    <Row gutter={16} justify="center" style={{ marginBottom: '8px' }}>
                         <Typography.Text type="secondary" style={{fontSize:'12px'}}>
-                            {`We're about to create an event in your and your guests' calendars. Please review your preferences before confirming.`}
+                            {`You're about to create an event in your and your guests' calendars. Please review your preferences before confirming.`}
                         </Typography.Text>
                     </Row>
                     <Row gutter={16} justify="center">
+                        <Col span={20}>
+                            <Row>
                                 <Col span={8}>
                                     <Typography.Title level={5} style={{marginBottom:0}}>Event guests:</Typography.Title>
-                                    <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px'}}>
+                                    <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px', marginTop:'0px'}}>
                                         Obligatory guests are {` `}
                                         <Typography.Text type="secondary" strong style={{fontSize:'12px'}}>bold</Typography.Text>
                                     </Typography.Text>
@@ -419,7 +421,19 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                 </Col>
                                 <Col span={8}>
                                     <Row>
-                                        <Space align="end" style={{ marginBottom: '8px' }}>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Space align="end">
                                             <Typography.Title level={5} style={{ margin: 0 }}>Color:</Typography.Title>
                                             <div style={{ margin: 0 }}>
                                                 <svg height="12" width="12">
@@ -428,21 +442,9 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                             </div>
                                         </Space>
                                     </Row>
-                                    <Row>
-                                            <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
-                                    </Row>
-                                    <Row>
-                                            <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
-                                    </Row>
-                                    <Row>
-                                            <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
-                                    </Row>
-                                    <Row>
-                                            <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
-                                    </Row>
                                 </Col>
                                 <Col span={8}>
-                                    <Typography.Title level={5}>Availability:</Typography.Title>
+                                    <Typography.Title level={5} style={{marginBottom:'0px'}}>Availability:</Typography.Title>
                                     {useWatch('excludeWeekDays',excludeForm)?.map(({ name, exclude, availability }) => (
                                         <Row key={name}>
                                             {exclude ? (
@@ -451,8 +453,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                                                 <Typography.Text >{name} {toTimeString(availability[0])} - {toTimeString(availability[1])}</Typography.Text>
                                             )}
                                         </Row>
-                                        ))}
+                                    ))}
                                 </Col>
+                            </Row>
+                        </Col>
                     </Row>
                 </div>
             ),
