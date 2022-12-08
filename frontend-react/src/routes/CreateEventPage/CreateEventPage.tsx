@@ -21,10 +21,18 @@ export const CreateEventPage = () => {
   return (
     <>
       {query.get('close_prompt') === 'true' && (
-        <Modal open={true} closable={false} footer={null} centered title="Successfully signed up!">
+        <Modal
+          open={true}
+          closable={false}
+          footer={null}
+          centered
+          title="Successfully signed up!"
+          maskStyle={{ backgroundColor: 'white' }}
+        >
           {`You can now close this page.`}
         </Modal>
       )}
+
       <CreateEventForm
         onSubmit={onEventSubmit}
         onSaveToPreset={createOrUpdatePreset}
