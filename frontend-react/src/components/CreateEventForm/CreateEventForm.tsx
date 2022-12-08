@@ -218,6 +218,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                         </Col>
                     </Row>
                 </Form>
+            </>
             ),
             forceRender: true,
         },
