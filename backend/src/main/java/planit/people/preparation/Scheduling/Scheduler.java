@@ -1,5 +1,6 @@
 package planit.people.preparation.Scheduling;
 
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.*;
 import planit.people.preparation.Entities.Entity_PresetAvailability;
 
@@ -187,28 +188,87 @@ public final class Scheduler {
      * @param available List of "free" intervals too chose from.
      * @param duration  The duration of event.
      * @return An interval from list of exact duration or null.
-     * @see Schedular#splitInterval(Interval, Duration)
+     * @see #splitInterval(Interval, Duration)
      */
     private static List<Interval> filterIntervalsToMatchDuration(List<Interval> available, Duration duration) {
-        var filtered = new ArrayList<Interval>();
-        for (Interval interval : available) {
-            filtered.addAll(splitInterval(interval, duration));
-        }
-        return filtered;
+        return available.stream().filter(interval -> !interval.toDuration().isShorterThan(duration)).toList();
     }
 
     private static List<Interval> getAvailableIntervalsBasedOnPresetAvailability(List<Interval> freeIntervals, List<Entity_PresetAvailability> availabilities) {
         var availableIntervals = new ArrayList<Interval>();
+        var freeIntervalsSplitByDay = splitIntervalsByDay(freeIntervals);
         var mappedAvailabilities = mapAvailabilitiesToDaysOfWeek(availabilities);
-        for (Interval freeInterval : freeIntervals) {
+        for (Interval freeInterval : freeIntervalsSplitByDay) {
             var dayOfWeek = freeInterval.getStart().dayOfWeek().get();
-            var availabilityForDay = mappedAvailabilities.get(dayOfWeek);
-            if (doesTimeOverlap(availabilityForDay, freeInterval)) {
-                availableIntervals.add(freeInterval);
+            var availabilityForDay = mappedAvailabilities.getOrDefault(dayOfWeek, null);
+            // If is day off
+            if (availabilityForDay == null) {
+                continue;
+            }
+            var fittingInterval = tryFitIntervalIntoAvailability(freeInterval, availabilityForDay);
+            if (fittingInterval != null) {
+                availableIntervals.add(fittingInterval);
             }
         }
         return availableIntervals;
     }
+
+    /**
+     * Divides list of intervals into intervals such that no interval is starting at a different day than it is ending.
+     * If an interval is starting at monday and finishing at wednesday, it will be split into three intervals
+     * @param freeIntervals list of intervals that will be split
+     * @return List of intervals not crossing midnight
+     */
+    private static List<Interval> splitIntervalsByDay(List<Interval> freeIntervals) {
+        var freeIntervalsSplitByDay = new ArrayList<Interval>();
+        for (Interval interval :
+                freeIntervals) {
+            while (interval.getStart().getDayOfWeek() != interval.getEnd().getDayOfWeek())
+            {
+                var start = interval.getStart();
+                var endOfDay = new DateTime(start.getYear(), start.getMonthOfYear(), start.getDayOfMonth(), 23, 59, 59);
+                var newInterval = new Interval(interval.getStart(), endOfDay);
+                freeIntervalsSplitByDay.add(newInterval);
+                interval = new Interval(endOfDay.plusSeconds(1), interval.getEnd());
+            }
+            freeIntervalsSplitByDay.add(interval);
+        }
+        return freeIntervalsSplitByDay;
+    }
+
+    /**
+     * Attempts to fit free interval in to availability for the day.
+     * Only takes {@link LocalTime} into consideration.
+     * If the free interval overlaps the availability but exceeds it, it will be cut to not exceed availability
+     * @param freeInterval The interval that will be checked to match availability and possibly clamped to fit it
+     * @param availabilityForDay The interval that will be checked against. Stays unchanged.
+     * @return Interval that does not exceed available time or null
+     */
+    private static @Nullable Interval tryFitIntervalIntoAvailability(Interval freeInterval, Interval availabilityForDay) {
+
+        var intervalStartTime = LocalTime.fromDateFields(freeInterval.getStart().toDate());
+        var intervalEndTime = LocalTime.fromDateFields(freeInterval.getEnd().toDate());
+        var availableStartTime = LocalTime.fromDateFields(availabilityForDay.getStart().toDate());
+        var availableEndTime = LocalTime.fromDateFields(availabilityForDay.getEnd().toDate());
+
+        var newStart = freeInterval.getStart();
+        var newEnd = freeInterval.getEnd();
+
+        if(intervalStartTime.isBefore(availableStartTime))
+        {
+            newStart = new DateTime(newStart.getYear(), newStart.getMonthOfYear(), newStart.getDayOfMonth(), availableStartTime.getHourOfDay(), availableStartTime.getMinuteOfHour(), availableStartTime.getSecondOfMinute());
+        }
+        if(intervalEndTime.isAfter(availableEndTime))
+        {
+            newEnd = new DateTime(newEnd.getYear(), newEnd.getMonthOfYear(), newEnd.getDayOfMonth(), availableEndTime.getHourOfDay(), availableEndTime.getMinuteOfHour(), availableEndTime.getSecondOfMinute());
+        }
+        if(newStart.isBefore(newEnd))
+        {
+            return new Interval(newStart, newEnd);
+        }
+        return null;
+    }
+
 
     /**
      * Check if the time portion of the free interval overlaps with the preset availability interval. 
@@ -227,6 +287,9 @@ public final class Scheduler {
         HashMap<Integer, Interval> map = new HashMap<Integer, Interval>();
         for (Entity_PresetAvailability availability :
                 availabilities) {
+            if(availability.getDay_off()){
+                continue;
+            }
             switch (availability.getDay()) {
                 case MONDAY ->
                         map.putIfAbsent(DateTimeConstants.MONDAY, Converter.convertAvailabilityToInterval(availability));

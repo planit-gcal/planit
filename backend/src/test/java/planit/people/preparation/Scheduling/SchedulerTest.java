@@ -49,30 +49,22 @@ class SchedulerTest {
                 // Monday
                 // Getting back home
                 add(new Interval(
-                        new DateTime(2000, 1, 2, 16, 0),
-                        new DateTime(2000, 1, 2, 16, 40)
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 16, 40)
                 ));
                 // Gym
                 add(new Interval(
-                        new DateTime(2000, 1, 2, 18, 5),
-                        new DateTime(2000, 1, 2, 20, 12)
+                        new DateTime(2000, 1, 3, 18, 5),
+                        new DateTime(2000, 1, 3, 20, 12)
                 ));
                 // Dinner with wife
                 add(new Interval(
-                        new DateTime(2000, 1, 2, 22, 0),
-                        new DateTime(2000, 1, 2, 23, 40)
+                        new DateTime(2000, 1, 3, 22, 0),
+                        new DateTime(2000, 1, 3, 23, 40)
                 ));
 
 
                 //Tuesday
-                // Getting back home
-                add(new Interval(
-                        new DateTime(2000, 1, 3, 16, 0),
-                        new DateTime(2000, 1, 3, 16, 40)
-                ));
-                //HERE AVAILABLE 16:40 - 22:00
-
-                // Wednesday
                 // Getting back home
                 add(new Interval(
                         new DateTime(2000, 1, 4, 16, 0),
@@ -80,32 +72,40 @@ class SchedulerTest {
                 ));
                 //HERE AVAILABLE 16:40 - 22:00
 
-                // Thursday
+                // Wednesday
                 // Getting back home
                 add(new Interval(
                         new DateTime(2000, 1, 5, 16, 0),
                         new DateTime(2000, 1, 5, 16, 40)
                 ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Thursday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 16, 40)
+                ));
                 // COLLIDING EVENTS
                 // Gym
                 add(new Interval(
-                        new DateTime(2000, 1, 5, 18, 5),
-                        new DateTime(2000, 1, 5, 20, 12)
+                        new DateTime(2000, 1, 6, 18, 5),
+                        new DateTime(2000, 1, 6, 20, 12)
                 ));
                 // Gym with bro
                 add(new Interval(
-                        new DateTime(2000, 1, 5, 18, 0),
-                        new DateTime(2000, 1, 5, 20, 30)
+                        new DateTime(2000, 1, 6, 18, 0),
+                        new DateTime(2000, 1, 6, 20, 30)
                 ));
                 // Dinner with wife
                 add(new Interval(
-                        new DateTime(2000, 1, 5, 22, 0),
-                        new DateTime(2000, 1, 5, 23, 40)
+                        new DateTime(2000, 1, 6, 22, 0),
+                        new DateTime(2000, 1, 6, 23, 40)
                 ));
                 // Dinner with girlfriend
                 add(new Interval(
-                        new DateTime(2000, 1, 5, 21, 0),
-                        new DateTime(2000, 1, 5, 22, 17)
+                        new DateTime(2000, 1, 6, 21, 0),
+                        new DateTime(2000, 1, 6, 22, 17)
                 ));
 
 
@@ -113,15 +113,15 @@ class SchedulerTest {
                 // Work time
                 // Getting back home
                 add(new Interval(
-                        new DateTime(2000, 1, 6, 16, 0),
-                        new DateTime(2000, 1, 6, 16, 57)
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 16, 57)
                 ));
                 // HERE AVAILABLE 16:57 - 21:57
 
                 // Movie
                 add(new Interval(
-                        new DateTime(2000, 1, 6, 21, 57),
-                        new DateTime(2000, 1, 6, 23, 59)
+                        new DateTime(2000, 1, 7, 21, 57),
+                        new DateTime(2000, 1, 7, 23, 59)
                 ));
 
             }
@@ -140,24 +140,24 @@ class SchedulerTest {
             }
         };
 
-        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 6, 23, 59), presetAvailabilities);
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
 
         var expected = new ArrayList<Interval>()
         {
             {
-                add(new Interval(
-                        new DateTime(2000, 1, 3, 16, 40),
-                        new DateTime(2000, 1, 3, 22, 0)
-                ));
-
                 add(new Interval(
                         new DateTime(2000, 1, 4, 16, 40),
                         new DateTime(2000, 1, 4, 22, 0)
                 ));
 
                 add(new Interval(
-                        new DateTime(2000, 1, 6, 16, 57),
-                        new DateTime(2000, 1, 6, 21, 57)
+                        new DateTime(2000, 1, 5, 16, 40),
+                        new DateTime(2000, 1, 5, 22, 0)
+                ));
+
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 57),
+                        new DateTime(2000, 1, 7, 21, 57)
                 ));
             }
         };
