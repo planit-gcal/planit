@@ -5,7 +5,6 @@ import MainLayout from './MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
 import { CreateEventPage } from './routes/CreateEventPage/CreateEventPage';
 import { ManageAccountPage } from './routes/ManageAccountPage/ManageAccountPage';
-import { ManagePresetsPage } from './routes/ManagePresetsPage/ManagePresetsPage';
 import SignInPage from './routes/SignInPage/SignInPage';
 import { SignUpPage } from './routes/SignInPage/SignUpPage';
 
@@ -20,14 +19,6 @@ function App() {
           element={
             <ProtectedRoute>
               <CreateEventPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="manage-presets"
-          element={
-            <ProtectedRoute>
-              <ManagePresetsPage />
             </ProtectedRoute>
           }
         />
