@@ -6,10 +6,12 @@ import { googleOAuthClientId } from '../../config';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 import { parseJwt, loadScript, clearScript } from '../../utils/oauth.utils';
 
+import {Typography, Col, Row} from 'antd';
+
 const src = 'https://accounts.google.com/gsi/client';
 
 const GoogleAuth = () => {
-  const { userDetails, setUserDetails } = useContext(PlanitUserContext);
+  const { userDetails, setUserDetails, isLoggedIn } = useContext(PlanitUserContext);
   const navigate = useNavigate();
 
   const googleButton = useRef<HTMLDivElement>(null);
@@ -28,6 +30,10 @@ const GoogleAuth = () => {
   );
 
   useEffect(() => {
+    isLoggedIn && navigate('/create-events');
+  }, [isLoggedIn, navigate]);
+
+  useEffect(() => {
     loadScript(src)
       .then(async () => {
         google.accounts.id.initialize({
@@ -41,7 +47,12 @@ const GoogleAuth = () => {
     return () => clearScript(src);
   }, [handleCredentialResponse, navigate, userDetails]);
 
-  return <div ref={googleButton} />;
+  return <Row style={{height:'100%'}} justify='center' align='middle'>
+      <Col>
+          <Typography.Title level={2}>Log in with Google:</Typography.Title>
+          <div className={"google-button"} ref={googleButton} />
+      </Col>
+  </Row>;
 };
 
 export default GoogleAuth;

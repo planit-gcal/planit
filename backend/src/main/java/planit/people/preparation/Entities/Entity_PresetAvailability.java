@@ -48,14 +48,14 @@ public class Entity_PresetAvailability {
      * defines the start time of a day when an event CAN be created. the time has the following format HH:mm
      */
     @Column(name = "start_available_time")
-    @JsonFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm:ss")
     @JsonDeserialize(using = SqlTimeDeserializer.class)
     private Time start_available_time;
     /**
      * defines the end time of a day when an event CAN be created. the time has the following format HH:mm
      */
     @Column(name = "end_available_time")
-    @JsonFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm:ss")
     @JsonDeserialize(using = SqlTimeDeserializer.class)
     private Time end_available_time;
     /**

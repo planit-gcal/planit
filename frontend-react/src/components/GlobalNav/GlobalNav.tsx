@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
-import { Button, Divider, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
+import { Button, Divider, notification, Select, Space, Tabs as AntdTabs, Typography } from 'antd';
 import { useCallback, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -23,6 +23,7 @@ const GlobalNav = () => {
     async ({ code }: CodeResponse) => {
       try {
         await createNewAssignedUser(code, userDetails!.planitUserId!);
+        notification.success({ message: 'Your new account has been added!', placement: 'bottom' });
         fetchAndSetEmails();
       } catch (e) {
         console.log(e);
@@ -46,6 +47,11 @@ const GlobalNav = () => {
 
   const onOwnerEmailChange = (ownerEmail: string) => {
     setUserDetails((prev) => ({ ...prev, ownerEmail }));
+  };
+
+  const onLogout = () => {
+    notification.success({ message: 'You have been successfully logged out!', placement: 'bottom' });
+    setUserDetails({ planitUserId: null, ownerEmail: null });
   };
 
   const OperationsSlot = {
@@ -76,7 +82,7 @@ const GlobalNav = () => {
           options={userEmails.map((item) => ({ label: item, value: item }))}
         />
 
-        <Button type="primary" danger onClick={() => setUserDetails({ planitUserId: null, ownerEmail: null })}>
+        <Button type="primary" danger onClick={() => onLogout()}>
           Logout
         </Button>
       </Space>
@@ -86,6 +92,7 @@ const GlobalNav = () => {
   const items = [
     { key: '1', label: <Link to="create-events">Create events</Link> },
     { key: '2', label: <Link to="manage-presets">Manage presets</Link> },
+    { key: '3', label: <Link to="manage-account">Manage account</Link> },
   ];
 
   return (

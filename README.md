@@ -36,7 +36,11 @@ This repository contains frontend and backend apps for the Planit project.
 
 #### Prerequisites
 
-1. Clasp is a CLI to upload the addon code. Run `clasp create --type standalone` to create a clasp connection with your Google account.
+
+1. Clasp is a CLI to upload the addon code.
+2. Run `npm install clasp` to install Clasp. You might want to add `--global` attribute.
+3. Run `clasp login` to login to Clasp. You will need to authorize with your Google Account.
+4. Run `clasp create --type standalone` to create a clasp connection with your Google account.
 
 #### Deploying
 
