@@ -46,7 +46,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
 
     const stepItems = [
         { title: 'General' },
-        { title: 'Google Event Details' },
+        { title: 'Details' },
         { title: 'Availability' },
         { title: 'Confirm' },
     ];
@@ -79,6 +79,10 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
 
     function toDateString(date: Date) {
         return date ? format(date, 'dd MMM yyyy') : '';
+    }
+
+    function toTimeString(date:Date){
+        return date ? format(date, 'HH:mm') : '';
     }
 
     const weekDays = [
@@ -203,19 +207,17 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                                                     ))}
                                                 </div>
                                             </div>
-
-                                            <Form.Item>
-                                                <Button type="dashed" size='small' onClick={() => add()} block icon={<PlusOutlined />}>
-                                                    Add guest
-                                                </Button>
-                                            </Form.Item>
-                                        </div>
-                                    )}
-                                </Form.List>
-                            </Col>
-                        </Row>
-                    </Form>
-                </>
+                                        <Form.Item>
+                                            <Button type="dashed" size='small' onClick={() => add({email:'', obligatory:false})} block icon={<PlusOutlined />}>
+                                                Add guest
+                                            </Button>
+                                        </Form.Item>
+                                    </div>
+                                )}
+                            </Form.List>
+                        </Col>
+                    </Row>
+                </Form>
             ),
             forceRender: true,
         },
@@ -398,8 +400,8 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
             label: '',
             key: '4',
             children: (
-                <Form.Item name="event_name" label="Exclude" required>
-                    <Row gutter={16} justify="center">
+                <div>
+                    <Row justify="center">
                         <Space align="end" style={{ marginBottom: '8px' }}>
                             <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
@@ -412,8 +414,66 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                             </Typography.Title>
                         </Space>
                     </Row>
-                    <Input />
-                </Form.Item>
+                    <Row gutter={16} justify="center" style={{ marginBottom: '8px' }}>
+                        <Typography.Text type="secondary" style={{fontSize:'12px'}}>
+                            {`You're about to create an event in your and your guests' calendars. Please review your preferences before confirming.`}
+                        </Typography.Text>
+                    </Row>
+                    <Row gutter={16} justify="center">
+                        <Col span={20}>
+                            <Row>
+                                <Col span={8}>
+                                    <Typography.Title level={5} style={{marginBottom:0}}>Event guests:</Typography.Title>
+                                    <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px', marginTop:'0px'}}>
+                                        Obligatory guests are {` `}
+                                        <Typography.Text type="secondary" strong style={{fontSize:'12px'}}>bold</Typography.Text>
+                                    </Typography.Text>
+                                    {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
+                                        <div key={email}>
+                                            <Typography.Text strong={obligatory}>{email}</Typography.Text>
+                                        </div>
+                                    ))}
+                                </Col>
+                                <Col span={8}>
+                                    <Row>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Space align="end">
+                                            <Typography.Title level={5} style={{ margin: 0 }}>Color:</Typography.Title>
+                                            <div style={{ margin: 0 }}>
+                                                <svg height="12" width="12">
+                                                    <circle cx="6" cy="6" r="6" fill={useWatch('event_color', googleEventForm)} />
+                                                </svg>
+                                            </div>
+                                        </Space>
+                                    </Row>
+                                </Col>
+                                <Col span={8}>
+                                    <Typography.Title level={5} style={{marginBottom:'0px'}}>Availability:</Typography.Title>
+                                    {useWatch('excludeWeekDays',excludeForm)?.map(({ name, exclude, availability }) => (
+                                        <Row key={name}>
+                                            {exclude ? (
+                                                <Typography.Text delete>{name}</Typography.Text>
+                                            ):(
+                                                <Typography.Text >{name} {toTimeString(availability[0])} - {toTimeString(availability[1])}</Typography.Text>
+                                            )}
+                                        </Row>
+                                    ))}
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                </div>
             ),
             forceRender: true,
         },
