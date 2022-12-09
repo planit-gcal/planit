@@ -17,6 +17,7 @@ import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class Service_Calendar {
@@ -39,46 +40,27 @@ public class Service_Calendar {
         this.fmConfiguration = fmConfiguration;
     }
 
-    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException {
-        List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountByEmail(new ArrayList<>() {
+    /**
+     * Call on GoogleHelper class to create a new google event. 
+     * 
+     * @param newEventDetail Event details
+     * @return CalendarResponse which contains the start and end date of the created event.
+     * @see Service_Calendar#getAllRefreshTokensPerPlanItUser
+     * @see GoogleHelper#createEvent
+     */
+    public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail) throws IOException, ExecutionException, InterruptedException {
+        String ownerRefreshToken = idaoGoogleAccount.getGoogleAccountFromEmail(newEventDetail.owner_email()).getRefresh_token();
+        GoogleHelper google_helper = new GoogleHelper(ownerRefreshToken, true);
+        Entity_Guest owner = new Entity_Guest(newEventDetail.owner_email(), true);
+        List<Entity_Guest> guests = new ArrayList<>() {
             {
-                add(newEventDetail.owner_email());
-                for (Entity_Guest guest : newEventDetail.event_preset_detail().guests()) {
-                    add(guest.getEmail());
-                }
+                add(owner);
+                addAll(newEventDetail.event_preset_detail().guests());
             }
-        });
-        GoogleHelper google_helper = new GoogleHelper(getOwnerRefreshToken(googleAccounts, newEventDetail.owner_email()), true);
-        System.out.println("DTO_NewEventDetail: " + newEventDetail);
-        return google_helper.createEvent(newEventDetail, getAttendeeRefreshTokens(googleAccounts));
+        };
+        return google_helper.createEvent(newEventDetail, getAllRefreshTokensPerPlanItUser(guests));
     }
 
-    private String getOwnerRefreshToken(List<Entity_GoogleAccount> googleAccounts, String ownerEmail) {
-        for (Entity_GoogleAccount googleAccount : googleAccounts) {
-            if (googleAccount.getEmail().equals(ownerEmail)) {
-                return googleAccount.getRefresh_token();
-            }
-        }
-        return null;
-    }
-
-    private Set<Entity_User> getPlanItUserIdsFromEmails(List<Entity_GoogleAccount> googleAccountsFromEmail) {
-        Set<Entity_User> usersPlanItIds = new HashSet<>();
-        for (Entity_GoogleAccount googleAccount : googleAccountsFromEmail) {
-            usersPlanItIds.add(googleAccount.getThe_user());
-        }
-        return usersPlanItIds;
-    }
-
-    private Set<String> getAttendeeRefreshTokens(List<Entity_GoogleAccount> googleAccountsFromEmail) {
-        Set<Entity_User> usersPlanItIds = getPlanItUserIdsFromEmails(googleAccountsFromEmail);
-        Set<String> refreshTokens = new HashSet<>();
-        List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountsByPlanItUsers(usersPlanItIds);
-        for (Entity_GoogleAccount googleAccount : googleAccounts) {
-            refreshTokens.add(googleAccount.getRefresh_token());
-        }
-        return refreshTokens;
-    }
 
     /**
      * The creation will happen in the following steps:
@@ -119,7 +101,7 @@ public class Service_Calendar {
                 idaoEventPreset.save(modifiedPreset);
                 idaoUser.saveAll(users);
                 return new PresetDetailResponse(planItUserId, modifiedPreset.getId_event_preset());
-            }else {
+            } else {
                 //TODO: THROW PRESET NOT FOUND
                 throw new Exception();
             }
@@ -173,6 +155,7 @@ public class Service_Calendar {
 
     /**
      * Create a new Preset detail or update an already existing record for a PlanIt user.
+     *
      * @param planItUserId the PlanIt user Id for whom the system is creating the new preset.
      * @param dtoNewPreset the body of the new preset detail.
      * @param isUpdate     indicates whether the function is used for an insert or an update operation.
@@ -183,7 +166,7 @@ public class Service_Calendar {
         PresetDetailResponse upsertedPresetIds = upsertPresetDetailIntoDB(planItUserId, dtoNewPreset, isUpdate);
         List<DTO_PresetDetail> allPresetsOfUser = getEventPresetsByPlanItUserId(planItUserId);
         for (DTO_PresetDetail detail : allPresetsOfUser) {
-            if (detail.event_preset().getId_event_preset().equals(upsertedPresetIds.eventPresetId())){
+            if (detail.event_preset().getId_event_preset().equals(upsertedPresetIds.eventPresetId())) {
                 return detail;
             }
         }
@@ -228,35 +211,29 @@ public class Service_Calendar {
     /**
      * Delete Preset Detail. the deletion process can happen in 2 ways
      * 1 - Delete all instances of a preset. this process is used for either
-     *      a- the preset detail update process,
-     *      b- there is only one owner of the preset,
-     *      c- there is no owner of the preset.
+     * a- the preset detail update process,
+     * b- there is only one owner of the preset,
+     * c- there is no owner of the preset.
      * 1.1 - In case of a and b,we first delete all PlanIt User instances in order to not violate the constraints in the PlanItUser-EventPreset helper table.
      * 1.2 - Delete the PlanItEvent record which would trigger the deletion of all related Guest and Availability records
      * 2 - Delete only the instance for the given PlanItUserId
      *
      * @param planItUserId the id of the PlanIt user whose instance should be removed.
-     * @param presetId the id of the EventPreset which should be removed.
+     * @param presetId     the id of the EventPreset which should be removed.
      */
     public void deletePreset(Long planItUserId, Long presetId) {
         Entity_EventPreset presetToBeDeleted = idaoEventPreset.findById(presetId).orElse(null);
         System.out.println("presetToBeDeleted: " + presetToBeDeleted);
         if (presetToBeDeleted != null) {
             System.out.println("Number of users owning the preset: " + presetToBeDeleted.getEntityUsers());
-            if (presetToBeDeleted.getEntityUsers().isEmpty() ||
-                    planItUserId == null ||
-                    (
-                            presetToBeDeleted.getEntityUsers().size() == 1 &&
-                            Objects.equals(presetToBeDeleted.getEntityUsers().stream().toList().get(0).getUser_id(), planItUserId)
-                    )
-            ) {
+            if (presetToBeDeleted.getEntityUsers().isEmpty() || planItUserId == null || (presetToBeDeleted.getEntityUsers().size() == 1 && Objects.equals(presetToBeDeleted.getEntityUsers().stream().toList().get(0).getUser_id(), planItUserId))) {
                 if (!presetToBeDeleted.getEntityUsers().isEmpty()) {
                     Set<Entity_User> updatedUsers = new HashSet<>();
                     for (Entity_User presetOwner : presetToBeDeleted.getEntityUsers()) {
                         presetOwner.removePreset(presetToBeDeleted);
                         updatedUsers.add(presetOwner);
                     }
-                        idaoUser.saveAll(updatedUsers);
+                    idaoUser.saveAll(updatedUsers);
                 }
                 System.out.println("deleting all instances of the event preset");
                 idaoEventPreset.delete(presetToBeDeleted);
@@ -280,14 +257,15 @@ public class Service_Calendar {
      * 2- Get the preset to be shared
      * 3- Create a new record for Entity_SharedPreset in order to generate the new sharing code.
      * 4- Send an email using EmailHelper
+     *
      * @param sharePreset contains the sharing information
      * @throws MessagingException in case of any errors with Java Mail
      * @see EmailHelper#sendEmail(Entity_GoogleAccount, Entity_GoogleAccount, UUID, Configuration)
      */
     @Transactional
     public void sharePreset(DTO_SharePreset sharePreset) throws MessagingException {
-        Entity_GoogleAccount inviteeAccount = idaoGoogleAccount.getIdOfUserFromEmail(sharePreset.invitee_email());
-        Entity_GoogleAccount inviterAccount = idaoGoogleAccount.getIdOfUserFromEmail(sharePreset.inviter_email());
+        Entity_GoogleAccount inviteeAccount = idaoGoogleAccount.getGoogleAccountFromEmail(sharePreset.invitee_email());
+        Entity_GoogleAccount inviterAccount = idaoGoogleAccount.getGoogleAccountFromEmail(sharePreset.inviter_email());
         if (inviterAccount != null) {
             if (inviteeAccount != null) {
                 Entity_User inviterUser = inviterAccount.getThe_user();
@@ -308,4 +286,65 @@ public class Service_Calendar {
         }
 
     }
+
+    /**
+     * Get all refresh token for all registered guests in an event. The method perform the following steps: 
+     * 1 - get all google accounts from DB by the guests email 
+     * 2 - extract all PlanIt User Id into a set from the retrieved Google accounts in step 1. 
+     * 3 - get all google accounts from DB by the extracted PlanIt User Ids. 
+     * 4 - split the retrieved google accounts in step 3 into 2 Maps, one contains the the optional guests and their refresh token and the second is a similar map for required guests. 
+     * 5 - clean the optional guests map.  
+     * 
+     * @param guests a list containing all invited guests in an event
+     * @return Map<String, Map<Long, Set<String>>> a map containing the obligation to attend for all registered guests and the refresh token for all of their google accounts. The map structure is the following: Map<Obligation to attend, Map<PlanIt User Id, Set<Refresh Token>>> 
+     * @see Service_Calendar#cleanOptionalUsers(Map<Long, Set<String>>, Set<Long>)
+     */
+    private Map<String, Map<Long, Set<String>>> getAllRefreshTokensPerPlanItUser(List<Entity_Guest> guests) {
+        Map<Long, Set<String>> optionalUsers = new HashMap<>();
+        Map<Long, Set<String>> requiredUser = new HashMap<>();
+        List<String> emails = new ArrayList<>();
+        Set<Entity_User> planItUserIds = new HashSet<>();
+
+        for (Entity_Guest guest : guests) {
+            emails.add(guest.getEmail());
+        }
+
+        idaoGoogleAccount.getEntityGoogleAccountByEmail(emails).forEach((googleAccount) -> planItUserIds.add(googleAccount.getThe_user()));
+
+        List<Entity_GoogleAccount> googleAccounts = idaoGoogleAccount.getEntityGoogleAccountsByPlanItUsers(planItUserIds);
+
+        for (Entity_GoogleAccount googleAccount : googleAccounts) {
+            Long planItUserId = googleAccount.getThe_user().getUser_id();
+            Set<String> requiredUserRefreshTokens = requiredUser.getOrDefault(planItUserId, new HashSet<>());
+            Set<String> optionalUserRefreshTokens = optionalUsers.getOrDefault(planItUserId, new HashSet<>());
+            requiredUserRefreshTokens.add(googleAccount.getRefresh_token());
+            optionalUserRefreshTokens.add(googleAccount.getRefresh_token());
+            requiredUser.put(planItUserId, requiredUserRefreshTokens);
+            optionalUsers.put(planItUserId, optionalUserRefreshTokens);
+        }
+
+        Map<Long, Set<String>> finalOptionalUsers = cleanOptionalUsers(optionalUsers, requiredUser.keySet());
+        return new HashMap<>() {
+            {
+                put("required", requiredUser);
+                put("optional", finalOptionalUsers);
+            }
+        };
+    }
+
+    /**
+     * In order to have a better algorithm performance, remove all PlanIt users who are invited as both Optional and Required guest from the list of Optional guests
+     * 
+     * @param optionalUsers a map of registered optional guests. Map<PlanIt User Id, Set<Refresh Tokens>>
+     * @param requiredUserIds a set of all registered required guests' ids. Set<PlanIt User Id>
+     * @return Map<Long, Set<String>> a filtered map of registered optional guests. Map<PlanIt User Id, Set<Refresh Tokens>>
+     * 
+     */
+    public Map<Long, Set<String>> cleanOptionalUsers(Map<Long, Set<String>> optionalUsers, Set<Long> requiredUserIds) {
+        for (Long userId : requiredUserIds) {
+            optionalUsers.remove(userId);
+        }
+        return optionalUsers;
+    }
+
 }

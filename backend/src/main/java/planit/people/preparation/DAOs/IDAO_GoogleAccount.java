@@ -24,5 +24,5 @@ public interface IDAO_GoogleAccount extends CrudRepository<Entity_GoogleAccount,
     Optional<Long> getPlanitUserIdFromEmail(@Param("email") String email);
 
     @Query("SELECT new Entity_GoogleAccount(ac.id, ac.email, ac.the_user, ac.refresh_token) FROM Entity_GoogleAccount ac WHERE ac.email = :email")
-    Entity_GoogleAccount getIdOfUserFromEmail(@Param("email") String email);
+    Entity_GoogleAccount getGoogleAccountFromEmail(@Param("email") String email);
 }

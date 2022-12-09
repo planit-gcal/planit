@@ -32,7 +32,7 @@ public class OAuthWebLayerTest {
     @Test
     public void getPlanItUserIdFromTheirEmailTest() throws Exception {
         Entity_GoogleAccount response = new Entity_GoogleAccount(1L, new Entity_User(1L));
-        doReturn(response).when(idaoGoogleAccount).getIdOfUserFromEmail(Converter.decodeURLString("user@email.com"));
+        doReturn(response).when(idaoGoogleAccount).getGoogleAccountFromEmail(Converter.decodeURLString("user@email.com"));
         this.mockMvc
                 .perform(
                         RestDocumentationRequestBuilders

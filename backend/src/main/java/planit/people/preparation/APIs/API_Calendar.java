@@ -25,10 +25,11 @@ public class API_Calendar {
     }
 
     /**
-     * create a new event
+     * create a new Google calendar event
      *
      * @param newEventDetail the event details
      * @return HttpStatus.OK if event is created else HttpStatus.NOT_FOUND
+     * @see Service_Calendar#createEvent
      */
     @PostMapping(path = "events", consumes = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<CalendarResponse> createNewEvent(@RequestBody DTO_NewEventDetail newEventDetail) {

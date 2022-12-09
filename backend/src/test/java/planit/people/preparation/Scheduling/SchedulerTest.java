@@ -1,14 +1,16 @@
 package planit.people.preparation.Scheduling;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import planit.people.preparation.Entities.Entity_PresetAvailability;
 
+import java.sql.Time;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,152 +24,523 @@ class SchedulerTest {
     }
 
     @Test
-    void getAvailableTimeSlotsBetweenDatesUsual() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
+    void regularUseCase() {
+        var duration = Duration.standardHours(5);
+        var busyTime = new ArrayList<Interval>() {
+            {
+                // Saturday
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 10, 30),
+                        new DateTime(2000, 1, 1, 13, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 17, 5),
+                        new DateTime(2000, 1, 1, 20, 30)
+                ));
+                // Sunday
 
-        List<Interval> actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(7), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
+                // Monday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 16, 40)
+                ));
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 18, 5),
+                        new DateTime(2000, 1, 3, 20, 12)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 22, 0),
+                        new DateTime(2000, 1, 3, 23, 40)
+                ));
 
-        var expected = new ArrayList<>();
-        expected.add(new Interval(formatter.parseDateTime("05/01/2000"), formatter.parseDateTime("07/01/2000")));
-        expected.add(new Interval(formatter.parseDateTime("10/01/2000"), formatter.parseDateTime("13/01/2000")));
-        expected.add(new Interval(formatter.parseDateTime("15/01/2000"), formatter.parseDateTime("17/01/2000")));
 
-        var actualArray = actual.toArray();
-        var expectedArray = expected.toArray();
+                //Tuesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 0),
+                        new DateTime(2000, 1, 4, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
 
-        assertArrayEquals(expectedArray, actualArray);
+                // Wednesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 5, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Thursday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 16, 40)
+                ));
+                // COLLIDING EVENTS
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 5),
+                        new DateTime(2000, 1, 6, 20, 12)
+                ));
+                // Gym with bro
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 0),
+                        new DateTime(2000, 1, 6, 20, 30)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 22, 0),
+                        new DateTime(2000, 1, 6, 23, 40)
+                ));
+                // Dinner with girlfriend
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 21, 0),
+                        new DateTime(2000, 1, 6, 22, 17)
+                ));
+
+
+                // Friday
+                // Work time
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 16, 57)
+                ));
+                // HERE AVAILABLE 16:57 - 21:57
+
+                // Movie
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 21, 57),
+                        new DateTime(2000, 1, 7, 23, 59)
+                ));
+
+            }
+        };
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>() {
+            {
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 40),
+                        new DateTime(2000, 1, 4, 22, 0)
+                ));
+
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 40),
+                        new DateTime(2000, 1, 5, 22, 0)
+                ));
+
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 57),
+                        new DateTime(2000, 1, 7, 21, 57)
+                ));
+            }
+        };
+
+//        actual.forEach(System.out::println);
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAvailableTimeSlotsBetweenDatesWithShortDuration() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
+    void durationTooLong() {
+        var duration = Duration.standardHours(8);
+        var busyTime = new ArrayList<Interval>() {
+            {
+                // Saturday
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 10, 30),
+                        new DateTime(2000, 1, 1, 13, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 17, 5),
+                        new DateTime(2000, 1, 1, 20, 30)
+                ));
+                // Sunday
 
-        var actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(4), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
+                // Monday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 16, 40)
+                ));
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 18, 5),
+                        new DateTime(2000, 1, 3, 20, 12)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 22, 0),
+                        new DateTime(2000, 1, 3, 23, 40)
+                ));
 
-        var expected = new ArrayList<>();
-        expected.add(new Interval(formatter.parseDateTime("05/01/2000"), formatter.parseDateTime("07/01/2000")));
-        expected.add(new Interval(formatter.parseDateTime("10/01/2000"), formatter.parseDateTime("12/01/2000")));
 
-        var actualArray = actual.toArray();
-        var expectedArray = expected.toArray();
+                //Tuesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 0),
+                        new DateTime(2000, 1, 4, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
 
-        assertArrayEquals(expectedArray, actualArray);
+                // Wednesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 5, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Thursday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 16, 40)
+                ));
+                // COLLIDING EVENTS
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 5),
+                        new DateTime(2000, 1, 6, 20, 12)
+                ));
+                // Gym with bro
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 0),
+                        new DateTime(2000, 1, 6, 20, 30)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 22, 0),
+                        new DateTime(2000, 1, 6, 23, 40)
+                ));
+                // Dinner with girlfriend
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 21, 0),
+                        new DateTime(2000, 1, 6, 22, 17)
+                ));
+
+
+                // Friday
+                // Work time
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 16, 57)
+                ));
+                // HERE AVAILABLE 16:57 - 21:57
+
+                // Movie
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 21, 57),
+                        new DateTime(2000, 1, 7, 23, 59)
+                ));
+
+            }
+        };
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>()
+        {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>();
+
+        actual.forEach(System.out::println);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAvailableTimeSlotsBetweenDatesWithTooLongDuration() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
+    void everyDayOff() {
+        var duration = Duration.standardMinutes(1);
+        var busyTime = new ArrayList<Interval>() {
+            {
+                // Saturday
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 10, 30),
+                        new DateTime(2000, 1, 1, 13, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 17, 5),
+                        new DateTime(2000, 1, 1, 20, 30)
+                ));
+                // Sunday
 
-        var actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(10), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
+                // Monday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 16, 40)
+                ));
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 18, 5),
+                        new DateTime(2000, 1, 3, 20, 12)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 22, 0),
+                        new DateTime(2000, 1, 3, 23, 40)
+                ));
 
-        assertEquals(0, actual.size());
+
+                //Tuesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 0),
+                        new DateTime(2000, 1, 4, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Wednesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 5, 16, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Thursday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 16, 40)
+                ));
+                // COLLIDING EVENTS
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 5),
+                        new DateTime(2000, 1, 6, 20, 12)
+                ));
+                // Gym with bro
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 0),
+                        new DateTime(2000, 1, 6, 20, 30)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 22, 0),
+                        new DateTime(2000, 1, 6, 23, 40)
+                ));
+                // Dinner with girlfriend
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 21, 0),
+                        new DateTime(2000, 1, 6, 22, 17)
+                ));
+
+
+                // Friday
+                // Work time
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 16, 57)
+                ));
+                // HERE AVAILABLE 16:57 - 21:57
+
+                // Movie
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 21, 57),
+                        new DateTime(2000, 1, 7, 23, 59)
+                ));
+
+            }
+        };
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 14, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>();
+
+//        actual.forEach(System.out::println);
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAvailableTimeSlotsBetweenDatesFewMerges() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("15/01/2000")));
+    void literallyNoFreeTime() {
+        var duration = Duration.standardHours(5);
+        var busyTime = new ArrayList<Interval>() {
+            {
+                // Saturday
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 10, 30),
+                        new DateTime(2000, 1, 1, 13, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 1, 12, 5),
+                        new DateTime(2000, 1, 3, 20, 30)
+                ));
+                // Sunday
 
-        var actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(2), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
+                // Monday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 20, 0),
+                        new DateTime(2000, 1, 4, 4, 40)
+                ));
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 18, 5),
+                        new DateTime(2000, 1, 3, 20, 12)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 22, 0),
+                        new DateTime(2000, 1, 3, 23, 40)
+                ));
 
-        var expected = new ArrayList<>();
-        expected.add(new Interval(formatter.parseDateTime("15/01/2000"), formatter.parseDateTime("17/01/2000")));
 
-        var actualArray = actual.toArray();
-        var expectedArray = expected.toArray();
+                //Tuesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 4, 0),
+                        new DateTime(2000, 1, 5, 17, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
 
-        assertArrayEquals(expectedArray, actualArray);
+                // Wednesday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 6, 18, 40)
+                ));
+                //HERE AVAILABLE 16:40 - 22:00
+
+                // Thursday
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 16, 40)
+                ));
+                // COLLIDING EVENTS
+                // Gym
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 5),
+                        new DateTime(2000, 1, 6, 20, 12)
+                ));
+                // Gym with bro
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 18, 0),
+                        new DateTime(2000, 1, 6, 22, 30)
+                ));
+                // Dinner with wife
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 22, 0),
+                        new DateTime(2000, 1, 7, 3, 40)
+                ));
+                // Dinner with girlfriend
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 21, 0),
+                        new DateTime(2000, 1, 6, 22, 17)
+                ));
+
+
+                // Friday
+                // Work time
+                // Getting back home
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 2, 0),
+                        new DateTime(2000, 1, 7, 16, 57)
+                ));
+                // HERE AVAILABLE 16:57 - 21:57
+
+                // Movie
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 15, 57),
+                        new DateTime(2000, 1, 9, 23, 59)
+                ));
+
+            }
+        };
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>();
+
+//        actual.forEach(System.out::println);
+        assertEquals(expected, actual);
     }
 
     @Test
-    void getAvailableTimeSlotsBetweenDatesOutOfBounds() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("15/01/2000")));
+    void fewYearsNoCrashTest() {
+        var duration = Duration.standardHours(2);
 
-        var actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(5), formatter.parseDateTime("20/01/2000"), formatter.parseDateTime("25/01/2000"));
 
-        var expected = new ArrayList<>();
-        expected.add(new Interval(formatter.parseDateTime("20/01/2000"), formatter.parseDateTime("25/01/2000")));
+        var busyTime = new ArrayList<Interval>();
 
-        var actualArray = actual.toArray();
-        var expectedArray = expected.toArray();
+        var date = new DateTime(1950, 1, 1, 10, 30);
+        while (date.isBefore(new DateTime(2050, 1, 1, 10, 30)))
+        {
+            busyTime.add(
+                    new Interval(
+                            date,
+                            date.plusDays(5).plusHours(4).plusMinutes(17)
+                    ));
+            date = date.plusDays(3).plusHours(12).plusMinutes(45);
+        }
 
-        assertArrayEquals(expectedArray, actualArray);
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+        System.out.println(busyTime.size());
+        assertDoesNotThrow(() -> Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(1950, 1, 1, 0, 0), new DateTime(2050, 1, 7, 23, 59), presetAvailabilities));
     }
 
-    @Test
-    void getAvailableTimeSlotsBetweenDatesEmpty() {
-        List<Interval> intervals = new ArrayList<>();
-        var actual = Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(16), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
-
-        var expected = new ArrayList<>();
-        expected.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000")));
-
-        var actualArray = actual.toArray();
-        var expectedArray = expected.toArray();
-
-        assertArrayEquals(expectedArray, actualArray);
-    }
-
-    @Test
-    void getAvailableTimeSlotsBetweenDatesIncorrect() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("15/01/2000")));
-        assertThrows(java.lang.IllegalArgumentException.class, () -> Scheduler.getAvailableTimeSlotsBetweenDatesOfTotalLength(intervals, Duration.standardDays(0), formatter.parseDateTime("20/01/2000"), formatter.parseDateTime("1/01/2000")));
-    }
-
-    @Test
-    void getOneTimeSlotBetweenDatesOfLengthUsual() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-
-        var actual = Scheduler.getOneTimeSlotBetweenDatesOfLength(intervals, Duration.standardDays(2), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
-
-        var expected = new Interval(formatter.parseDateTime("05/01/2000"), formatter.parseDateTime("07/01/2000"));
-
-        assertEquals(actual, expected);
-    }
-
-    @Test
-    void getOneTimeSlotBetweenDatesOfLengthShort() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-
-        var actual = Scheduler.getOneTimeSlotBetweenDatesOfLength(intervals, Duration.standardDays(1), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
-
-        var expected = new Interval(formatter.parseDateTime("05/01/2000"), formatter.parseDateTime("06/01/2000"));
-
-        assertEquals(actual, expected);
-    }
-
-    @Test
-    void getOneTimeSlotBetweenDatesOfLengthTooLong() {
-        List<Interval> intervals = new ArrayList<>();
-        intervals.add(new Interval(formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("05/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("07/01/2000"), formatter.parseDateTime("10/01/2000")));
-        intervals.add(new Interval(formatter.parseDateTime("13/01/2000"), formatter.parseDateTime("15/01/2000")));
-
-        var actual = Scheduler.getOneTimeSlotBetweenDatesOfLength(intervals, Duration.standardDays(10), formatter.parseDateTime("01/01/2000"), formatter.parseDateTime("17/01/2000"));
-
-        assertNull(actual);
-    }
 }
