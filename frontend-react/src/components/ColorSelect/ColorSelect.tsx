@@ -16,7 +16,7 @@ const colorOptions = [
   { value: '#5484ED', label: 'Blueberry' },
   { value: '#A4BDFC', label: 'Lavender' },
   { value: '#DBADFF', label: 'Grape' },
-  { value: '#616161', label: 'Graphite' },
+  { value: '#E1E1E1', label: 'Graphite' },
 ];
 
 const tagRender = (value: string, label: string) => {
