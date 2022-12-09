@@ -28,6 +28,7 @@ export type EventCreateRequest = {
   summary: string;
   location: string;
   description: string;
+  color: string;
   event_preset_detail: EventPresetDetail;
   owner_email: string;
   start_date: string; // '2022-01-10 12:00:00'

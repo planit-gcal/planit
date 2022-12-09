@@ -23,6 +23,7 @@ export const convertFormToRequest = (
   summary: general.name,
   location: googleEvent.event_location || '',
   description: googleEvent.event_description || '',
+  color: googleEvent.event_color || '#5484ED',
   event_preset_detail: {
     event_preset: {
       name: general.name,
