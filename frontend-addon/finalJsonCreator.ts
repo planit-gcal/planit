@@ -14,7 +14,7 @@ class FinalJsonCreator {
             name: PropertyManager.getProperty<string>(eventNameString),
             owner_email: this.getOwnerEmail(),
             start_date: PropertyManager.getProperty<string>(minDateString),
-            summary: ""
+            summary: PropertyManager.getProperty<string>(eventNameString),
         }
         console.log(createEventDTO);
         return createEventDTO;

@@ -34,3 +34,9 @@ export type EventCreateRequest = {
   end_date: string; // '2022-02-10 12:00:00'
   duration: number; // in minutes
 };
+
+export type EventCreateResponse = {
+  start_date: string;
+  end_date: string;
+  event_url: string;
+};

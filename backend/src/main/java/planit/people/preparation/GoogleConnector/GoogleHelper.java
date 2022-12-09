@@ -53,8 +53,7 @@ public class GoogleHelper {
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, Map<String, Map<Long, Set<String>>> refreshTokenForAllGuests) throws IOException, ExecutionException, InterruptedException {
         DateTime startDate = getStartDate(newEventDetail, refreshTokenForAllGuests);
         System.out.println("StartDate: " + startDate);
-        googleConnector.createEvent(newEventDetail, startDate);
-        return new CalendarResponse(startDate, startDate);
+        return googleConnector.createEvent(newEventDetail, startDate);
     }
 
     /**

@@ -264,7 +264,7 @@ public class CalendarWebLayerTest {
         );
         DateTime start = new DateTime(format.parse("2022-1-20 15:00:00"));
         DateTime end = new DateTime(format.parse("2022-1-20 16:00:00"));
-        CalendarResponse response = new CalendarResponse(start, end);
+        CalendarResponse response = new CalendarResponse(start, end, "");
         doReturn(response).when(serviceCalendar).createEvent(any());
         this.mockMvc
                 .perform(
