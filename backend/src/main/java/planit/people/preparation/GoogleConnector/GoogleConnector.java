@@ -155,7 +155,8 @@ public class GoogleConnector {
         Event event = new Event()
                 .setSummary(newEventDetail.summary())
                 .setLocation(newEventDetail.location())
-                .setDescription(newEventDetail.description());
+                .setDescription(newEventDetail.description())
+                .setColorId(newEventDetail.color());
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDate)
                 .setTimeZone(TIME_ZONE_SPECIFIER);
