@@ -176,7 +176,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                                                                 <Form.Item
                                                                     {...restField}
                                                                     name={[name, 'email']}
-                                                                    rules={[{ required: true, message: 'Missing email' }]}
+                                                                    rules={[{ required: true, message: 'Missing email' }, {type: 'email', message: 'Please enter a valid email!'}]}
                                                                     label={name === 0 ? 'Guest email' : undefined}
                                                                 >
                                                                     <Input />
