@@ -6,17 +6,17 @@ import LimitedMultiSelect from '../LimitedMultiSelect/LimitedMultiSelect';
 type ColorSelectProps = SelectProps;
 
 const colorOptions = [
-  { value: '#DC2127', label: 'Tomato' },
-  { value: '#FF887C', label: 'Flamingo' },
-  { value: '#FFB878', label: 'Tangerine' },
-  { value: '#FBD75B', label: 'Banana' },
-  { value: '#7AE7BF', label: 'Sage' },
-  { value: '#51B749', label: 'Basil' },
-  { value: '#46D6DB', label: 'Peacock' },
-  { value: '#5484ED', label: 'Blueberry' },
-  { value: '#A4BDFC', label: 'Lavender' },
-  { value: '#DBADFF', label: 'Grape' },
-  { value: '#616161', label: 'Graphite' },
+  { value: '#DC2127', label: 'Tomato', id:11 },
+  { value: '#FF887C', label: 'Flamingo', id:4 },
+  { value: '#FFB878', label: 'Tangerine', id:6 },
+  { value: '#FBD75B', label: 'Banana', id:5 },
+  { value: '#7AE7BF', label: 'Sage', id:2 },
+  { value: '#51B749', label: 'Basil', id:10 },
+  { value: '#46D6DB', label: 'Peacock', id:7 },
+  { value: '#5484ED', label: 'Blueberry', id:9 },
+  { value: '#A4BDFC', label: 'Lavender' , id:1},
+  { value: '#DBADFF', label: 'Grape', id:3 },
+  { value: '#e1e1e1', label: 'Graphite', id:8 },
 ];
 
 const tagRender = (value: string, label: string) => {
