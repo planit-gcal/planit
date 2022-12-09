@@ -5,6 +5,7 @@ import com.google.api.services.calendar.model.FreeBusyResponse;
 import com.google.api.services.calendar.model.TimePeriod;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import planit.people.preparation.DTOs.DTO_NewEventDetail;
@@ -52,6 +53,11 @@ public class GoogleHelper {
      */
     public CalendarResponse createEvent(DTO_NewEventDetail newEventDetail, Map<String, Map<Long, Set<String>>> refreshTokenForAllGuests) throws IOException, ExecutionException, InterruptedException {
         DateTime startDate = getStartDate(newEventDetail, refreshTokenForAllGuests);
+        if(startDate == null)
+        {
+            System.out.println("No date could be found");
+            return new CalendarResponse(new DateTime(0), new DateTime(0));
+        }
         System.out.println("StartDate: " + startDate);
         googleConnector.createEvent(newEventDetail, startDate);
         return new CalendarResponse(startDate, startDate);
@@ -72,13 +78,16 @@ public class GoogleHelper {
      * @see Converter#convertIntervalMapToListOfSchedulingInfo(Map<String, Map<Long, List<Interval>>>)
      * @see BestDateFinder#getBestStartDate(List<SchedulingInfo>, Duration)
      */
-    public DateTime getStartDate(DTO_NewEventDetail newEventDetail, Map<String, Map<Long, Set<String>>> refreshTokenForAllGuests) throws ExecutionException, InterruptedException {
+    public @Nullable DateTime getStartDate(DTO_NewEventDetail newEventDetail, Map<String, Map<Long, Set<String>>> refreshTokenForAllGuests) throws ExecutionException, InterruptedException {
         Duration durationInMinutes = Duration.standardMinutes(newEventDetail.duration());
         Map<String, Map<Long, List<Interval>>> freeBusyIntervalsForAllUsers = getFreeBusyIntervalForAll(newEventDetail.start_date(), newEventDetail.end_date(), refreshTokenForAllGuests);
         Map<String, Map<Long, List<Interval>>> freeIntervalsForAllUsers = getFreeIntervalForAll(freeBusyIntervalsForAllUsers, newEventDetail.start_date(), newEventDetail.end_date(), durationInMinutes, newEventDetail.event_preset_detail().preset_availability());
         List<SchedulingInfo> schedulingInfos = Converter.convertIntervalMapToListOfSchedulingInfo(freeIntervalsForAllUsers);
         Date startTime = BestDateFinder.getBestStartDate(schedulingInfos, durationInMinutes);
-        assert startTime != null;
+        if(startTime == null)
+        {
+            return null;
+        }
         return new DateTime(startTime);
     }
 
