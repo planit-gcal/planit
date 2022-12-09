@@ -11,6 +11,7 @@ import planit.people.preparation.Entities.Entity_PresetAvailability;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -511,6 +512,100 @@ class SchedulerTest {
     }
 
     @Test
+    void noBusyTime() {
+        var duration = Duration.standardHours(5);
+        var busyTime = new ArrayList<Interval>();
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>()
+        {
+            {
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 0),
+                        new DateTime(2000, 1, 4, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 5, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 6, 16, 0),
+                        new DateTime(2000, 1, 6, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 22, 0)
+                ));
+            }
+        };
+
+//        actual.forEach(System.out::println);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void onlyOneBusyTime() {
+        var duration = Duration.standardHours(5);
+        var busyTime = List.of(
+                new Interval(
+                        new DateTime(2000, 1, 5, 16, 0),
+                        new DateTime(2000, 1, 6, 18, 40)
+                ));
+
+        var presetAvailabilities = new ArrayList<Entity_PresetAvailability>() {
+            {
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.MONDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.TUESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.WEDNESDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.THURSDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.FRIDAY, Time.valueOf("16:00:00"), Time.valueOf("22:00:00"), false));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SATURDAY, null, null, true));
+                add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
+            }
+        };
+
+        var actual = Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(2000, 1, 1, 0, 0), new DateTime(2000, 1, 7, 23, 59), presetAvailabilities);
+
+        var expected = new ArrayList<Interval>()
+        {
+            {
+                add(new Interval(
+                        new DateTime(2000, 1, 3, 16, 0),
+                        new DateTime(2000, 1, 3, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 4, 16, 0),
+                        new DateTime(2000, 1, 4, 22, 0)
+                ));
+                add(new Interval(
+                        new DateTime(2000, 1, 7, 16, 0),
+                        new DateTime(2000, 1, 7, 22, 0)
+                ));
+            }
+        };
+
+        assertEquals(expected, actual);
+    }
+
+
+    @Test
     void fewYearsNoCrashTest() {
         var duration = Duration.standardHours(2);
 
@@ -539,7 +634,6 @@ class SchedulerTest {
                 add(new Entity_PresetAvailability(Entity_PresetAvailability.WeekDays.SUNDAY, null, null, true));
             }
         };
-        System.out.println(busyTime.size());
         assertDoesNotThrow(() -> Scheduler.getAvailableTimeSlots(busyTime, duration, new DateTime(1950, 1, 1, 0, 0), new DateTime(2050, 1, 7, 23, 59), presetAvailabilities));
     }
 
