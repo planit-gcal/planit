@@ -36,7 +36,6 @@ This repository contains frontend and backend apps for the Planit project.
 
 #### Prerequisites
 
-
 1. Clasp is a CLI to upload the addon code.
 2. Run `npm install clasp` to install Clasp. You might want to add `--global` attribute.
 3. Run `clasp login` to login to Clasp. You will need to authorize with your Google Account.
@@ -64,7 +63,7 @@ Checking the results of `console.log` requires entering the the "Executions" sec
 In case of caching problems:
 `docker-compose build --no-cache frontend-service && docker-compose up`
 
-In the end, it's available at `https://planit-custom-domain.loca.lt/`.
+In the end, it's available at `https://3bb6-89-64-6-212.ngrok.io`.
 
 # Architecture overview
 

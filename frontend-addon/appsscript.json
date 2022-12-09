@@ -10,7 +10,11 @@
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
-  "urlFetchWhitelist": ["https://planit-custom-domain.loca.lt/", "https://planit-custom-domain2.loca.lt/", "https://witty-bear-80.loca.lt/"],
+  "urlFetchWhitelist": [
+    "https://3bb6-89-64-6-212.ngrok.io",
+    "https://planit-custom-domain2.loca.lt",
+    "https://witty-bear-80.loca.lt/"
+  ],
   "addOns": {
     "common": {
       "name": "PlanIt - create event",
@@ -27,7 +31,7 @@
       "universalActions": [
         {
           "label": "For more features visit website",
-          "openLink": "https://planit-custom-domain.loca.lt/"
+          "openLink": "https://3bb6-89-64-6-212.ngrok.io"
         }
       ]
     },

@@ -12,39 +12,41 @@ import {
     Tabs,
     TabsProps,
     Typography,
-    InputNumber,
-    Select,
-    Slider,
 } from 'antd';
 import 'antd/es/date-picker/style/index';
 import { add, format, parse } from 'date-fns';
 import React, { useState } from 'react';
-import { EventCreateRequest } from '../../api/calendar/calendar.dto';
+import { EventCreateRequest, EventPresetDetail } from '../../api/calendar/calendar.dto';
+import { convertFormToRequest, getPartialFormFromPreset } from '../../utils/event.utils';
 
 import ColorSelect from '../ColorSelect/ColorSelect';
 import DatePicker from '../DatePicker/DatePicker';
+import { PresetCreateModal } from '../PresetCreateModal/PresetCreateModal';
+import { PresetSelect } from '../PresetSelect/PresetSelect';
 import TimePicker from '../TimePicker/TimePicker';
 import { ExcludeForm, GeneralForm, GoogleEventForm } from './models';
 
 type CreateEventFormProps = {
     owner: string;
-    onSubmit: (result: unknown) => void;
+    onSubmit: (result: EventCreateRequest) => void;
+    onSaveToPreset: (result: EventCreateRequest) => void;
 };
 
 const { TextArea } = Input;
 
 const { useWatch } = Form;
 
-export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
+export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEventFormProps) => {
     const [generalForm] = Form.useForm<GeneralForm>();
     const [googleEventForm] = Form.useForm<GoogleEventForm>();
     const [excludeForm] = Form.useForm<ExcludeForm>();
 
     const [activeTabKey, setActiveTabKey] = useState('0');
+    const [isPresetCreateModalOpen, setIsPresetCreateModalOpen] = useState(false);
 
     const stepItems = [
         { title: 'General' },
-        { title: 'Google Event Details' },
+        { title: 'Details' },
         { title: 'Availability' },
         { title: 'Confirm' },
     ];
@@ -79,6 +81,10 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         return date ? format(date, 'dd MMM yyyy') : '';
     }
 
+    function toTimeString(date:Date){
+        return date ? format(date, 'HH:mm') : '';
+    }
+
     const weekDays = [
         { name: 'Monday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
         { name: 'Tuesday', exclude: true, availability: [toTime('08:00'), toTime('16:00')] },
@@ -89,107 +95,120 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         { name: 'Sunday', exclude: false, availability: [toTime('12:00'), toTime('20:00')] },
     ];
 
+    const onApplyPreset = (preset: EventPresetDetail) => {
+        const converted = getPartialFormFromPreset(preset);
+
+        generalForm.setFieldsValue(converted.generalForm)
+        excludeForm.setFieldsValue(converted.excludeForm)
+    }
+
     const items = [
         {
             label: '',
             key: '1',
             children: (
-                <Form layout="vertical" form={generalForm}>
-                    <Row gutter={16} justify="center">
-                        <Col span={8}>
-                            <Form.Item
-                                name="name"
-                                label="Event Name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input event name!',
-                                    },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={8}>
-                            <Form.Item
-                                name="duration"
-                                label="Event Duration"
-                                required
-                                initialValue={parse('1:00', 'HH:mm', new Date())}
-                            >
-                                <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
-                            </Form.Item>
-                        </Col>
-                    </Row>
+                <>
                     <Row gutter={16} justify="center">
                         <Col span={16}>
-                            <Form.Item
-                                name="event_between"
-                                label="Event Between"
-                                required
-                                initialValue={[
-                                    new Date(),
-                                    add(new Date(), {
-                                        days: 3,
-                                    }),
-                                ]}
-                            >
-                                <DatePicker.RangePicker
-                                    style={{ width: '100%' }}
-                                    format="eeee, MMMM d"
-                                    minuteStep={15}
-                                />
-                            </Form.Item>
+                            <PresetSelect onApplyPreset={onApplyPreset} />
+                            <Divider />
                         </Col>
                     </Row>
-                    <Row gutter={16} justify="center">
-                        <Col span={16}>
-                            <Form.List name="guests" initialValue={[{email: '', obligatory: true}]}>
-                                {(fields, { add, remove }) => (
-                                    <div>
-                                        {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
-                                        <div style={{flex: 1, overflowY: 'hidden', height: '160px' }}>
-                                            <div style={{ height: '100%', overflowY: 'scroll' }}>
-                                                {fields.map(({ key, name, ...restField }) => (
-                                                    <Row style={{ width: '100%' }} key={key} gutter={16}>
-                                                        <Col flex={1}>
-                                                            <Form.Item
-                                                                {...restField}
-                                                                name={[name, 'email']}
-                                                                rules={[{ required: true, message: 'Missing email' }]}
-                                                                label={name === 0 ? 'Guest email' : undefined}
-                                                            >
-                                                                <Input />
-                                                            </Form.Item>
-                                                        </Col>
+                    <Form layout="vertical" form={generalForm}>
+                        <Row gutter={16} justify="center">
+                            <Col span={8}>
+                                <Form.Item
+                                    name="name"
+                                    label="Event Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please input event name!',
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                                <Form.Item
+                                    name="duration"
+                                    label="Event Duration"
+                                    required
+                                    initialValue={parse('1:00', 'HH:mm', new Date())}
+                                >
+                                    <TimePicker style={{ width: '100%' }} format="HH:mm" minuteStep={15} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16} justify="center">
+                            <Col span={16}>
+                                <Form.Item
+                                    name="event_between"
+                                    label="Event Between"
+                                    required
+                                    initialValue={[
+                                        new Date(),
+                                        add(new Date(), {
+                                            days: 3,
+                                        }),
+                                    ]}
+                                >
+                                    <DatePicker.RangePicker
+                                        style={{ width: '100%' }}
+                                        format="eeee, MMMM d"
+                                        minuteStep={15}
+                                    />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16} justify="center">
+                            <Col span={16}>
+                                <Form.List name="guests" initialValue={[{email: '', obligatory: true}]}>
+                                    {(fields, { add, remove }) => (
+                                        <div>
+                                            {fields.length === 0 && <Typography.Text>No guests added yet.</Typography.Text>}
+                                            <div style={{flex: 1, overflowY: 'hidden' }}>
+                                                <div style={{ height: '100%', overflowY: 'scroll' }}>
+                                                    {fields.map(({ key, name, ...restField }) => (
+                                                        <Row style={{ width: '100%' }} key={key} gutter={16}>
+                                                            <Col flex={1}>
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    name={[name, 'email']}
+                                                                    rules={[{ required: true, message: 'Missing email' }, {type: 'email', message: 'Please enter a valid email!'}]}
+                                                                    label={name === 0 ? 'Guest email' : undefined}
+                                                                >
+                                                                    <Input />
+                                                                </Form.Item>
+                                                            </Col>
 
-                                                        <Col span={6}>
-                                                            <Form.Item
-                                                                {...restField}
-                                                                name={[name, 'obligatory']}
-                                                                label={name === 0 ? 'Obligatory?' : undefined}
-                                                                valuePropName="checked"
-                                                            >
-                                                                <Switch defaultChecked style={{ display: 'block' }} />
-                                                            </Form.Item>
-                                                        </Col>
+                                                            <Col span={6}>
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    name={[name, 'obligatory']}
+                                                                    label={name === 0 ? 'Obligatory?' : undefined}
+                                                                    valuePropName="checked"
+                                                                >
+                                                                    <Switch defaultChecked style={{ display: 'block' }} />
+                                                                </Form.Item>
+                                                            </Col>
 
-                                                        <Col span={2}>
-                                                            {/* empty HTML entity */}
-                                                            <Form.Item
-                                                                {...restField}
-                                                                label={name === 0 ? <>&#8203;</> : undefined}
-                                                            >
-                                                                <CloseOutlined onClick={() => remove(name)} />
-                                                            </Form.Item>
-                                                        </Col>
-                                                    </Row>
-                                                ))}
+                                                            <Col span={2}>
+                                                                {/* empty HTML entity */}
+                                                                <Form.Item
+                                                                    {...restField}
+                                                                    label={name === 0 ? <>&#8203;</> : undefined}
+                                                                >
+                                                                    <CloseOutlined onClick={() => remove(name)} />
+                                                                </Form.Item>
+                                                            </Col>
+                                                        </Row>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-
                                         <Form.Item>
-                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                            <Button type="dashed" size='small' onClick={() => add({email:'', obligatory:false})} block icon={<PlusOutlined />}>
                                                 Add guest
                                             </Button>
                                         </Form.Item>
@@ -199,6 +218,7 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                         </Col>
                     </Row>
                 </Form>
+            </>
             ),
             forceRender: true,
         },
@@ -381,8 +401,8 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
             label: '',
             key: '4',
             children: (
-                <Form.Item name="event_name" label="Exclude" required>
-                    <Row gutter={16} justify="center">
+                <div>
+                    <Row justify="center">
                         <Space align="end" style={{ marginBottom: '8px' }}>
                             <Typography.Title level={3} style={{ margin: 0 }}>
                                 {useWatch('name', generalForm)}
@@ -395,8 +415,66 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
                             </Typography.Title>
                         </Space>
                     </Row>
-                    <Input />
-                </Form.Item>
+                    <Row gutter={16} justify="center" style={{ marginBottom: '8px' }}>
+                        <Typography.Text type="secondary" style={{fontSize:'12px'}}>
+                            {`You're about to create an event in your and your guests' calendars. Please review your preferences before confirming.`}
+                        </Typography.Text>
+                    </Row>
+                    <Row gutter={16} justify="center">
+                        <Col span={20}>
+                            <Row>
+                                <Col span={8}>
+                                    <Typography.Title level={5} style={{marginBottom:0}}>Event guests:</Typography.Title>
+                                    <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px', marginTop:'0px'}}>
+                                        Obligatory guests are {` `}
+                                        <Typography.Text type="secondary" strong style={{fontSize:'12px'}}>bold</Typography.Text>
+                                    </Typography.Text>
+                                    {useWatch('guests',generalForm)?.map(({ email, obligatory }) => (
+                                        <div key={email}>
+                                            <Typography.Text strong={obligatory}>{email}</Typography.Text>
+                                        </div>
+                                    ))}
+                                </Col>
+                                <Col span={8}>
+                                    <Row>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Description:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph ellipsis={{rows: 4, expandable: false}} style={{ margin: 0 }}>{useWatch('event_description', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
+                                    </Row>
+                                    <Row>
+                                        <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
+                                    </Row>
+                                    <Row>
+                                        <Space align="end">
+                                            <Typography.Title level={5} style={{ margin: 0 }}>Color:</Typography.Title>
+                                            <div style={{ margin: 0 }}>
+                                                <svg height="12" width="12">
+                                                    <circle cx="6" cy="6" r="6" fill={useWatch('event_color', googleEventForm)} />
+                                                </svg>
+                                            </div>
+                                        </Space>
+                                    </Row>
+                                </Col>
+                                <Col span={8}>
+                                    <Typography.Title level={5} style={{marginBottom:'0px'}}>Availability:</Typography.Title>
+                                    {useWatch('excludeWeekDays',excludeForm)?.map(({ name, exclude, availability }) => (
+                                        <Row key={name}>
+                                            {exclude ? (
+                                                <Typography.Text delete>{name}</Typography.Text>
+                                            ):(
+                                                <Typography.Text >{name} {toTimeString(availability[0])} - {toTimeString(availability[1])}</Typography.Text>
+                                            )}
+                                        </Row>
+                                    ))}
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                </div>
             ),
             forceRender: true,
         },
@@ -447,47 +525,26 @@ export const CreateEventForm = ({ onSubmit, owner }: CreateEventFormProps) => {
         const googleEvent = await googleEventForm.validateFields();
         const exclude = await excludeForm.validateFields();
 
-
-        const requestBody: EventCreateRequest = {
-            name: general.name,
-            summary: general.name,
-            location: googleEvent.event_location || '',
-            description: googleEvent.event_description || '',
-            event_preset_detail: {
-                event_preset: { // dummy data because BE doesn't support these fields
-                    name: '',
-                    break_into_smaller_events: false,
-                    min_length_of_single_event: null,
-                    max_length_of_single_event: null,
-                    shared_presets: [],
-                },
-                guests: general.guests.map(g => ({
-                    email: g.email,
-                    obligatory: g.obligatory,
-                })),
-                preset_availability: exclude.excludeWeekDays.map(d => ({
-                    day: d.name.toUpperCase() as any,
-                    day_off: d.exclude,
-                    start_available_time: format(d.availability[0], "HH:mm"),
-                    end_available_time: format(d.availability[1], "HH:mm"),
-                })),
-            },
-            owner_email: owner,
-            start_date: format(general.event_between[0], "yyyy-MM-dd HH:mm:ss"),
-            end_date: format(general.event_between[1], "yyyy-MM-dd HH:mm:ss"),
-            duration: general.duration.getHours() * 60 + general.duration.getMinutes()
-
-        }
-
-        onSubmit(requestBody);
+        onSubmit(convertFormToRequest(owner, general, googleEvent, exclude));
     };
 
-    const onSaveToPresetButton = () => {
-        alert('todo');
+    const onSaveToPresetButton = async () => {
+        setIsPresetCreateModalOpen(true);
     };
 
     return (
         <div style={{ width: '100%', height: '100%', display: 'flex', gap: 0, flexDirection: 'column' }}>
+            <PresetCreateModal
+                forms={{ generalForm, googleEventForm, excludeForm }}
+                owner={owner}
+                open={isPresetCreateModalOpen}
+                onCancel={() => setIsPresetCreateModalOpen(false)}
+                onCreatePreset={(request) => {
+                    setIsPresetCreateModalOpen(false);
+                    onSaveToPreset(request);
+                }}
+            />
+            
             <Tabs activeKey={`${+activeTabKey + 1}`} items={items} renderTabBar={RenderTabBar} style={{ flex: 1 }} />
 
             <Divider />

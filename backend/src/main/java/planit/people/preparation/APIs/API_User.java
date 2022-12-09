@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "plan-it/users", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "plan-it/users", produces = { MediaType.APPLICATION_JSON_VALUE })
 public class API_User {
     private final Service_User serviceUser;
     private final IDAO_GoogleAccount idaoGoogleAccount;
@@ -41,15 +41,17 @@ public class API_User {
             return new ResponseEntity<>(idaoGoogleAccount.getEmailsFromUserId(userId), HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     /**
      * Remove a PlanIt User from DB.
      *
-     * @param planItUserId the id of the PlanIt user who should be removed from the DB.
-     * @return HttpStatus Ok if a PlanIt user is deleted successfully, else Not Found.
+     * @param planItUserId the id of the PlanIt user who should be removed from the
+     *                     DB.
+     * @return HttpStatus Ok if a PlanIt user is deleted successfully, else Not
+     *         Found.
      * @see Service_User#revokeUserAccess(Long)
      */
     @DeleteMapping(path = "{planit-user-id}")
@@ -68,7 +70,7 @@ public class API_User {
         try {
             return new ResponseEntity<Optional<Long>>(idaoGoogleAccount.getPlanitUserIdFromEmail(email), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
