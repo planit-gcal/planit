@@ -21,4 +21,4 @@ integrations:
 spring:
   profiles: production
 integrations:
-  google-token-redirect-uri: https://planit-custom-domain.loca.lt/
+  google-token-redirect-uri: https://3bb6-89-64-6-212.ngrok.io
