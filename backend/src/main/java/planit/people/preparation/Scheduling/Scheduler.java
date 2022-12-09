@@ -6,7 +6,6 @@ import planit.people.preparation.Entities.Entity_PresetAvailability;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -31,8 +30,9 @@ public final class Scheduler {
     public static List<Interval> getAvailableTimeSlots(List<Interval> busyTime, Duration duration, DateTime start, DateTime end, List<Entity_PresetAvailability> availabilities) {
         List<Interval> available = getAllAvailable(busyTime, start, end);
         List<Interval> splitByDay = splitIntervalsByDay(available);
-        List<Interval> intervalsOfDuration = filterIntervalsToMatchDuration(splitByDay, duration);
-        return getAvailableIntervalsBasedOnPresetAvailability(intervalsOfDuration, availabilities);
+        List<Interval> filteredByAvailability = getAvailableIntervalsBasedOnPresetAvailability(splitByDay, availabilities);
+        List<Interval> intervalsOfDuration = filterIntervalsToMatchDuration(filteredByAvailability, duration);
+        return intervalsOfDuration;
     }
 
     /**
@@ -50,8 +50,8 @@ public final class Scheduler {
                 .sorted(new IntervalStartComparator())
                 .collect(Collectors.toList());
         List<Interval> merged = mergeSortedIntervals(filtered);
-        List<Interval> free = getFreeIntervalsFromMergedIntervals(merged).collect(Collectors.toList());
-        return addBeginningAndEndFreeTimeIfPossible(free, start, end);
+        List<Interval> free = invertIntervals(merged, start, end);
+        return free;
     }
 
     /**
@@ -87,34 +87,42 @@ public final class Scheduler {
     /**
      * "Inverts" a list of intervals provided to get "free" time.
      *
-     * @param mergedIntervals List of <strong>non-overlapping and sorted</strong> intervals being "busy".
+     * @param intervals List of <strong>non-overlapping and sorted</strong> intervals being "busy".
+     * @param start
+     * @param end
      * @return Inverted list of intervals provided. Might additionally add intervals starting at start or ending at end. Might return empty.
      */
-    private static Stream<Interval> getFreeIntervalsFromMergedIntervals(List<Interval> mergedIntervals) {
-        return IntStream.range(0, mergedIntervals.size() - 1)
-                .mapToObj(i -> mergedIntervals.get(i).gap(mergedIntervals.get(i + 1)));
-    }
-
-    private static List<Interval> addBeginningAndEndFreeTimeIfPossible(List<Interval> mergedIntervals, DateTime start, DateTime end) {
-        if(mergedIntervals.isEmpty())
+    private static List<Interval> invertIntervals(List<Interval> intervals, DateTime start, DateTime end) {
+        if(intervals.isEmpty())
         {
-            return mergedIntervals;
-        }
-        if(mergedIntervals.get(0).getStart().isAfter(start))
-        {
-            mergedIntervals.add(0,
-                    new Interval(start, mergedIntervals.get(0).getStart())
-            );
+            return List.of(new Interval(start, end));
         }
 
-        if(mergedIntervals.get(mergedIntervals.size() - 1).getEnd().isBefore(end))
+        var inverted = new ArrayList<Interval>();
+
+        // If the first interval starts after the Start date, we need to "fill" that time with free interval
+        var firstIntervalStart = intervals.get(0).getStart();
+        if(start.isBefore(firstIntervalStart))
         {
-            mergedIntervals.add(mergedIntervals.size() - 1,
-                    new Interval(mergedIntervals.get(mergedIntervals.size() - 1).getEnd(), end)
-            );
+            inverted.add(new Interval(start, firstIntervalStart));
         }
-        return mergedIntervals;
+        // If the last interval ends before the End date, we need to "fill" that time with free interval
+        var lastIntervalEnd = intervals.get(intervals.size() - 1).getEnd();
+        if(end.isAfter(lastIntervalEnd))
+        {
+            inverted.add(new Interval(lastIntervalEnd, end));
+        }
+
+        // Loop that gets two intervals, finds the gap between then and adds that gap as "free" time
+        for (int i = 0; i < intervals.size() - 1; i++) {
+            Interval previousInterval = intervals.get(i);
+            Interval nextInterval = intervals.get(i + 1);
+            inverted.add(previousInterval.gap(nextInterval));
+        }
+
+        return inverted;
     }
+
 
     /**
      * Merges provided intervals. "Merge" means join any overlapping intervals together, leaving no overlaps. Provided interval list must be <strong>sorted</strong>.
