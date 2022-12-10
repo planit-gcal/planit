@@ -59,8 +59,7 @@ public class GoogleHelper {
             return new CalendarResponse(new DateTime(0), new DateTime(0));
         }
         System.out.println("StartDate: " + startDate);
-        googleConnector.createEvent(newEventDetail, startDate);
-        return new CalendarResponse(startDate, startDate);
+        return googleConnector.createEvent(newEventDetail, startDate);
     }
 
     /**

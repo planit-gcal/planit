@@ -184,7 +184,7 @@ public class GoogleConnector {
         event.setReminders(reminders);
         event = calendarService().events().insert(calendarId, event).execute();
         System.out.printf("Event created: %s\n", event.getHtmlLink());
-        return new CalendarResponse(startDate, endDateTime);
+        return new CalendarResponse(startDate, endDateTime, event.getHtmlLink());
     }
 
     public FreeBusyResponse getFreeBusy(Date startDate, Date endDate) throws IOException {

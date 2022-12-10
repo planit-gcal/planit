@@ -1,9 +1,8 @@
-import { Modal, notification } from 'antd';
-import { useContext } from 'react';
+import { Modal, notification, Typography } from 'antd';
+import { useContext, useState } from 'react';
 
 import { createEvent } from '../../api/calendar/calendar.api';
 import { EventCreateRequest } from '../../api/calendar/calendar.dto';
-import { createUserPreset, updateUserPreset } from '../../api/presets/presets.api';
 import { CreateEventForm } from '../../components/CreateEventForm/CreateEventForm';
 import { PlanitUserContext } from '../../contexts/PlanitUserContext';
 import { PresetsContext } from '../../contexts/PresetsContext';
@@ -14,8 +13,28 @@ export const CreateEventPage = () => {
   const { createOrUpdatePreset } = useContext(PresetsContext);
   const query = useUrlQuery();
 
+  const [formRerenderKey, setFormRerenderKey] = useState(0);
+
   const onEventSubmit = async (result: EventCreateRequest) => {
-    await createEvent(result);
+    try {
+      const eventResponse = await createEvent(result);
+
+      notification.success({
+        message: (
+          <div>
+            Successfully created your event(s).{' '}
+            <Typography.Link href={eventResponse.event_url} target="_blank">
+              Preview it in Google Calendar
+            </Typography.Link>
+          </div>
+        ),
+        placement: 'bottom',
+      });
+
+      setFormRerenderKey((prev) => prev + 1);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -34,6 +53,7 @@ export const CreateEventPage = () => {
       )}
 
       <CreateEventForm
+        key={formRerenderKey}
         onSubmit={onEventSubmit}
         onSaveToPreset={createOrUpdatePreset}
         owner={userDetails?.ownerEmail || ''}
