@@ -424,6 +424,10 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                         <Col span={20}>
                             <Row>
                                 <Col span={8}>
+                                    <Space align="end" style={{ marginBottom: 0 }}>
+                                        <Typography.Title level={5} style={{marginBottom:0}}>Event duration:</Typography.Title>
+                                        <Typography.Text style={{margin:0}}>{toTimeString(useWatch('duration', generalForm))}</Typography.Text>
+                                    </Space>
                                     <Typography.Title level={5} style={{marginBottom:0}}>Event guests:</Typography.Title>
                                     <Typography.Text type="secondary" style={{marginBottom:'8px', fontSize:'12px', marginTop:'0px'}}>
                                         Obligatory guests are {` `}
@@ -446,7 +450,7 @@ export const CreateEventForm = ({ onSubmit, onSaveToPreset, owner }: CreateEvent
                                         <Typography.Title level={5} style={{ margin: 0 }}>Location:</Typography.Title>
                                     </Row>
                                     <Row>
-                                        <Typography.Paragraph style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
+                                        <Typography.Paragraph ellipsis={{rows: 1, expandable: false}} style={{ margin: 0 }}>{useWatch('event_location', googleEventForm)}</Typography.Paragraph>
                                     </Row>
                                     <Row>
                                         <Space align="end">
