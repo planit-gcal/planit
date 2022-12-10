@@ -56,7 +56,7 @@ public class GoogleHelper {
         if(startDate == null)
         {
             System.out.println("No date could be found");
-            return new CalendarResponse(new DateTime(0), new DateTime(0));
+            return new CalendarResponse(new DateTime(0), new DateTime(0), "no event");
         }
         System.out.println("StartDate: " + startDate);
         return googleConnector.createEvent(newEventDetail, startDate);
