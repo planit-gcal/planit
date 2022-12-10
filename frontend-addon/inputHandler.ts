@@ -4,7 +4,7 @@ function onEventNameChange(e) {
 }
 
 function isEmailValid(email: string): boolean {
-    return email.endsWith("@gmail.com") || email.endsWith("@student.pwr.edu.pl");
+    return email.endsWith("@gmail.com") || email.endsWith("@student.pwr.edu.pl") || email.endsWith("@pwr.edu.pl");
 }
 
 function onNewUserName(e) {
