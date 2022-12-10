@@ -24,7 +24,7 @@ const colors = [
   { value: '#5484ED', id:9 },
   { value: '#A4BDFC', id:1},
   { value: '#DBADFF', id:3 },
-  { value: '#e1e1e1', id:8 },
+  { value: '#E1E1E1', id:8 },
 ];
 
 const getIdByHex = (hex:string) => {
