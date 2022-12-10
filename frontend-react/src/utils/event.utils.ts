@@ -13,6 +13,28 @@ const capitalize = (word: string) => {
   return firstLetterCap + remainingLetters;
 };
 
+const colors = [
+  { value: '#DC2127', id:11 },
+  { value: '#FF887C', id:4 },
+  { value: '#FFB878', id:6 },
+  { value: '#FBD75B', id:5 },
+  { value: '#7AE7BF', id:2 },
+  { value: '#51B749', id:10 },
+  { value: '#46D6DB', id:7 },
+  { value: '#5484ED', id:9 },
+  { value: '#A4BDFC', id:1},
+  { value: '#DBADFF', id:3 },
+  { value: '#E1E1E1', id:8 },
+];
+
+const getIdByHex = (hex:string) => {
+  return colors.find(row => row.value === hex)?.id;
+}
+
+const getHexById = (id:number) => {
+  return colors.find(row => row.id === id)?.value;
+}
+
 export const convertFormToRequest = (
   owner_email: string,
   general: GeneralForm,
@@ -23,6 +45,7 @@ export const convertFormToRequest = (
   summary: general.name,
   location: googleEvent.event_location || '',
   description: googleEvent.event_description || '',
+  color: getIdByHex(googleEvent.event_color) || 9,
   event_preset_detail: {
     event_preset: {
       name: general.name,
