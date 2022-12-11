@@ -13,6 +13,8 @@ const presetString = "Presets";
 const userTokenString = "userToken";
 const msSinceEpocToday = new Date();
 const iconUrl = "https://cdn-icons-png.flaticon.com/512/2569/2569174.png";
+const loginPopupPrompt = "/?close_prompt=true"
+
 
 const defaultPreset: PresetDetails = {
   event_preset: {
