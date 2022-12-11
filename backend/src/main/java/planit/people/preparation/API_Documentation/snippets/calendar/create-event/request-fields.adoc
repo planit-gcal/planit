@@ -25,6 +25,10 @@
 |`+Number+`
 |The duration of the event
 
+|`+color+`
+|`+String+`
+|The color id of the event
+
 |`+start_date+`
 |`+String+`
 |The start date after when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss

@@ -256,6 +256,7 @@ public class CalendarWebLayerTest {
                 "Summary TEST",
                 "PWR",
                 "this is a unit test",
+                "11",
                 presetDetail,
                 "owner@email.com",
                 format.parse("2022-1-10 12:00:00"),
@@ -283,6 +284,7 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("location").description("Location of the event"),
                                 fieldWithPath("owner_email").description("The email of the event owner"),
                                 fieldWithPath("duration").description("The duration of the event"),
+                                fieldWithPath("color").description("The color id of the event"),
                                 fieldWithPath("start_date").description("The start date after when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss"),
                                 fieldWithPath("end_date").description("The end date before when an event should be created. The date has the following format yyyy-MM-dd HH:mm:ss"),
                                 fieldWithPath("event_preset_detail.event_preset.name").description("The name of the preset to be created").type(String.class),
@@ -312,7 +314,8 @@ public class CalendarWebLayerTest {
                                 fieldWithPath("end_date").description("The scheduled event end date").type(DateTime.class),
                                 fieldWithPath("end_date.value").description("Date/time value expressed as the number of ms since the Unix epoch.").type(Long.class),
                                 fieldWithPath("end_date.dateOnly").description("Specifies whether this is a date-only value.").type(Boolean.class),
-                                fieldWithPath("end_date.timeZoneShift").description("Time zone shift from UTC in minutes or 0 for date-only value.").type(Integer.class)
+                                fieldWithPath("end_date.timeZoneShift").description("Time zone shift from UTC in minutes or 0 for date-only value.").type(Integer.class),
+                                fieldWithPath("event_url").description("The URL returned by Google API that redirects to the newly created event").type(String.class)
                         )
                 ));
     }

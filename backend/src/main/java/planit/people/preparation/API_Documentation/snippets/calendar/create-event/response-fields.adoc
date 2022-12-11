@@ -33,4 +33,8 @@
 |`+class java.lang.Integer+`
 |Time zone shift from UTC in minutes or 0 for date-only value.
 
+|`+event_url+`
+|`+class java.lang.String+`
+|The URL returned by Google API that redirects to the newly created event
+
 |===

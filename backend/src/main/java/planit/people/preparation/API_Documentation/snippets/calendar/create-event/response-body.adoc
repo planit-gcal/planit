@@ -1,4 +1,4 @@
 [source,options="nowrap"]
 ----
-{"start_date":{"value":1642690800000,"dateOnly":false,"timeZoneShift":0},"end_date":{"value":1642694400000,"dateOnly":false,"timeZoneShift":0}}
+{"start_date":{"value":1642690800000,"dateOnly":false,"timeZoneShift":0},"end_date":{"value":1642694400000,"dateOnly":false,"timeZoneShift":0},"event_url":""}
 ----
