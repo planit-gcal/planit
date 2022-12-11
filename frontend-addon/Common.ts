@@ -1,6 +1,6 @@
 function onHomepage() {
     PropertyManager.resetProperties()
-    if (!Authenticator.isAuthenticated() && !Authenticator.authenticate()) {
+    if (!Authenticator.authenticate()) {
         return authenticationCard();
     }
     return eventCard();
@@ -19,6 +19,7 @@ function eventCard() {
 function authenticationCard() {
     return CardService.newCardBuilder()
         .addSection(Components.signUpSection())
+        .addSection(Components.refreshSection())
         .build();
 }
 

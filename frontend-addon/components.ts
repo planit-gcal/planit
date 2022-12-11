@@ -19,6 +19,8 @@ class Components {
         console.log(presets)
 
         presets.forEach((x, i) => dropdown.addItem(x.event_preset.name, i, i === currentIndex))
+        // const fakePresets = ["Family", "Friends", "Paintball Sundays", "Study together"];
+        // fakePresets.forEach((x, i) => dropdown.addItem(x, i, i===2));
         return dropdown
     }
 
@@ -199,21 +201,40 @@ class Components {
     }
 
     static signUpSection() {
-        const url = MAINURL;
+        const url = MAINURL + loginPopupPrompt;
         const onClose = CardService.OnClose.RELOAD_ADD_ON;
-        const openLink = CardService.newOpenLink().setUrl(url).setOnClose(onClose).setOpenAs(CardService.OpenAs.OVERLAY);
+        const openLink = CardService.newOpenLink()
+            .setUrl(url)
+            .setOnClose(onClose)
+            .setOpenAs(CardService.OpenAs.OVERLAY);
 
         return CardService.newCardSection()
-            .setHeader("Sign up")
-            .addWidget(
-                CardService.newTextButton()
-                    .setText("Open sign in popup")
-                    .setOpenLink(openLink)
-            )
             .addWidget(
                 CardService.newTextParagraph()
-                    .setText("Log in screen?")
+                    .setText("Looks like you're not signed in to our application. No worries, that's an easy fix :)")
             )
+            .addWidget(
+                CardService.newTextButton()
+                    .setText("click here to register")
+                    .setOpenLink(openLink)
+                    .setTextButtonStyle(CardService.TextButtonStyle.FILLED)
+            );
+    }
+
+    static refreshSection()
+    {
+        return CardService.newCardSection()
+            .addWidget(
+                CardService.newTextParagraph()
+                    .setText("If after registering you still see this page")
+            )
+            .addWidget(
+                CardService.newTextButton()
+                    .setText("press here to refresh.")
+                    .setOnClickAction(
+                        CardService.newAction()
+                            .setFunctionName("onHomepage"))
+            );
     }
 
 

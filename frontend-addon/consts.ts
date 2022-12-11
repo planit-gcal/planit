@@ -50,7 +50,7 @@ const defaultPreset: PresetDetails = {
   ],
 };
 
-const MAINURL = "https://3bb6-89-64-6-212.ngrok.io";
+const MAINURL = "https://5158-37-128-74-50.ngrok.io";
 // const MAINURL = "https://witty-bear-80.loca.lt"
 // const MAINURL = "http://localhost:8080"
 const weekInMs = 6.048e8;
@@ -66,3 +66,4 @@ const presetString = "Presets";
 const userTokenString = "userToken";
 const msSinceEpocToday = new Date();
 const iconUrl = "https://cdn-icons-png.flaticon.com/512/2569/2569174.png";
+const loginPopupPrompt = "/?close_prompt=true";

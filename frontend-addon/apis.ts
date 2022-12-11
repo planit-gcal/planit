@@ -45,9 +45,13 @@ class API {
                 'Bypass-Tunnel-Reminder': '1',
             },
         }
-        console.log({url})
+        try {
         const response = UrlFetchApp.fetch(url, options);
         console.log(response.toString());
         return JSON.parse(response.toString())
+        }
+        catch (e) {
+            return null;
+        }
     }
 }
