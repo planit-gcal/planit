@@ -11,9 +11,7 @@
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "urlFetchWhitelist": [
-    "https://3bb6-89-64-6-212.ngrok.io/",
-    "https://planit-custom-domain2.loca.lt/",
-    "https://5158-37-128-74-50.ngrok.io/"
+    "https://ngrok-url/"
   ],
   "addOns": {
     "common": {
@@ -31,7 +29,7 @@
       "universalActions": [
         {
           "label": "For more features visit website",
-          "openLink": "https://5158-37-128-74-50.ngrok.io/"
+          "openLink": "https://ngrok-url"
         }
       ]
     },

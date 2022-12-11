@@ -1,3 +1,19 @@
+const MAINURL = "https://ngrok-url";
+
+const weekInMs = 6.048e8;
+const durationString = "duration";
+const eventNameString = "eventName";
+const usersString = "Users";
+const currentPresetIndexString = "currentPresetIndex";
+const minDateString = "startDate";
+const maxDateString = "endDate";
+const errorString = "inputErrors";
+const addUserEmailString = "addUserEmail";
+const presetString = "Presets";
+const userTokenString = "userToken";
+const msSinceEpocToday = new Date();
+const iconUrl = "https://cdn-icons-png.flaticon.com/512/2569/2569174.png";
+
 const defaultPreset: PresetDetails = {
   event_preset: {
     name: "PlanIt Event",
@@ -49,21 +65,3 @@ const defaultPreset: PresetDetails = {
     },
   ],
 };
-
-const MAINURL = "https://5158-37-128-74-50.ngrok.io";
-// const MAINURL = "https://witty-bear-80.loca.lt"
-// const MAINURL = "http://localhost:8080"
-const weekInMs = 6.048e8;
-const durationString = "duration";
-const eventNameString = "eventName";
-const usersString = "Users";
-const currentPresetIndexString = "currentPresetIndex";
-const minDateString = "startDate";
-const maxDateString = "endDate";
-const errorString = "inputErrors";
-const addUserEmailString = "addUserEmail";
-const presetString = "Presets";
-const userTokenString = "userToken";
-const msSinceEpocToday = new Date();
-const iconUrl = "https://cdn-icons-png.flaticon.com/512/2569/2569174.png";
-const loginPopupPrompt = "/?close_prompt=true";
