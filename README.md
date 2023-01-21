@@ -1,6 +1,37 @@
 # About
 
-This repository contains frontend and backend apps for the Planit project.
+Google Workspace Add-on
+Application written in TypeScript and deployed to Google Apps Script platform. It’s using APIs provided by Google to create the UI, send API requests and manage the local storage.
+
+## Purpose
+The purpose of the project is to create a website and an Add-on to Google Calendar that will be available to people with a Google account. Its function will assist in scheduling meetings for groups, by automating a part of the process. The main functionality will be finding free time slots among multiple calendars. Users will be able to save their event settings as presets to later be able to quickly use them.
+
+## Project scope
+creating a Google Calendar Add-on
+creating a website
+the ability to read calendars of multiple users
+creating events in users’ Google Calendars
+
+## Functional requirements
+* Automatically finding an available time slot based on the specified settings
+* Creating a shared event between multiple users;
+* Marking each meeting attendee as ‘obligatory’ or ‘non-obligatory’
+* Defining the total time needed for a particular task;
+* Defining between what dates the event needs to take place
+* Finding free slots in the calendar that work for all obligatory participants and the most non-obligatory users
+* Customize availability settings, ex: Exclude weekends, Consider only times between 08:00 AM and 04:00 PM
+* Scheduling the event at the found time
+* Adding additional emails to a single PlanIt user’s account
+* Creating, editing and deleting a preset
+* Specifying the settings that are available when normally creating an event in Google Calendar (ex. description and location)
+## Non-functional requirements
+* The system should be able to import database snapshots in case of failure
+* The system should take hourly database snapshots
+* The system architecture and functionalities are documented
+* The responses from the application back-end should take less than 1s
+* The system should support internationalization and a single language (English)
+* The system should not spend more than 10s per 500 requests to Google
+
 
 # Useful links
 
